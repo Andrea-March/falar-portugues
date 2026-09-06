@@ -79,7 +79,10 @@ export default function FillInBlank({ exercise, feedback, onSubmitAnswer }: Fill
             {feedback !== 'correct' && (
               <button
                 type="button"
-                onClick={() => setShowSpecialChars((prev) => !prev)}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  setShowSpecialChars((prev) => !prev);
+                }}
                 title="Mostrar/Ocultar caracteres especiais"
                 className={`absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black transition-colors ${
                   showSpecialChars
