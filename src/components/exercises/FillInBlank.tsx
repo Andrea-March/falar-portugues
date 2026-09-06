@@ -24,7 +24,8 @@ export default function FillInBlank({ exercise, feedback, onSubmitAnswer }: Fill
 
   const specialChars = ['á', 'ã', 'â', 'ç', 'é', 'ê', 'í', 'ó', 'õ', 'ú'];
 
-  const handleCharClick = (char: string) => {
+  const handleCharClick = (e: React.MouseEvent, char: string) => {
+    e.preventDefault(); // Impedisce all'input di perdere il focus (mantiene la tastiera aperta)
     setInput((prev) => prev + char);
   };
 
@@ -113,7 +114,7 @@ export default function FillInBlank({ exercise, feedback, onSubmitAnswer }: Fill
                 <button
                   key={char}
                   type="button"
-                  onClick={() => handleCharClick(char)}
+                  onMouseDown={(e) => handleCharClick(e, char)}
                   className="w-10 h-10 bg-white hover:bg-orange-100 text-stone-800 font-bold rounded-xl text-base border border-stone-200 shadow-sm active:scale-95 transition-all flex items-center justify-center"
                 >
                   {char}
