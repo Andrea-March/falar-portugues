@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import DailyMetaCard from '@/components/DailyMetaCard';
 import ModuleGrid from '@/components/ModuleGrid';
 import BottomNav from '@/components/BottomNav';
-import VerbPractice from '@/components/excercises/VerbPractice';
+import VerbPractice from '@/components/exercises/VerbPractice';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'home' | 'grammar' | 'vocab' | 'chat'>('home');
