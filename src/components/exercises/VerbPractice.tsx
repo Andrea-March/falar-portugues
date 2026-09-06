@@ -5,6 +5,8 @@ import rawVerbData from '@/data/verbs.json';
 import { generateExercisesFromVerbs, VerbEntry } from '@/utils/exerciseGenerator';
 import ExerciseRenderer from './ExerciseRenderer';
 import AudioButton from '@/components/common/AudioButton';
+import CompletionModal from '@/components/common/CompletionModal';
+import FeedbackSheet from './FeedbackSheet';
 
 interface VerbPracticeProps {
   onCorrectAnswer?: (xpEarned: number) => void;
@@ -59,37 +61,7 @@ export default function VerbPractice({ onCorrectAnswer, onFinish }: VerbPractice
   ? currentExercise.sentence.replace('___', currentExercise.correctAnswer)
   : '';
 
-  // Schermata Finale
-  if (isCompleted) {
-    return (
-      <div className="bg-brand-surface p-6 rounded-2xl border border-orange-200/80 shadow-sm text-center space-y-4">
-        <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-3xl mx-auto">
-          🏆
-        </div>
-        <h3 className="text-xl font-black text-stone-800">Sessão Concluída!</h3>
-        <p className="text-xs text-stone-600 leading-relaxed">
-          Completaste todos os exercícios de verbos. Ganhaste{' '}
-          <span className="font-bold text-brand-primary">+{exercises.length * 10} XP</span>!
-        </p>
-        <div className="pt-2 flex flex-col gap-2">
-          <button
-            onClick={handleRestart}
-            className="w-full bg-brand-primary hover:bg-brand-hover text-white font-bold py-3 px-4 rounded-xl shadow-md text-sm transition-all active:scale-[0.98]"
-          >
-            Repetir Exercícios
-          </button>
-          {onFinish && (
-            <button
-              onClick={onFinish}
-              className="w-full bg-orange-100 text-brand-primary font-bold py-3 px-4 rounded-xl text-sm hover:bg-orange-200 transition-all"
-            >
-              Voltar ao Início
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  }
+
 
   if (!currentExercise) return null;
 
@@ -121,30 +93,24 @@ export default function VerbPractice({ onCorrectAnswer, onFinish }: VerbPractice
         onAnswer={handleAnswer}
       />
 
-      {/* Box Feedback e Tasto Continuar */}
-      {feedback === 'correct' && (
-        <div className="space-y-3 pt-1">
-          <div className="p-3 bg-emerald-100/90 text-emerald-900 rounded-xl text-xs font-bold flex items-center justify-between border border-emerald-300">
-            <span>🎉 Excelente! +10 XP</span>
-            {/* Bottone Audio elegante accanto al titolo del verbo */}
-            <AudioButton textToSpeak={fullSentenceWithAnswer} />
-            
-          </div>
-          <button
-            onClick={handleNext}
-            className="w-full bg-brand-primary hover:bg-brand-hover text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition-all text-sm flex items-center justify-center gap-2 active:scale-[0.98]"
-          >
-            <span>Continuar</span>
-            <span>→</span>
-          </button>
-        </div>
-      )}
+      
 
-      {feedback === 'wrong' && (
-        <div className="p-3 bg-rose-100 text-rose-900 rounded-xl text-xs font-bold text-center border border-rose-300">
-          ❌ Resposta incorreta. Tenta novamente!
-        </div>
-      )}
+      {/* Bottom Sheet Sticky per Feedback Senza Scroll */}
+      <FeedbackSheet
+        feedback={feedback}
+        correctAnswer={currentExercise.correctAnswer}
+        sentenceToSpeak={fullSentenceWithAnswer}
+        onContinue={handleNext}
+        onRetry={() => setFeedback('idle')}
+      />
+      {/* Modale Celebrativa a fine sessione */}
+      <CompletionModal
+        isOpen={isCompleted}
+        xpEarned={exercises.length * 10}
+        totalExercises={exercises.length}
+        onRestart={handleRestart}
+        onFinish={onFinish}
+      />
     </div>
   );
 }

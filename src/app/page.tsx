@@ -38,7 +38,7 @@ export default function Home() {
             >
               ← Voltar ao Início
             </button>
-            <VerbPractice onCorrectAnswer={handleCorrectAnswer} />
+            <VerbPractice onCorrectAnswer={handleCorrectAnswer} onFinish={() => setActiveTab('home')}/>
           </div>
         )}
 
