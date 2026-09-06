@@ -30,7 +30,9 @@ interface VerbStudyProps {
 }
 
 export default function VerbStudy({ onStartPractice }: VerbStudyProps) {
-  const verbs = (rawVerbsData.verbs || rawVerbsData) as VerbEntry[];
+  // Cast sicuro che gestisce sia il formato oggetto { verbs: [...] } che array [ ... ]
+    const rawData = rawVerbsData as unknown as { verbs?: VerbEntry[] } | VerbEntry[];
+    const verbs: VerbEntry[] = Array.isArray(rawData) ? rawData : rawData.verbs || [];
   const [selectedVerbId, setSelectedVerbId] = useState<string>(verbs[0]?.id || '');
   const [search, setSearch] = useState('');
 
