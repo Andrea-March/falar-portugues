@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import rawVerbData from '@/data/verbs.json';
 import { generateExercisesFromVerbs, VerbEntry } from '@/utils/exerciseGenerator';
 import ExerciseRenderer from './ExerciseRenderer';
+import AudioButton from '@/components/common/AudioButton';
 
 interface VerbPracticeProps {
   onCorrectAnswer?: (xpEarned: number) => void;
@@ -53,6 +54,10 @@ export default function VerbPractice({ onCorrectAnswer, onFinish }: VerbPractice
     setFeedback('idle');
     setIsCompleted(false);
   };
+
+  const fullSentenceWithAnswer = currentExercise 
+  ? currentExercise.sentence.replace('___', currentExercise.correctAnswer)
+  : '';
 
   // Schermata Finale
   if (isCompleted) {
@@ -121,7 +126,9 @@ export default function VerbPractice({ onCorrectAnswer, onFinish }: VerbPractice
         <div className="space-y-3 pt-1">
           <div className="p-3 bg-emerald-100/90 text-emerald-900 rounded-xl text-xs font-bold flex items-center justify-between border border-emerald-300">
             <span>🎉 Excelente! +10 XP</span>
-            <span className="text-emerald-700 font-extrabold">✓</span>
+            {/* Bottone Audio elegante accanto al titolo del verbo */}
+            <AudioButton textToSpeak={fullSentenceWithAnswer} />
+            
           </div>
           <button
             onClick={handleNext}
