@@ -23,10 +23,22 @@ export interface VerbEntry {
   }[];
 }
 
-export function generateExercisesFromVerbs(verbs: VerbEntry[]): ExerciseType[] {
+export function generateExercisesFromVerbs(
+  verbs: VerbEntry[],
+  filterVerbId?: string
+): ExerciseType[] {
   const exercises: ExerciseType[] = [];
 
-  verbs.forEach((verb, index) => {
+  // Se è specificato filterVerbId, confronta sia l'ID esatto che l'infinito
+  const targetVerbs = filterVerbId
+    ? verbs.filter(
+        (v) =>
+          v.id === filterVerbId ||
+          v.infinitive.toLowerCase() === filterVerbId.toLowerCase()
+      )
+    : verbs;
+
+  targetVerbs.forEach((verb) => {
     verb.sentences.forEach((sentence) => {
       // Alterniamo il tipo di esercizio in base all'indice (pari = scelta multipla, dispari = digitazione)
       const isMultipleChoice = exercises.length % 2 === 0;
@@ -38,7 +50,7 @@ export function generateExercisesFromVerbs(verbs: VerbEntry[]): ExerciseType[] {
         // Raccogliamo tutte le coniugazioni dello stesso tempo per creare le opzioni
         const tenseConjugations = verb.conjugations[sentence.tense] || {};
         const optionsSet = new Set<string>();
-        
+
         optionsSet.add(sentence.correct_answer);
         Object.values(tenseConjugations).forEach((conj) => optionsSet.add(conj));
 

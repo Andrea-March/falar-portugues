@@ -6,6 +6,7 @@ import DailyMetaCard from '@/components/DailyMetaCard';
 import ModuleGrid from '@/components/ModuleGrid';
 import BottomNav from '@/components/BottomNav';
 import VerbPractice from '@/components/exercises/VerbPractice';
+import GrammarHub from '@/components/GrammarHub';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'home' | 'grammar' | 'vocab' | 'chat'>('home');
@@ -31,15 +32,7 @@ export default function Home() {
         )}
 
         {activeTab === 'grammar' && (
-          <div>
-            <button
-              onClick={() => setActiveTab('home')}
-              className="text-xs font-bold text-brand-primary mb-3 flex items-center gap-1 bg-orange-100/80 px-3 py-1.5 rounded-lg w-fit active:scale-95 transition-transform"
-            >
-              ← Voltar ao Início
-            </button>
-            <VerbPractice onCorrectAnswer={handleCorrectAnswer} onFinish={() => setActiveTab('home')}/>
-          </div>
+          <GrammarHub />
         )}
 
         {activeTab === 'vocab' && (
