@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import rawVerbsData from '@/data/verbs.json';
 import AudioButton from '@/components/common/AudioButton';
 
-// Tipi per rispecchiare la nuova struttura del JSON
 interface ConjugationSet {
   eu: string;
   tu: string;
@@ -22,18 +21,20 @@ interface VerbEntry {
   conjugations: {
     presente: ConjugationSet;
     preterito_perfeito?: ConjugationSet;
+    [key: string]: ConjugationSet | undefined;
   };
 }
 
 interface VerbStudyProps {
-  onStartPractice?: (verbId: string) => void;
+  onStartPractice?: (verbId: string, tense?: string) => void;
 }
 
 export default function VerbStudy({ onStartPractice }: VerbStudyProps) {
-  // Cast sicuro che gestisce sia il formato oggetto { verbs: [...] } che array [ ... ]
-    const rawData = rawVerbsData as unknown as { verbs?: VerbEntry[] } | VerbEntry[];
-    const verbs: VerbEntry[] = Array.isArray(rawData) ? rawData : rawData.verbs || [];
+  const rawData = rawVerbsData as unknown as { verbs?: VerbEntry[] } | VerbEntry[];
+  const verbs: VerbEntry[] = Array.isArray(rawData) ? rawData : rawData.verbs || [];
+
   const [selectedVerbId, setSelectedVerbId] = useState<string>(verbs[0]?.id || '');
+  const [selectedTense, setSelectedTense] = useState<string>('presente');
   const [search, setSearch] = useState('');
 
   const selectedVerb = verbs.find((v) => v.id === selectedVerbId) || verbs[0];
@@ -52,9 +53,17 @@ export default function VerbStudy({ onStartPractice }: VerbStudyProps) {
     { key: 'eles_elas_voces', label: 'Eles / Elas / Vocês' },
   ];
 
+  // Nomi leggibili per i tempi verbali
+  const tenseLabels: Record<string, string> = {
+    presente: 'Presente do Indicativo',
+    preterito_perfeito: 'Pretérito Perfeito',
+    preterito_imperfeito: 'Pretérito Imperfeito',
+    futuro: 'Futuro do Indicativo',
+  };
+
   return (
     <div className="space-y-4">
-      {/* Barra di ricerca e chips verbi */}
+      {/* Search & Chips */}
       <div className="bg-brand-surface p-4 rounded-2xl border border-orange-200/80 shadow-sm space-y-3">
         <input
           type="text"
@@ -64,7 +73,6 @@ export default function VerbStudy({ onStartPractice }: VerbStudyProps) {
           className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/50 bg-stone-50"
         />
 
-        {/* Chips verbi */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
           {filteredVerbs.map((v) => (
             <button
@@ -82,32 +90,48 @@ export default function VerbStudy({ onStartPractice }: VerbStudyProps) {
         </div>
       </div>
 
-      {/* Scheda del Verbo */}
+      {/* Scheda Verbo */}
       {selectedVerb && (
         <div className="bg-brand-surface p-5 rounded-2xl border border-orange-200/80 shadow-sm space-y-4">
-          {/* Header Verbo */}
-          <div className="flex justify-between items-start border-b border-orange-100 pb-3">
+          {/* Header con Badge Dropdown */}
+          <div className="flex justify-between items-start border-b border-orange-100 pb-3 gap-2">
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-2xl font-black text-stone-800 capitalize">
                   {selectedVerb.infinitive}
                 </h2>
-                <AudioButton textToSpeak={selectedVerb.infinitive} />
+               
               </div>
               <p className="text-xs text-stone-500 font-medium italic mt-0.5">
                 "{selectedVerb.translation_it}"
               </p>
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 bg-orange-100 text-brand-primary rounded-lg border border-orange-200/60">
-              Presente do Indicativo
-            </span>
+            <AudioButton textToSpeak={selectedVerb.infinitive} />
           </div>
-
+        {/* Dropdown Tempo Verbale */}
+        <div className="relative inline-block w-full">
+            <select
+            value={selectedTense}
+            onChange={(e) => setSelectedTense(e.target.value)}
+            className="w-full appearance-none bg-orange-50/80 text-brand-primary text-xs font-bold px-3.5 py-2.5 pr-8 rounded-xl border border-orange-200/80 cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-primary/40 transition-all"
+            >
+            {Object.keys(selectedVerb.conjugations || {}).map((tenseKey) => (
+                <option key={tenseKey} value={tenseKey} className="text-stone-800 font-medium py-1">
+                {tenseLabels[tenseKey] || tenseKey.replace('_', ' ')}
+                </option>
+            ))}
+            </select>
+            
+            {/* Freccetta centrata con pointer-events-none */}
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-brand-primary text-[10px]">
+            ▼
+            </div>
+        </div>
           {/* Tabella Coniugazioni */}
           <div className="divide-y divide-stone-100">
             {pronouns.map(({ key, label }) => {
-              const conjugation =
-                selectedVerb.conjugations?.presente?.[key as keyof ConjugationSet];
+              const tenseData = selectedVerb.conjugations?.[selectedTense];
+              const conjugation = tenseData?.[key as keyof ConjugationSet];
               const textToSpeak = `${label} ${conjugation || ''}`;
 
               return (
@@ -124,15 +148,15 @@ export default function VerbStudy({ onStartPractice }: VerbStudyProps) {
             })}
           </div>
 
-          {/* CTA per la Pratica */}
+          {/* CTA Pratica */}
           {onStartPractice && (
             <div className="pt-2 border-t border-orange-100">
               <button
                 type="button"
-                onClick={() => onStartPractice(selectedVerb.id)}
+                onClick={() => onStartPractice(selectedVerb.id, selectedTense)}
                 className="w-full bg-brand-primary hover:bg-brand-hover text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all text-sm flex items-center justify-center gap-2 active:scale-[0.98]"
               >
-                <span>🎯 Praticar "{selectedVerb.infinitive}"</span>
+                <span>🎯 Praticar "{selectedVerb.infinitive}" ({tenseLabels[selectedTense] || selectedTense})</span>
                 <span>→</span>
               </button>
             </div>
