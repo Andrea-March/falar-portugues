@@ -108,7 +108,10 @@ export default function FillInBlank({ exercise, feedback, onSubmitAnswer }: Fill
 
         {/* Tastiera Caratteri Speciali (Più grandi e visibili solo su richiesta) */}
         {showSpecialChars && feedback !== 'correct' && (
-          <div className="bg-stone-100/80 p-2.5 rounded-xl border border-stone-200 animate-fadeIn">
+          <div 
+            className="bg-stone-100/80 p-2.5 rounded-xl border border-stone-200 animate-fadeIn"
+            onMouseDown={(e) => e.preventDefault()}
+          >
             <div className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-2 text-center">
               Caracteres Especiais
             </div>
