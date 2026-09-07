@@ -39,6 +39,15 @@
         "sentence_after": " o novo aluno de português?",
         "correct_answer": "és",
         "translation_it": "Tu sei il nuovo studente di portoghese?"
+      },
+      {
+        "id": "s_ser_3",
+        "tense": "preterito_perfeito",
+        "person": "eu",
+        "sentence_before": "Ontem eu ",
+        "sentence_after": " ao cinema com os meus amigos.",
+        "correct_answer": "fui",
+        "translation_it": "Ieri sono stato al cinema con i miei amici."
       }
     ]
   },

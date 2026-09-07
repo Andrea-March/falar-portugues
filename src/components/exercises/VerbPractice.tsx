@@ -10,11 +10,12 @@ import FeedbackSheet from './FeedbackSheet';
 
 interface VerbPracticeProps {
   filterVerbId?: string;
+  filterTense?: string;
   onCorrectAnswer?: (xpEarned: number) => void;
   onFinish?: () => void;
 }
 
-export default function VerbPractice({ filterVerbId,onCorrectAnswer, onFinish }: VerbPracticeProps) {
+export default function VerbPractice({ filterVerbId, filterTense, onCorrectAnswer, onFinish }: VerbPracticeProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<'idle' | 'correct' | 'wrong'>('idle');
@@ -22,8 +23,8 @@ export default function VerbPractice({ filterVerbId,onCorrectAnswer, onFinish }:
 
   // Genera la lista dinamica di esercizi basata sul JSON dei verbi
   const exercises = useMemo(() => {
-    return generateExercisesFromVerbs(rawVerbData as VerbEntry[], filterVerbId);
-  }, [filterVerbId]);
+    return generateExercisesFromVerbs(rawVerbData as VerbEntry[], filterVerbId, filterTense);
+  }, [filterVerbId, filterTense]);
 
   const currentExercise = exercises[currentIndex];
 

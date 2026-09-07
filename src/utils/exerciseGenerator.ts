@@ -25,7 +25,8 @@ export interface VerbEntry {
 
 export function generateExercisesFromVerbs(
   verbs: VerbEntry[],
-  filterVerbId?: string
+  filterVerbId?: string,
+  filterTense?: string
 ): ExerciseType[] {
   const exercises: ExerciseType[] = [];
 
@@ -39,7 +40,10 @@ export function generateExercisesFromVerbs(
     : verbs;
 
   targetVerbs.forEach((verb) => {
-    verb.sentences.forEach((sentence) => {
+    const targetSentences = filterTense
+        ? verb.sentences.filter((s) => s.tense === filterTense)
+        : verb.sentences;
+    targetSentences.forEach((sentence) => {
       // Alterniamo il tipo di esercizio in base all'indice (pari = scelta multipla, dispari = digitazione)
       const isMultipleChoice = exercises.length % 2 === 0;
 

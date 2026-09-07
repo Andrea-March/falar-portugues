@@ -7,6 +7,7 @@ import VerbPractice from './exercises/VerbPractice';
 export default function GrammarHub() {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [practiceVerbId, setPracticeVerbId] = useState<string | null>(null);
+  const [practiceTense, setPracticeTense] = useState<string | undefined>(undefined);
 
   const topics = [
     {
@@ -40,7 +41,10 @@ export default function GrammarHub() {
     return (
       <div className="space-y-4 animate-fadeIn">
         <button
-          onClick={() => setPracticeVerbId(null)}
+          onClick={() => {
+            setPracticeVerbId(null);
+            setPracticeTense(undefined);
+          }}
           className="text-xs font-bold text-stone-600 hover:text-stone-800 flex items-center gap-1 bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded-xl transition-all w-fit"
         >
           ← Voltar à Tabela do Verbo
@@ -48,7 +52,11 @@ export default function GrammarHub() {
 
         <VerbPractice
           filterVerbId={practiceVerbId}
-          onFinish={() => setPracticeVerbId(null)}
+          filterTense={practiceTense}
+          onFinish={() => {
+            setPracticeVerbId(null);
+            setPracticeTense(undefined);
+          }}
         />
       </div>
     );
@@ -66,7 +74,10 @@ export default function GrammarHub() {
         </button>
 
         <VerbStudy
-          onStartPractice={(verbId) => setPracticeVerbId(verbId)}
+          onStartPractice={(verbId, tense) => {
+            setPracticeVerbId(verbId);
+            setPracticeTense(tense);
+          }}
         />
       </div>
     );
