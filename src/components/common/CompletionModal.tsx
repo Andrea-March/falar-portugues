@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import confetti from 'canvas-confetti';
+import { soundFX } from '@/utils/sound';
 
 interface CompletionModalProps {
   isOpen: boolean;
@@ -20,25 +21,25 @@ export default function CompletionModal({
 }: CompletionModalProps) {
   useEffect(() => {
     if (isOpen) {
-      const duration = 2.5 * 1000;
+      const duration = 1.5 * 1000;
       const animationEnd = Date.now() + duration;
-
+      soundFX.playComplete();
       const frame = () => {
         confetti({
-          particleCount: 3,
+          particleCount: 2,
           angle: 60,
           spread: 55,
           origin: { x: 0, y: 0.7 },
           colors: ['#E07A5F', '#F4A261', '#2A9D8F', '#E9C46A'],
         });
         confetti({
-          particleCount: 3,
+          particleCount: 2,
           angle: 120,
           spread: 55,
           origin: { x: 1, y: 0.7 },
           colors: ['#E07A5F', '#F4A261', '#2A9D8F', '#E9C46A'],
         });
-
+        
         if (Date.now() < animationEnd) {
           requestAnimationFrame(frame);
         }

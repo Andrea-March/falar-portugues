@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import AudioButton from '@/components/common/AudioButton';
+import { soundFX } from '@/utils/sound';
 
 interface FeedbackSheetProps {
   feedback: 'idle' | 'correct' | 'wrong';
@@ -20,9 +21,12 @@ export default function FeedbackSheet({
 }: FeedbackSheetProps) {
   const [showSolution, setShowSolution] = useState(false);
 
-  // Resetta lo stato della soluzione ogni volta che cambia il feedback
+  // Resetta lo stato della soluzione ogni volta che cambia il feedback e riproduce il suono appropriato
   useEffect(() => {
-    if (feedback === 'wrong') {
+    if (feedback === 'correct') {
+      soundFX.playSuccess();
+    } else if (feedback === 'wrong') {
+      soundFX.playError();
       setShowSolution(false);
     }
   }, [feedback]);
