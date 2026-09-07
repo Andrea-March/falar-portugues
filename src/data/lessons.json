@@ -1,0 +1,179 @@
+{
+  "node_1_1": {
+    "id": "node_1_1",
+    "title": "Verbo Ser",
+    "tense": "presente",
+    "subtitle": "Impara l'identità e l'origine",
+    "verbRefId": "verb_ser",
+    "theory": [
+      {
+        "title": "Identità e Origine",
+        "description": "Il verbo **Ser** si usa per caratteristiche permanenti, nazionalità, origini e professioni.",
+        "conjugation": [
+          { "pronoun": "Eu", "verb": "sou" },
+          { "pronoun": "Tu", "verb": "és" },
+          { "pronoun": "Você / Ele / Ela", "verb": "é" },
+          { "pronoun": "Nós", "verb": "somos" },
+          { "pronoun": "Vocês / Eles / Elas", "verb": "são" }
+        ],
+        "examples": [
+          { "pt": "Eu sou italiano.", "it": "Io sono italiano." },
+          { "pt": "Ela é médica.", "it": "Lei è medica." }
+        ]
+      }
+    ],
+    "exercises": [
+      {
+        "id": "ex_1_1_1",
+        "type": "multiple_choice",
+        "question": "Seleziona la forma corretta del verbo Ser:",
+        "sentence": "Eu _____ de Roma.",
+        "options": ["sou", "és", "é", "somos"],
+        "correctAnswer": "sou"
+      },
+      {
+        "id": "ex_1_1_2",
+        "type": "multiple_choice",
+        "question": "Come dici \"Lei è professoressa\"?",
+        "sentence": "Ela _____ professora.",
+        "options": ["sou", "és", "é", "são"],
+        "correctAnswer": "é"
+      },
+      {
+        "id": "ex_1_1_3",
+        "type": "word_order",
+        "question": "Riordina le parole per formare la frase corretta:",
+        "words": ["português", "Eu", "sou", "não"],
+        "correctOrder": ["Eu", "não", "sou", "português"],
+        "translation": "Io non sono portoghese"
+      },
+      {
+        "id": "ex_1_1_4",
+        "type": "multiple_choice",
+        "question": "Completa la frase al plurale:",
+        "sentence": "Nós _____ amigos.",
+        "options": ["somos", "são", "é", "sou"],
+        "correctAnswer": "somos"
+      }
+    ]
+  },
+
+  "node_1_2": {
+    "id": "node_1_2",
+    "title": "Cumprimentos e Saudações",
+    "theory": [
+      {
+        "title": "Saluti di base",
+        "description": "Ecco i saluti principali usati ogni giorno in Portogallo:",
+        "examples": [
+          { "pt": "Olá!", "it": "Ciao! (informale)" },
+          { "pt": "Bom dia!", "it": "Buongiorno!" },
+          { "pt": "Boa tarde!", "it": "Buon pomeriggio!" },
+          { "pt": "Boa noite!", "it": "Buona sera / Buona notte!" },
+          { "pt": "Como estás?", "it": "Come stai?" }
+        ]
+      }
+    ],
+    "exercises": [
+      {
+        "id": "ex_1_2_1",
+        "type": "multiple_choice",
+        "question": "Come saluti qualcuno la mattina?",
+        "sentence": "_____! Tudo bem?",
+        "options": ["Boa noite", "Bom dia", "Boa tarde", "Adeus"],
+        "correctAnswer": "Bom dia"
+      },
+      {
+        "id": "ex_1_2_2",
+        "type": "word_order",
+        "question": "Metti in ordine il saluto informale:",
+        "words": ["estás?", "Olá,", "como"],
+        "correctOrder": ["Olá,", "como", "estás?"],
+        "translation": "Ciao, come stai?"
+      },
+      {
+        "id": "ex_1_2_3",
+        "type": "multiple_choice",
+        "question": "Cosa rispondi a \"Tudo bem?\":",
+        "sentence": "Tudo _____, obrigado!",
+        "options": ["mal", "bem", "dia", "noite"],
+        "correctAnswer": "bem"
+      }
+    ]
+  },
+
+  "node_1_3": {
+    "id": "node_1_3",
+    "title": "No Café",
+    "theory": [
+      {
+        "title": "Ordinare al bar a Lisbona",
+        "description": "Espressioni essenziali per ordinare da bere o mangiare in Portogallo:",
+        "examples": [
+          { "pt": "Um café, por favor.", "it": "Un caffè (espresso), per favore." },
+          { "pt": "Queria um pastel de nata.", "it": "Vorrei un pastel de nata." },
+          { "pt": "Quanto é?", "it": "Quanto costa?" },
+          { "pt": "Obrigado / Obrigada", "it": "Grazie (M/F)" }
+        ]
+      }
+    ],
+    "exercises": [
+      {
+        "id": "ex_1_3_1",
+        "type": "multiple_choice",
+        "question": "Come chiedi la cortesia al cameriere?",
+        "sentence": "Um café, _____.",
+        "options": ["por favor", "obrigado", "olá", "de nada"],
+        "correctAnswer": "por favor"
+      },
+      {
+        "id": "ex_1_3_2",
+        "type": "word_order",
+        "question": "Ordina la richiesta al banco:",
+        "words": ["um", "por favor", "Queria", "café,"],
+        "correctOrder": ["Queria", "um", "café,", "por favor"],
+        "translation": "Vorrei un caffè, per favore"
+      },
+      {
+        "id": "ex_1_3_3",
+        "type": "multiple_choice",
+        "question": "Se sei un uomo, come dici \"grazie\"?",
+        "sentence": "_____, bom dia!",
+        "options": ["Obrigado", "Obrigada", "De nada", "Por favor"],
+        "correctAnswer": "Obrigado"
+      }
+    ]
+  },
+
+  "node_1_checkpoint": {
+    "id": "node_1_checkpoint",
+    "title": "Teste do Capítulo 1",
+    "theory": [],
+    "exercises": [
+      {
+        "id": "chk_1_1",
+        "type": "multiple_choice",
+        "question": "Verifica del Capitolo 1 - Verbo Ser:",
+        "sentence": "Você _____ de Portugal?",
+        "options": ["é", "sou", "és", "somos"],
+        "correctAnswer": "é"
+      },
+      {
+        "id": "chk_1_2",
+        "type": "word_order",
+        "question": "Ricomponi la frase d'ordinazione completa:",
+        "words": ["favor", "um", "por", "café,", "Queria"],
+        "correctOrder": ["Queria", "um", "café,", "por", "favor"],
+        "translation": "Vorrei un caffè, per favore"
+      },
+      {
+        "id": "chk_1_3",
+        "type": "multiple_choice",
+        "question": "Come saluti la sera tardi?",
+        "sentence": "_____, até amanhã!",
+        "options": ["Boa noite", "Bom dia", "Boa tarde", "Olá"],
+        "correctAnswer": "Boa noite"
+      }
+    ]
+  }
+}

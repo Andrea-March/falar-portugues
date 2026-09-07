@@ -3,11 +3,12 @@
 interface HeaderProps {
   streak: number;
   xp: number;
+  hearts?: number; 
 }
 
-export default function Header({ streak, xp }: HeaderProps) {
+export default function Header({ streak, xp, hearts }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-10 bg-brand-surface/90 backdrop-blur-md border-b border-amber-100 px-4 py-3 shadow-sm">
+    <header className="sticky top-0 z-50 bg-brand-surface/90 backdrop-blur-md border-b border-amber-100 px-4 py-3 shadow-sm">
       <div className="max-w-md mx-auto flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-primary to-amber-500 flex items-center justify-center text-white font-black text-base shadow-md shadow-brand-primary/20 tracking-tighter">
@@ -31,6 +32,10 @@ export default function Header({ streak, xp }: HeaderProps) {
           <div className="flex items-center gap-1 bg-brand-primary/10 text-brand-primary px-2.5 py-1 rounded-full border border-brand-primary/20">
             <span>⭐</span>
             <span>{xp}</span>
+          </div>
+          <div className="flex items-center gap-1 bg-brand-primary/10 text-brand-primary px-2.5 py-1 rounded-full border border-brand-primary/20">
+            <span>⭐</span>
+            <span>{hearts}</span>
           </div>
         </div>
       </div>

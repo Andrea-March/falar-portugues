@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { UserProvider } from '@/context/UserContext';
 
 export const metadata: Metadata = {
   title: "FalarLisboa - Aprender Português",
@@ -14,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="pt">
       <body className="bg-brand-background text-slate-900 antialiased min-h-screen">
-        {children}
+        <UserProvider>
+          {children}
+        </UserProvider>
       </body>
     </html>
   );

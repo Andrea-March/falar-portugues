@@ -1,0 +1,87 @@
+[
+  {
+    "id": "chapter_1",
+    "number": 1,
+    "title": "Primeiros Passos",
+    "description": "Basi della lingua, saluti essenziali e il verbo essere per presentarsi.",
+    "icon": "👋",
+    "nodes": [
+      {
+        "id": "node_1_1",
+        "title": "Verbo Ser",
+        "subtitle": "Impara l'identità e l'origine",
+        "type": "verb",
+        "refId": "verb_ser",
+        "tense": "presente",
+        "icon": "📖"
+      },
+      {
+        "id": "node_1_2",
+        "title": "Cumprimentos",
+        "subtitle": "Saluti e cortesia nel quotidiano",
+        "type": "vocabulary",
+        "refId": "greetings",
+        "icon": "🗣️"
+      },
+      {
+        "id": "node_1_3",
+        "title": "No Café",
+        "subtitle": "Ordina la tua prima bica a Lisbona",
+        "type": "dialogue",
+        "refId": "at_the_cafe",
+        "icon": "☕"
+      },
+      {
+        "id": "node_1_checkpoint",
+        "title": "Teste do Capítulo 1",
+        "subtitle": "Verifica le tue competenze",
+        "type": "checkpoint",
+        "requiredNodes": ["node_1_1", "node_1_2", "node_1_3"],
+        "icon": "🏆"
+      }
+    ]
+  },
+  {
+    "id": "chapter_2",
+    "number": 2,
+    "title": "A Rotina Diária",
+    "description": "Descrivi le tue giornate, azioni frequenti e stati temporanei.",
+    "icon": "☀️",
+    "nodes": [
+      {
+        "id": "node_2_1",
+        "title": "Verbo Estar",
+        "subtitle": "Stati d'animo e posizioni",
+        "type": "verb",
+        "refId": "verb_estar",
+        "tense": "presente",
+        "icon": "📖"
+      },
+      {
+        "id": "node_2_2",
+        "title": "Horas e Dias",
+        "subtitle": "Leggere l'ora e i giorni della settimana",
+        "type": "vocabulary",
+        "refId": "time_and_days",
+        "icon": "⏰"
+      },
+      {
+        "id": "node_2_3",
+        "title": "Verbo Ter",
+        "subtitle": "Possesso ed età",
+        "type": "verb",
+        "refId": "verb_ter",
+        "tense": "presente",
+        "icon": "📖"
+      },
+      {
+        "id": "node_2_checkpoint",
+        "title": "Teste do Capítulo 2",
+        "subtitle": "Sfida di fine capitolo",
+        "type": "checkpoint",
+        "requiredNodes": ["node_2_1", "node_2_2", "node_2_3"],
+        "icon": "🏆"
+      }
+    ]
+  }
+]
