@@ -50,6 +50,7 @@
         "sentence_before": "Ontem eu ",
         "sentence_after": " ao cinema com os meus amigos.",
         "correct_answer": "fui",
+        "type": "fill-in-the-blank",
         "translation_it": "Ieri sono stato al cinema con i miei amici."
       }
     ]
@@ -82,6 +83,7 @@
         "tense": "presente",
         "person": "tu",
         "sentence_before": "Tu ",
+        "type": "multiple-choice",
         "sentence_after": " a estudar para o exame?",
         "correct_answer": "estás",
         "translation_it": "Stai studiando per l'esame?"
@@ -117,6 +119,7 @@
         "person": "eu",
         "sentence_before": "Eu não ",
         "sentence_after": " tempo hoje.",
+        "type": "fill-in-the-blank",
         "correct_answer": "tenho",
         "translation_it": "Io non ho tempo oggi."
       }
