@@ -25,35 +25,43 @@
     "exercises": [
       {
         "id": "ex_1_1_1",
-        "type": "multiple_choice",
-        "question": "Seleziona la forma corretta del verbo Ser:",
-        "sentence": "Eu _____ de Roma.",
-        "options": ["sou", "és", "é", "somos"],
-        "correctAnswer": "sou"
+        "tense": "presente",
+        "person": "eu",
+        "sentence_before": "Eu ",
+        "sentence_after": " de Roma.",
+        "correct_answer": "sou",
+        "translation_it": "Io sono di Roma.",
+        "type": "fill-in-the-blank"
       },
       {
         "id": "ex_1_1_2",
-        "type": "multiple_choice",
-        "question": "Come dici \"Lei è professoressa\"?",
-        "sentence": "Ela _____ professora.",
-        "options": ["sou", "és", "é", "são"],
-        "correctAnswer": "é"
+        "tense": "presente",
+        "person": "ela",
+        "sentence_before": "Ela ",
+        "sentence_after": " professora.",
+        "correct_answer": "é",
+        "translation_it": "Lei è professoressa.",
+        "type": "fill-in-the-blank"
       },
       {
         "id": "ex_1_1_3",
-        "type": "word_order",
-        "question": "Riordina le parole per formare la frase corretta:",
-        "words": ["português", "Eu", "sou", "não"],
-        "correctOrder": ["Eu", "não", "sou", "português"],
-        "translation": "Io non sono portoghese"
+        "tense": "presente",
+        "person": "eu",
+        "sentence_before": "Eu não ",
+        "sentence_after": " português.",
+        "correct_answer": "sou",
+        "translation_it": "Io non sono portoghese.",
+        "type": "fill-in-the-blank"
       },
       {
         "id": "ex_1_1_4",
-        "type": "multiple_choice",
-        "question": "Completa la frase al plurale:",
-        "sentence": "Nós _____ amigos.",
-        "options": ["somos", "são", "é", "sou"],
-        "correctAnswer": "somos"
+        "tense": "presente",
+        "person": "nós",
+        "sentence_before": "Nós ",
+        "sentence_after": " amigos.",
+        "correct_answer": "somos",
+        "translation_it": "Noi siamo amici.",
+        "type": "fill-in-the-blank"
       }
     ]
   },
@@ -61,6 +69,7 @@
   "node_1_2": {
     "id": "node_1_2",
     "title": "Cumprimentos e Saudações",
+    "type": "vocab",
     "theory": [
       {
         "title": "Saluti di base",

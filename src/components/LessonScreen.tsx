@@ -7,6 +7,7 @@ import { useUser } from '@/context/UserContext';
 
 import VerbPractice from '@/components/exercises/VerbPractice';
 import lessonsData from '@/data/lessons.json';
+import VocabPractice from './exercises/VocabPractice';
 
 export interface TheoryCard {
   title: string;
@@ -14,6 +15,8 @@ export interface TheoryCard {
   conjugation?: { pronoun: string; verb: string }[];
   examples?: { pt: string; it: string }[];
 }
+
+export type LessonExercise = SentenceExercise | VocabExercise;
 
 export interface LessonData {
   id: string;
@@ -24,6 +27,7 @@ export interface LessonData {
   tense?: string;
   category?: string;
   scenarioId?: string;
+  exercises?: LessonExercise[];
 }
 
 interface LessonScreenProps {
@@ -67,7 +71,6 @@ export default function LessonScreen({
 
   const lessons = lessonsData as Record<string, LessonData>;
   const lesson = lessons[nodeId];
-
   const [step, setStep] = useState<'theory' | 'practice' | 'complete'>(
     lesson?.theory && lesson.theory.length > 0 ? 'theory' : 'practice'
   );
@@ -228,8 +231,16 @@ export default function LessonScreen({
 
         {(!lesson.type || lesson.type === 'verb') && (
           <VerbPractice
+            exercises={lesson.exercises}
             filterVerbId={lesson.verbRefId}
             filterTense={lesson.tense}
+            onFinish={handleFinishPractice}
+          />
+        )}
+        {/* Caso 2: Lezione di tipo VOCABOLARIO */}
+        {(lesson.type === 'vocab' || lesson.type === 'vocabulary') && (
+          <VocabPractice
+            exercises={lesson.exercises}
             onFinish={handleFinishPractice}
           />
         )}

@@ -23,23 +23,26 @@
     },
     "sentences": [
       {
-        "id": "s_ser_1",
-        "tense": "presente",
-        "person": "eu",
-        "sentence_before": "Eu ",
-        "sentence_after": " italiano e moro em Lisboa.",
-        "correct_answer": "sou",
-        "translation_it": "Io sono italiano e vivo a Lisbona."
-      },
-      {
         "id": "s_ser_2",
         "tense": "presente",
         "person": "tu",
         "sentence_before": "Tu ",
         "sentence_after": " o novo aluno de português?",
         "correct_answer": "és",
+        "type": "multiple-choice",
         "translation_it": "Tu sei il nuovo studente di portoghese?"
       },
+      {
+        "id": "s_ser_1",
+        "tense": "presente",
+        "person": "eu",
+        "sentence_before": "Eu ",
+        "sentence_after": " italiano e moro em Lisboa.",
+        "correct_answer": "sou",
+        "type": "fill-in-the-blank",
+        "translation_it": "Io sono italiano e vivo a Lisbona."
+      },
+
       {
         "id": "s_ser_3",
         "tense": "preterito_perfeito",

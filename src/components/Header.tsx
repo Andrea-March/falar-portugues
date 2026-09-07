@@ -16,7 +16,7 @@ export default function Header({ streak, xp, hearts }: HeaderProps) {
           </div>
           <div className="flex flex-col">
             <span className="font-extrabold text-sm tracking-tight text-slate-900 leading-none">
-              Falar<span className="text-brand-primary">Lisboa</span>
+              Fala<span className="text-brand-primary">Luso</span>
             </span>
             <span className="text-[10px] text-stone-500 font-medium leading-tight">
               Portoghese Europeo

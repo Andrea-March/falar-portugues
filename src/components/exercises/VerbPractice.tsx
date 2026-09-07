@@ -2,20 +2,22 @@
 
 import React, { useState, useMemo } from 'react';
 import rawVerbData from '@/data/verbs.json';
-import { generateExercisesFromVerbs, VerbEntry } from '@/utils/exerciseGenerator';
+import { generateExercisesFromVerbs, normalizeDirectExercises, VerbEntry } from '@/utils/exerciseGenerator';
 import ExerciseRenderer from './ExerciseRenderer';
 import AudioButton from '@/components/common/AudioButton';
 import CompletionModal from '@/components/common/CompletionModal';
 import FeedbackSheet from './FeedbackSheet';
+import { Exercise } from '../LessonScreen';
 
 interface VerbPracticeProps {
+  exercises?: Exercise[];
   filterVerbId?: string;
   filterTense?: string;
   onCorrectAnswer?: (xpEarned: number) => void;
   onFinish?: () => void;
 }
 
-export default function VerbPractice({ filterVerbId, filterTense, onCorrectAnswer, onFinish }: VerbPracticeProps) {
+export default function VerbPractice({ exercises: directExercises,filterVerbId, filterTense, onCorrectAnswer, onFinish }: VerbPracticeProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<'idle' | 'correct' | 'wrong'>('idle');
@@ -23,8 +25,18 @@ export default function VerbPractice({ filterVerbId, filterTense, onCorrectAnswe
 
   // Genera la lista dinamica di esercizi basata sul JSON dei verbi
   const exercises = useMemo(() => {
-    return generateExercisesFromVerbs(rawVerbData as VerbEntry[], filterVerbId, filterTense);
-  }, [filterVerbId, filterTense]);
+    // Se sono presenti esercizi scritti direttamente nel nodo, usiamo quelli
+    if (directExercises && directExercises.length > 0) {
+      return normalizeDirectExercises(directExercises);
+    }
+
+    // Altrimenti, generiamo gli esercizi dinamici dal file dei verbi
+    return generateExercisesFromVerbs(
+      rawVerbData as VerbEntry[],
+      filterVerbId,
+      filterTense
+    );
+  }, [directExercises, filterVerbId, filterTense]);
 
   const currentExercise = exercises[currentIndex];
 
@@ -46,6 +58,7 @@ export default function VerbPractice({ filterVerbId, filterTense, onCorrectAnswe
     if (currentIndex + 1 < exercises.length) {
       setCurrentIndex((prev) => prev + 1);
       setSelectedOption(null);
+      console.log(selectedOption);
       setFeedback('idle');
     } else {
       setIsCompleted(true);

@@ -23,6 +23,7 @@ export default function ExerciseRenderer({
     case 'multiple-choice':
       return (
         <MultipleChoice
+          key={exercise.id}
           exercise={exercise}
           selectedOption={selectedOption}
           feedback={feedback}
@@ -30,9 +31,10 @@ export default function ExerciseRenderer({
         />
       );
 
-    case 'fill-in-blank':
+    case 'fill-in-the-blank':
       return (
         <FillInBlank
+          key={exercise.id}
           exercise={exercise}
           feedback={feedback}
           onSubmitAnswer={onAnswer}

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 export interface FillInBlankExercise {
   id: number;
-  type: 'fill-in-blank';
+  type: 'fill-in-the-blank';
   verb: string;
   sentence: string;
   translation: string;

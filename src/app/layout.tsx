@@ -3,7 +3,7 @@ import "./globals.css";
 import { UserProvider } from '@/context/UserContext';
 
 export const metadata: Metadata = {
-  title: "FalarLisboa - Aprender Português",
+  title: "FalaLuso - Aprender Português",
   description: "Aprende português europeu de forma prática",
 };
 
