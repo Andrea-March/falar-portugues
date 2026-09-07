@@ -2,15 +2,14 @@
 
 import React, { useState, useMemo } from 'react';
 import rawVerbData from '@/data/verbs.json';
-import { generateExercisesFromVerbs, normalizeDirectExercises, VerbEntry } from '@/utils/exerciseGenerator';
+import { generateExercisesFromVerbs, normalizeDirectExercises, RawDirectExercise, VerbEntry } from '@/utils/exerciseGenerator';
 import ExerciseRenderer from './ExerciseRenderer';
 import AudioButton from '@/components/common/AudioButton';
 import CompletionModal from '@/components/common/CompletionModal';
 import FeedbackSheet from './FeedbackSheet';
-import { Exercise } from '../LessonScreen';
 
 interface VerbPracticeProps {
-  exercises?: Exercise[];
+  exercises?: RawDirectExercise[];
   filterVerbId?: string;
   filterTense?: string;
   onCorrectAnswer?: (xpEarned: number) => void;

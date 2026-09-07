@@ -1,6 +1,6 @@
 import { ExerciseType } from '@/components/exercises/ExerciseRenderer';
 
-interface RawDirectExercise {
+export interface RawDirectExercise {
   id: string;
   tense: string;
   person: string;
@@ -120,5 +120,16 @@ export function normalizeDirectExercises(directExercises: RawDirectExercise[]): 
         hint: `Persona: ${raw.person} | Tempo: ${raw.tense}`,
       };
     }
+
+    // Fallback per tipi di esercizi non riconosciuti
+    return {
+      id: index + 1,
+      type: 'fill-in-the-blank', // o 'fill-in-blank' a seconda del tuo tipo ExerciseType
+      verb: verbTitle,
+      sentence: fullSentence,
+      translation: raw.translation_it,
+      correctAnswer: raw.correct_answer,
+      hint: `Persona: ${raw.person} | Tempo: ${raw.tense}`,
+    };
   });
 }

@@ -7,7 +7,8 @@ import { useUser } from '@/context/UserContext';
 
 import VerbPractice from '@/components/exercises/VerbPractice';
 import lessonsData from '@/data/lessons.json';
-import VocabPractice from './exercises/VocabPractice';
+import VocabPractice, { VocabExercise } from './exercises/VocabPractice';
+import { SentenceExercise } from '@/types/verb';
 
 export interface TheoryCard {
   title: string;
@@ -238,7 +239,7 @@ export default function LessonScreen({
           />
         )}
         {/* Caso 2: Lezione di tipo VOCABOLARIO */}
-        {(lesson.type === 'vocab' || lesson.type === 'vocabulary') && (
+        {(lesson.type === 'vocab') && (
           <VocabPractice
             exercises={lesson.exercises}
             onFinish={handleFinishPractice}
