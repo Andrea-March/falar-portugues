@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import ExerciseRenderer from './ExerciseRenderer';
+import FeedbackSheet from './FeedbackSheet';
+import { soundFX } from '@/utils/sound';
 
 export interface VocabExercise {
   id: string;
@@ -16,61 +19,28 @@ export interface VocabExercise {
 
 interface VocabPracticeProps {
   exercises?: VocabExercise[];
-  onFinish: () => void;
+  onFinish: (stats?: { total: number; errors: number }) => void;
 }
-
-const speakPt = (text: string) => {
-  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'pt-PT';
-    utterance.rate = 0.9;
-    window.speechSynthesis.speak(utterance);
-  }
-};
 
 export default function VocabPractice({ exercises = [], onFinish }: VocabPracticeProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [feedback, setFeedback] = useState<'idle' | 'correct' | 'wrong'>('idle');
 
-  const currentItem = exercises[currentIndex];
+  // Tracciamento errori per il calcolo dell'accuratezza nella LessonCompleteCard
+  const [errorCount, setErrorCount] = useState(0);
+  const [hasFailedCurrentQuestion, setHasFailedCurrentQuestion] = useState(false);
 
-  const handleSelectOption = (option: string) => {
-    if (isSubmitted) return;
-    setSelectedOption(option);
-  };
+  const rawItem = exercises[currentIndex];
 
-  const handleCheck = () => {
-    if (!selectedOption || !currentItem) return;
-
-    const targetAnswer = currentItem.correctAnswer || currentItem.wordIt;
-    const correct = selectedOption === targetAnswer;
-    setIsCorrect(correct);
-    setIsSubmitted(true);
-  };
-
-  const handleNext = () => {
-    setSelectedOption(null);
-    setIsSubmitted(false);
-    setIsCorrect(null);
-
-    if (currentIndex < exercises.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
-    } else {
-      onFinish();
-    }
-  };
-
-  if (!currentItem) {
+  if (!rawItem) {
     return (
-      <div className="p-6 bg-white rounded-2xl border border-stone-200 text-center">
-        <p className="text-stone-500 font-bold">Nenhum exercício encontrado.</p>
+      <div className="p-8 bg-brand-surface rounded-3xl border border-brand-border text-center shadow-xs">
+        <p className="text-brand-muted font-bold text-sm">Nenhum exercício encontrado.</p>
         <button
           type="button"
-          onClick={onFinish}
-          className="mt-4 bg-brand-primary text-white font-bold px-4 py-2 rounded-xl text-xs"
+          onClick={() => onFinish({ total: 0, errors: 0 })}
+          className="mt-4 bg-brand-primary text-white font-black px-5 py-2.5 rounded-xl text-xs active:scale-95 transition-all shadow-sm"
         >
           Concluir
         </button>
@@ -78,103 +48,96 @@ export default function VocabPractice({ exercises = [], onFinish }: VocabPractic
     );
   }
 
-  const promptText = currentItem.wordPt || currentItem.sentence || currentItem.question || '';
-  const optionsList = currentItem.options || [];
+  // Risoluzione flessibile della risposta corretta
+  const resolvedCorrectAnswer = (rawItem.correctAnswer || rawItem.wordIt || '').trim();
+
+  // Normalizza l'esercizio per renderlo compatibile al 100% con ExerciseRenderer e MultipleChoice
+  const normalizedExercise = {
+    id: rawItem.id,
+    type: rawItem.type || 'multiple_choice',
+    verb: 'Vocabulário',
+    question: rawItem.question || 'Qual é a tradução correta?',
+    sentence: rawItem.sentence || (rawItem.wordPt ? `Como se diz "${rawItem.wordPt}"?` : '_____'),
+    correctAnswer: resolvedCorrectAnswer,
+    options: rawItem.options || [],
+  };
+
+  const handleAnswer = (answer: string) => {
+    if (feedback === 'correct') return;
+
+    setSelectedOption(answer);
+
+    if (answer.trim().toLowerCase() === resolvedCorrectAnswer.toLowerCase()) {
+      soundFX.playSuccess();
+      setFeedback('correct');
+    } else {
+      soundFX.playError();
+      setFeedback('wrong');
+      if (!hasFailedCurrentQuestion) {
+        setErrorCount((prev) => prev + 1);
+        setHasFailedCurrentQuestion(true);
+      }
+    }
+  };
+
+  const handleNext = () => {
+    soundFX.playClick();
+    if (currentIndex + 1 < exercises.length) {
+      setCurrentIndex((prev) => prev + 1);
+      setSelectedOption(null);
+      setFeedback('idle');
+      setHasFailedCurrentQuestion(false);
+    } else {
+      // Invia le metriche aggregate al genitore per la card trionfale
+      onFinish({
+        total: exercises.length,
+        errors: errorCount,
+      });
+    }
+  };
+
+  const fullSentenceWithAnswer = normalizedExercise.sentence.includes('_____')
+    ? normalizedExercise.sentence.replace('_____', resolvedCorrectAnswer)
+    : normalizedExercise.sentence.includes('___')
+    ? normalizedExercise.sentence.replace('___', resolvedCorrectAnswer)
+    : rawItem.wordPt || resolvedCorrectAnswer;
 
   return (
-    <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm space-y-6 animate-fadeIn">
-      {/* Indicatore di Progresso */}
-      <div className="flex items-center justify-between text-xs font-bold text-stone-400">
-        <span>Vocabulário</span>
-        <span>
-          {currentIndex + 1} de {exercises.length}
-        </span>
-      </div>
-
-      {/* Scheda esercizio */}
-      <div className="bg-stone-50 rounded-2xl p-6 text-center border border-stone-200/80 space-y-3">
-        {currentItem.emoji && (
-          <div className="text-5xl mb-2">{currentItem.emoji}</div>
-        )}
-
-        <div className="flex items-center justify-center gap-2">
-          <h2 className="text-2xl font-black text-stone-900">{promptText}</h2>
-          {promptText && (
-            <button
-              type="button"
-              onClick={() => speakPt(promptText)}
-              className="p-2 bg-white hover:bg-orange-100 text-stone-600 hover:text-brand-primary rounded-full transition-colors border border-stone-200"
-              title="Ouvir pronúncia"
-            >
-              🔊
-            </button>
-          )}
+    <div className="bg-brand-surface p-5 rounded-3xl border border-brand-border shadow-xs space-y-5 animate-in fade-in duration-200">
+      {/* Barra Progresso Lezione */}
+      <div>
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-[11px] font-black text-brand-primary uppercase tracking-wider flex items-center gap-1.5">
+            <span>🗣️</span> {normalizedExercise.verb}
+          </span>
+          <span className="text-xs font-bold text-brand-muted">
+            {currentIndex + 1} de {exercises.length}
+          </span>
         </div>
-
-        {currentItem.question && currentItem.wordPt && (
-          <p className="text-xs font-semibold text-stone-400">
-            {currentItem.question}
-          </p>
-        )}
+        <div className="w-full bg-brand-background h-2 rounded-full overflow-hidden border border-brand-border/60">
+          <div
+            className="bg-brand-primary h-full rounded-full transition-all duration-300 ease-out"
+            style={{ width: `${((currentIndex + 1) / exercises.length) * 100}%` }}
+          />
+        </div>
       </div>
 
-      {/* Opzioni di risposta */}
-      <div className="space-y-2">
-        {optionsList.map((option) => {
-          const targetAnswer = currentItem.correctAnswer || currentItem.wordIt;
-          let btnStyle =
-            'border-stone-200 bg-white text-stone-700 hover:border-stone-300';
+      {/* Render dell'Esercizio (condiviso con VerbPractice) */}
+      <ExerciseRenderer
+        exercise={normalizedExercise}
+        selectedOption={selectedOption}
+        feedback={feedback}
+        onAnswer={handleAnswer}
+      />
 
-          if (selectedOption === option) {
-            btnStyle = 'border-brand-primary bg-orange-50/50 text-brand-primary font-bold';
-          }
-
-          if (isSubmitted) {
-            if (option === targetAnswer) {
-              btnStyle = 'border-emerald-500 bg-emerald-50 text-emerald-700 font-bold';
-            } else if (selectedOption === option && !isCorrect) {
-              btnStyle = 'border-rose-500 bg-rose-50 text-rose-700 font-bold';
-            }
-          }
-
-          return (
-            <button
-              key={option}
-              type="button"
-              disabled={isSubmitted}
-              onClick={() => handleSelectOption(option)}
-              className={`w-full p-4 rounded-2xl border-2 text-left text-sm transition-all flex items-center justify-between ${btnStyle}`}
-            >
-              <span>{option}</span>
-              {isSubmitted && option === targetAnswer && (
-                <span className="text-emerald-600 font-bold">✓</span>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Pulsante Azione */}
-      {!isSubmitted ? (
-        <button
-          type="button"
-          disabled={!selectedOption}
-          onClick={handleCheck}
-          className="w-full bg-brand-primary disabled:opacity-50 text-white font-black py-3.5 rounded-2xl shadow-md active:scale-95 transition-all text-sm"
-        >
-          Verificar
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={handleNext}
-          className={`w-full font-black py-3.5 rounded-2xl shadow-md active:scale-95 transition-all text-sm text-white ${
-            isCorrect ? 'bg-emerald-500' : 'bg-stone-700'
-          }`}
-        >
-          {currentIndex < exercises.length - 1 ? 'Próximo →' : 'Concluir →'}
-        </button>
-      )}
+      {/* Feedback Bottom Sheet con Riproduzione Vocale */}
+      <FeedbackSheet
+        feedback={feedback}
+        correctAnswer={resolvedCorrectAnswer}
+        sentenceToSpeak={fullSentenceWithAnswer}
+        onContinue={handleNext}
+        onRetry={() => setFeedback('idle')}
+      />
     </div>
   );
 }

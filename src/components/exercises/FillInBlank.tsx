@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export interface FillInBlankExercise {
   id: number;
@@ -19,6 +19,8 @@ interface FillInBlankProps {
 }
 
 export default function FillInBlank({ exercise, feedback, onSubmitAnswer }: FillInBlankProps) {
+
+  useEffect(() => {console.log('FillInBlank component rendered with exercise:', exercise);}, [exercise]);
   const [input, setInput] = useState('');
   const [showSpecialChars, setShowSpecialChars] = useState(false);
 

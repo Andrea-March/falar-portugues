@@ -20,28 +20,33 @@ export default function ExerciseRenderer({
   onAnswer,
 }: ExerciseRendererProps) {
   switch (exercise.type) {
+    // Gestisce sia 'multiple-choice' che 'multiple_choice'
     case 'multiple-choice':
+    case 'multiple_choice':
       return (
         <MultipleChoice
           key={exercise.id}
-          exercise={exercise}
+          exercise={exercise as MultipleChoiceExercise}
           selectedOption={selectedOption}
           feedback={feedback}
           onSelectOption={onAnswer}
         />
       );
 
+    // Gestisce sia 'fill-in-the-blank' che 'fill_in_the_blank'
     case 'fill-in-the-blank':
+    case 'fill_in_the_blank':
       return (
         <FillInBlank
           key={exercise.id}
-          exercise={exercise}
+          exercise={exercise as FillInBlankExercise}
           feedback={feedback}
           onSubmitAnswer={onAnswer}
         />
       );
 
     default:
+      console.warn(`Tipo di esercizio sconosciuto o non supportato: "${exercise.type}"`, exercise);
       return null;
   }
 }

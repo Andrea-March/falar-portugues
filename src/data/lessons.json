@@ -83,37 +83,38 @@
         ]
       }
     ],
-    "exercises": [
-      {
-        "id": "ex_1_2_1",
-        "type": "multiple_choice",
-        "question": "Come saluti qualcuno la mattina?",
-        "sentence": "_____! Tudo bem?",
-        "options": ["Boa noite", "Bom dia", "Boa tarde", "Adeus"],
-        "correctAnswer": "Bom dia"
-      },
-      {
-        "id": "ex_1_2_2",
-        "type": "word_order",
-        "question": "Metti in ordine il saluto informale:",
-        "words": ["estás?", "Olá,", "como"],
-        "correctOrder": ["Olá,", "como", "estás?"],
-        "translation": "Ciao, come stai?"
-      },
-      {
-        "id": "ex_1_2_3",
-        "type": "multiple_choice",
-        "question": "Cosa rispondi a \"Tudo bem?\":",
-        "sentence": "Tudo _____, obrigado!",
-        "options": ["mal", "bem", "dia", "noite"],
-        "correctAnswer": "bem"
-      }
-    ]
+   "exercises": [
+    {
+      "id": "ex_1_2_1",
+      "type": "multiple_choice",
+      "question": "Come saluti qualcuno la mattina?",
+      "sentence": "_____! Tudo bem?",
+      "options": ["Boa noite", "Bom dia", "Boa tarde", "Adeus"],
+      "correctAnswer": "Bom dia"
+    },
+    {
+      "id": "ex_1_2_2",
+      "type": "multiple_choice",
+      "question": "Come chiedi informalmente \"Come stai?\":",
+      "sentence": "Olá, como _____?",
+      "options": ["estás", "sou", "está", "chamas"],
+      "correctAnswer": "estás"
+    },
+    {
+      "id": "ex_1_2_3",
+      "type": "multiple_choice",
+      "question": "Cosa rispondi a \"Tudo bem?\":",
+      "sentence": "Tudo _____, obrigado!",
+      "options": ["mal", "bem", "dia", "noite"],
+      "correctAnswer": "bem"
+    }
+  ]
   },
 
   "node_1_3": {
     "id": "node_1_3",
     "title": "No Café",
+    "type": "vocab",
     "theory": [
       {
         "title": "Ordinare al bar a Lisbona",
@@ -130,18 +131,18 @@
       {
         "id": "ex_1_3_1",
         "type": "multiple_choice",
-        "question": "Come chiedi la cortesia al cameriere?",
+        "question": "Come chiedi con cortesia al cameriere?",
         "sentence": "Um café, _____.",
         "options": ["por favor", "obrigado", "olá", "de nada"],
         "correctAnswer": "por favor"
       },
       {
         "id": "ex_1_3_2",
-        "type": "word_order",
-        "question": "Ordina la richiesta al banco:",
-        "words": ["um", "por favor", "Queria", "café,"],
-        "correctOrder": ["Queria", "um", "café,", "por favor"],
-        "translation": "Vorrei un caffè, per favore"
+        "type": "multiple_choice",
+        "question": "Come chiedi educatamente un caffè al banco?",
+        "sentence": "_____ um café, por favor.",
+        "options": ["Queria", "Sou", "Estou", "Como"],
+        "correctAnswer": "Queria"
       },
       {
         "id": "ex_1_3_3",
@@ -157,6 +158,7 @@
   "node_1_checkpoint": {
     "id": "node_1_checkpoint",
     "title": "Teste do Capítulo 1",
+    "type": "vocab",
     "theory": [],
     "exercises": [
       {
@@ -169,11 +171,11 @@
       },
       {
         "id": "chk_1_2",
-        "type": "word_order",
-        "question": "Ricomponi la frase d'ordinazione completa:",
-        "words": ["favor", "um", "por", "café,", "Queria"],
-        "correctOrder": ["Queria", "um", "café,", "por", "favor"],
-        "translation": "Vorrei un caffè, per favore"
+        "type": "multiple_choice",
+        "question": "Completa l'ordinazione al bar:",
+        "sentence": "Queria um pastel de _____, por favor.",
+        "options": ["nata", "café", "dia", "noite"],
+        "correctAnswer": "nata"
       },
       {
         "id": "chk_1_3",

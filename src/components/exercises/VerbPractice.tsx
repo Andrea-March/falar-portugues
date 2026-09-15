@@ -4,8 +4,6 @@ import React, { useState, useMemo } from 'react';
 import rawVerbData from '@/data/verbs.json';
 import { generateExercisesFromVerbs, normalizeDirectExercises, RawDirectExercise, VerbEntry } from '@/utils/exerciseGenerator';
 import ExerciseRenderer from './ExerciseRenderer';
-import AudioButton from '@/components/common/AudioButton';
-import CompletionModal from '@/components/common/CompletionModal';
 import FeedbackSheet from './FeedbackSheet';
 
 interface VerbPracticeProps {
@@ -13,23 +11,30 @@ interface VerbPracticeProps {
   filterVerbId?: string;
   filterTense?: string;
   onCorrectAnswer?: (xpEarned: number) => void;
-  onFinish?: () => void;
+  onFinish: (stats: { total: number; errors: number }) => void;
 }
 
-export default function VerbPractice({ exercises: directExercises,filterVerbId, filterTense, onCorrectAnswer, onFinish }: VerbPracticeProps) {
+export default function VerbPractice({
+  exercises: directExercises,
+  filterVerbId,
+  filterTense,
+  onCorrectAnswer,
+  onFinish,
+}: VerbPracticeProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<'idle' | 'correct' | 'wrong'>('idle');
-  const [isCompleted, setIsCompleted] = useState(false);
+
+  // Tracciamento errori per il calcolo dell'accuratezza
+  const [errorCount, setErrorCount] = useState(0);
+  const [hasFailedCurrentQuestion, setHasFailedCurrentQuestion] = useState(false);
 
   // Genera la lista dinamica di esercizi basata sul JSON dei verbi
   const exercises = useMemo(() => {
-    // Se sono presenti esercizi scritti direttamente nel nodo, usiamo quelli
     if (directExercises && directExercises.length > 0) {
       return normalizeDirectExercises(directExercises);
     }
 
-    // Altrimenti, generiamo gli esercizi dinamici dal file dei verbi
     return generateExercisesFromVerbs(
       rawVerbData as VerbEntry[],
       filterVerbId,
@@ -50,32 +55,33 @@ export default function VerbPractice({ exercises: directExercises,filterVerbId, 
       }
     } else {
       setFeedback('wrong');
+      // Incrementa gli errori solo al primo sbaglio su questa domanda
+      if (!hasFailedCurrentQuestion) {
+        setErrorCount((prev) => prev + 1);
+        setHasFailedCurrentQuestion(true);
+      }
     }
   };
 
   const handleNext = () => {
     if (currentIndex + 1 < exercises.length) {
+      // Passa alla prossima domanda
       setCurrentIndex((prev) => prev + 1);
       setSelectedOption(null);
-      console.log(selectedOption);
       setFeedback('idle');
+      setHasFailedCurrentQuestion(false);
     } else {
-      setIsCompleted(true);
+      // FINE ESERCIZI: invia le statistiche al genitore per mostrare LessonCompleteCard!
+      onFinish({
+        total: exercises.length,
+        errors: errorCount,
+      });
     }
   };
 
-  const handleRestart = () => {
-    setCurrentIndex(0);
-    setSelectedOption(null);
-    setFeedback('idle');
-    setIsCompleted(false);
-  };
-
   const fullSentenceWithAnswer = currentExercise 
-  ? currentExercise.sentence.replace('___', currentExercise.correctAnswer)
-  : '';
-
-
+    ? currentExercise.sentence.replace('___', currentExercise.correctAnswer)
+    : '';
 
   if (!currentExercise) return null;
 
@@ -107,8 +113,6 @@ export default function VerbPractice({ exercises: directExercises,filterVerbId, 
         onAnswer={handleAnswer}
       />
 
-      
-
       {/* Bottom Sheet Sticky per Feedback Senza Scroll */}
       <FeedbackSheet
         feedback={feedback}
@@ -116,14 +120,6 @@ export default function VerbPractice({ exercises: directExercises,filterVerbId, 
         sentenceToSpeak={fullSentenceWithAnswer}
         onContinue={handleNext}
         onRetry={() => setFeedback('idle')}
-      />
-      {/* Modale Celebrativa a fine sessione */}
-      <CompletionModal
-        isOpen={isCompleted}
-        xpEarned={exercises.length * 10}
-        totalExercises={exercises.length}
-        onRestart={handleRestart}
-        onFinish={onFinish}
       />
     </div>
   );

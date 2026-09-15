@@ -9,6 +9,7 @@ import VerbPractice from '@/components/exercises/VerbPractice';
 import lessonsData from '@/data/lessons.json';
 import VocabPractice, { VocabExercise } from './exercises/VocabPractice';
 import { SentenceExercise } from '@/types/verb';
+import LessonCompleteCard from './common/LessonCompleteCard';
 
 export interface TheoryCard {
   title: string;
@@ -37,26 +38,27 @@ interface LessonScreenProps {
   onCompleteNode: () => void;
 }
 
-// Helper per sintetizzare l'audio in Portoghese Europeo (pt-PT)
 const speakPt = (text: string) => {
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-    window.speechSynthesis.cancel(); // Interrompe eventuali audio in corso
+    window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'pt-PT';
-    utterance.rate = 0.9; // Velocità naturale per l'apprendimento
+    utterance.rate = 0.88;
     window.speechSynthesis.speak(utterance);
   }
 };
 
-// Helper per trasformare **grassetto** in tag JSX <strong>
 const renderFormattedText = (text: string) => {
   const parts = text.split(/(\*\*.*?\*\*)/g);
   return parts.map((part, index) => {
     if (part.startsWith('**') && part.endsWith('**')) {
       return (
-        <strong key={index} className="font-black text-stone-900">
+        <span
+          key={index}
+          className="font-black text-amber-700 bg-amber-50 px-1 py-0.5 rounded-md border border-amber-200/60"
+        >
           {part.slice(2, -2)}
-        </strong>
+        </span>
       );
     }
     return part;
@@ -79,12 +81,16 @@ export default function LessonScreen({
 
   if (!lesson) {
     return (
-      <div className="p-8 text-center bg-white rounded-2xl border border-stone-200">
-        <p className="text-stone-500 font-bold text-sm">Lição não encontrada.</p>
+      <div className="p-8 text-center bg-white rounded-3xl border-2 border-stone-200 max-w-md mx-auto shadow-sm">
+        <div className="text-4xl mb-3">🔍</div>
+        <p className="text-stone-700 font-bold text-base">Lição não encontrada.</p>
         <button
           type="button"
-          onClick={onClose}
-          className="mt-4 text-xs font-bold text-brand-primary underline"
+          onClick={() => {
+            soundFX.playClick();
+            onClose();
+          }}
+          className="mt-5 px-5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-extrabold text-xs transition-colors"
         >
           Voltar ao Mapa
         </button>
@@ -93,6 +99,7 @@ export default function LessonScreen({
   }
 
   const handleNextTheory = () => {
+    soundFX.playClick();
     if (lesson.theory && theoryIndex < lesson.theory.length - 1) {
       setTheoryIndex((prev) => prev + 1);
     } else {
@@ -103,7 +110,12 @@ export default function LessonScreen({
   const handleFinishPractice = () => {
     soundFX.playComplete();
     addXp(15);
-    confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+    confetti({
+      particleCount: 70,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#f59e0b', '#10b981', '#3b82f6', '#ec4899'],
+    });
     setStep('complete');
   };
 
@@ -112,85 +124,114 @@ export default function LessonScreen({
   // =========================================
   if (step === 'theory' && lesson.theory && lesson.theory.length > 0) {
     const currentTheory = lesson.theory[theoryIndex];
+    const totalTheorySteps = lesson.theory.length;
+    const progressPercent = ((theoryIndex + 1) / totalTheorySteps) * 100;
+
     return (
-      <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm space-y-6 animate-fadeIn">
-        <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-          <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary">
-            Aprender • {lesson.title}
-          </span>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-stone-400 font-bold text-lg hover:text-stone-600"
-          >
-            ✕
-          </button>
+      <div className="w-full max-w-md mx-auto bg-white rounded-3xl p-6 border-2 border-stone-200 shadow-xl space-y-6 animate-in fade-in zoom-in-95 duration-200">
+        {/* Barra di navigazione & Progresso */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => {
+                soundFX.playClick();
+                onClose();
+              }}
+              className="w-8 h-8 flex items-center justify-center rounded-xl bg-stone-100 text-stone-400 hover:text-stone-700 hover:bg-stone-200 font-bold text-sm transition-colors cursor-pointer"
+            >
+              ✕
+            </button>
+            <span className="text-[11px] font-black uppercase tracking-wider text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200/80">
+              Passo {theoryIndex + 1} de {totalTheorySteps}
+            </span>
+          </div>
+
+          {/* Progress bar smooth */}
+          <div className="h-2.5 w-full bg-stone-100 rounded-full overflow-hidden p-0.5 border border-stone-200/60">
+            <div
+              className="h-full bg-amber-500 rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
         </div>
 
-        {/* Titolo e Descrizione con supporto per **grassetto** e Audio */}
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-black text-stone-900">{currentTheory.title}</h2>
-            {/* <button
+        {/* Titolo e Spiegazione */}
+        <div className="space-y-2.5">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-black text-stone-900 tracking-tight">
+              {currentTheory.title}
+            </h2>
+            <button
               type="button"
               onClick={() => speakPt(currentTheory.title)}
-              className="p-1.5 bg-stone-100 hover:bg-orange-100 text-stone-600 hover:text-brand-primary rounded-full transition-colors"
+              className="p-2 bg-stone-50 border border-stone-200 hover:bg-amber-50 hover:border-amber-300 text-stone-600 rounded-xl transition-all active:scale-95 shadow-xs"
               title="Ouvir pronúncia"
             >
               🔊
-            </button> */}
+            </button>
           </div>
-          <p className="text-sm text-stone-600 mt-2 font-medium leading-relaxed">
+          <p className="text-sm text-stone-600 font-medium leading-relaxed">
             {renderFormattedText(currentTheory.description)}
           </p>
         </div>
 
-        {/* Tabella Coniugazione con Pulsante Audio per singola riga */}
+        {/* Tabella Coniugazione Verbi a Griglia */}
         {currentTheory.conjugation && (
-          <div className="bg-orange-50/60 rounded-2xl p-4 border border-orange-200/60 space-y-2">
-            {currentTheory.conjugation.map((item) => (
-              <div
-                key={item.pronoun}
-                className="flex items-center justify-between text-sm py-1 border-b border-orange-100/80 last:border-0"
-              >
-                <span className="font-semibold text-stone-500">{item.pronoun}</span>
-                <div className="flex items-center gap-2">
-                  <span className="font-black text-brand-primary">{item.verb}</span>
-                  <button
-                    type="button"
-                    onClick={() => speakPt(`${item.pronoun} ${item.verb}`)}
-                    className="text-xs text-stone-400 hover:text-brand-primary"
-                  >
-                    🔊
-                  </button>
-                </div>
-              </div>
-            ))}
+          <div className="bg-orange-50/50 rounded-2xl p-3.5 border-2 border-orange-200/70">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-orange-600 block mb-2 px-1">
+              Conjugação • pt-PT
+            </span>
+            <div className="grid grid-cols-2 gap-2">
+              {currentTheory.conjugation.map((item) => (
+                <button
+                  key={item.pronoun}
+                  type="button"
+                  onClick={() => speakPt(`${item.pronoun} ${item.verb}`)}
+                  className="flex items-center justify-between p-2.5 bg-white rounded-xl border border-orange-200/80 hover:border-orange-400 hover:bg-orange-50/40 transition-all text-left shadow-2xs group cursor-pointer"
+                >
+                  <span className="text-xs font-semibold text-stone-400">
+                    {item.pronoun}
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-black text-stone-800 group-hover:text-amber-600">
+                      {item.verb}
+                    </span>
+                    <span className="text-[11px] opacity-40 group-hover:opacity-100 transition-opacity">
+                      🔊
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
-        {/* Esempi Frasi con Audio */}
+        {/* Esempi Contestuali */}
         {currentTheory.examples && (
           <div className="space-y-2">
-            <span className="text-xs font-bold text-stone-400 uppercase tracking-wide">
-              Exemplos
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-stone-400 px-1">
+              Exemplos do dia a dia
             </span>
             <div className="space-y-2">
               {currentTheory.examples.map((ex) => (
                 <div
                   key={ex.pt}
-                  className="bg-stone-50 p-3 rounded-xl border border-stone-200/80 text-xs flex items-center justify-between gap-2"
+                  className="p-3.5 bg-stone-50/80 rounded-2xl border border-stone-200 flex items-center justify-between gap-3 hover:border-stone-300 transition-colors"
                 >
-                  <div>
-                    <p className="font-bold text-stone-800">
+                  <div className="space-y-0.5 min-w-0">
+                    <p className="font-extrabold text-stone-800 text-xs sm:text-sm">
                       {renderFormattedText(ex.pt)}
                     </p>
-                    <p className="text-stone-500">{ex.it}</p>
+                    <p className="text-stone-500 font-medium text-xs">
+                      {ex.it}
+                    </p>
                   </div>
                   <button
                     type="button"
                     onClick={() => speakPt(ex.pt)}
-                    className="p-2 bg-white rounded-lg border border-stone-200 hover:bg-orange-50 text-stone-600 hover:text-brand-primary transition-colors shrink-0"
+                    className="w-9 h-9 flex items-center justify-center bg-white rounded-xl border-2 border-stone-200 hover:border-amber-300 hover:bg-amber-50 active:scale-90 text-sm transition-all shrink-0 shadow-2xs cursor-pointer"
+                    title="Ouvir frase"
                   >
                     🔊
                   </button>
@@ -200,12 +241,13 @@ export default function LessonScreen({
           </div>
         )}
 
+        {/* Bottone Avanti stile 3D */}
         <button
           type="button"
           onClick={handleNextTheory}
-          className="w-full bg-brand-primary text-white font-black py-3.5 rounded-2xl shadow-md active:scale-95 transition-all text-sm"
+          className="w-full bg-amber-500 hover:bg-amber-400 border-b-4 border-amber-700 text-white font-black py-3.5 rounded-2xl active:border-b-0 active:translate-y-1 transition-all text-sm tracking-wide shadow-md uppercase cursor-pointer"
         >
-          {theoryIndex < lesson.theory.length - 1 ? 'Próximo →' : 'Começar Exercícios →'}
+          {theoryIndex < lesson.theory.length - 1 ? 'Continuar →' : 'Começar Exercícios →'}
         </button>
       </div>
     );
@@ -216,15 +258,18 @@ export default function LessonScreen({
   // =========================================
   if (step === 'practice') {
     return (
-      <div className="space-y-4 animate-fadeIn">
-        <div className="flex items-center justify-between px-1">
-          <span className="text-xs font-bold text-stone-500">
-            {lesson.title}
+      <div className="w-full max-w-md mx-auto space-y-4 animate-in fade-in duration-200">
+        <div className="flex items-center justify-between px-2 bg-white/80 backdrop-blur-xs p-3 rounded-2xl border border-stone-200 shadow-2xs">
+          <span className="text-xs font-black text-stone-700 flex items-center gap-1.5 truncate">
+            <span>📖</span> {lesson.title}
           </span>
           <button
             type="button"
-            onClick={onClose}
-            className="text-xs font-bold text-stone-400 hover:text-stone-600"
+            onClick={() => {
+              soundFX.playClick();
+              onClose();
+            }}
+            className="text-xs font-bold text-stone-400 hover:text-stone-700 px-2 py-1 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
           >
             Sair ✕
           </button>
@@ -238,8 +283,7 @@ export default function LessonScreen({
             onFinish={handleFinishPractice}
           />
         )}
-        {/* Caso 2: Lezione di tipo VOCABOLARIO */}
-        {(lesson.type === 'vocab') && (
+        {lesson.type === 'vocab' && (
           <VocabPractice
             exercises={lesson.exercises}
             onFinish={handleFinishPractice}
@@ -253,34 +297,11 @@ export default function LessonScreen({
   // FASE 3: COMPLETAMENTO
   // =========================================
   return (
-    <div className="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm text-center space-y-6 animate-fadeIn">
-      <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-4xl mx-auto shadow-inner">
-        🏆
-      </div>
-
-      <div className="space-y-1">
-        <h2 className="text-2xl font-black text-stone-900">Lição Concluída!</h2>
-        <p className="text-xs font-bold text-stone-500">
-          Parabéns! Completaste {lesson.title}.
-        </p>
-      </div>
-
-      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center justify-around">
-        <div>
-          <span className="text-2xl font-black text-amber-600">+15</span>
-          <p className="text-[10px] font-extrabold text-amber-800 uppercase tracking-wider">
-            XP Ganho
-          </p>
-        </div>
-      </div>
-
-      <button
-        type="button"
-        onClick={onCompleteNode}
-        className="w-full bg-emerald-500 text-white font-black py-4 rounded-2xl shadow-md active:scale-95 transition-all text-sm"
-      >
-        Continuar no Mapa →
-      </button>
-    </div>
-  );
+      <LessonCompleteCard
+        title={lesson.title}
+        xpEarned={15}
+        accuracy={100}
+        onContinue={onCompleteNode}
+      />
+    );
 }

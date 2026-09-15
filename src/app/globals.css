@@ -1,18 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  /* Colore Primario (Terracotta / Arancio Caldo Solare) */
-  --color-brand-primary: #ea580c;
-  --color-brand-hover: #c2410c;
-  --color-brand-light: #fff7ed;
-  --color-brand-dark: #7c2d12;
+  /* Primario: Blu Azulejo */
+  --color-brand-primary: #1d4ed8;
+  --color-brand-hover: #1e40af;
+  --color-brand-light: #eff6ff;
+  --color-brand-dark: #172554;
 
-  /* Colore Accento (Giallo Caldo Pastéis / Solare) */
+  /* Accento: Oro Solare / Pastéis */
   --color-brand-accent: #f59e0b;
   --color-brand-accentHover: #d97706;
   --color-brand-accentLight: #fef3c7;
 
-  /* Sfondi e Superfici */
+  /* Superfici e Bordi */
   --color-brand-surface: #ffffff;
-  --color-brand-background: #fdf6ec; /* Tono sabbia/avorio ben visibile */
+  --color-brand-background: #f8fafc;
+  --color-brand-border: #e2e8f0;
+  --color-brand-muted: #64748b;
 }

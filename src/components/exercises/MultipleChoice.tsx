@@ -1,13 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { soundFX } from '@/utils/sound';
 
 export interface MultipleChoiceExercise {
-  id: number;
-  type: 'multiple-choice';
-  verb: string;
+  id: string | number;
+  type: string;
+  verb?: string;
+  question?: string;       // Aggiunto per le consegne
   sentence: string;
-  translation: string;
+  translation?: string;    // Reso facoltativo
   correctAnswer: string;
   options: string[];
 }
@@ -25,36 +27,68 @@ export default function MultipleChoice({
   feedback,
   onSelectOption,
 }: MultipleChoiceProps) {
+  useEffect(() => {console.log('MultipleChoice component rendered with exercise:', exercise);}, [exercise]);
   return (
-    <div className="space-y-4">
-      {/* Frase da completare */}
-      <div className="bg-brand-background p-4 rounded-xl border border-orange-100 text-center">
-        <p className="text-lg font-bold text-stone-800 mb-1 leading-snug">
-          {exercise.sentence.replace('___', selectedOption ? `[ ${selectedOption} ]` : '______')}
+    <div className="space-y-4 animate-in fade-in duration-200">
+      {/* 1. Consegna / Domanda */}
+      {exercise.question && (
+        <h3 className="text-base font-black text-brand-dark tracking-tight leading-snug px-1">
+          {exercise.question}
+        </h3>
+      )}
+
+      {/* 2. Frase guida con buco dinamico */}
+      <div className="bg-brand-background/80 p-5 rounded-3xl border border-brand-border text-center shadow-2xs space-y-1.5">
+        <p className="text-lg sm:text-xl font-black text-stone-900 leading-snug">
+          {exercise.sentence.replace(
+            '_____',
+            selectedOption ? `[ ${selectedOption} ]` : '______'
+          ).replace(
+            '___',
+            selectedOption ? `[ ${selectedOption} ]` : '______'
+          )}
         </p>
-        <p className="text-xs text-stone-500 italic">"{exercise.translation}"</p>
+
+        {exercise.translation && (
+          <p className="text-xs text-brand-muted font-bold italic">
+            "{exercise.translation}"
+          </p>
+        )}
       </div>
 
-      {/* Griglia Opzioni */}
-      <div className="grid grid-cols-2 gap-2">
+      {/* 3. Griglia Opzioni 3D */}
+      <div className="grid grid-cols-2 gap-2.5 pt-1">
         {exercise.options.map((option) => {
           const isSelected = selectedOption === option;
-          let buttonStyle = "bg-stone-50 hover:bg-orange-50 text-stone-700 border-stone-200";
 
+          // Stile base neutro
+          let buttonClasses =
+            'bg-brand-surface border-brand-border border-b-4 text-stone-700 hover:bg-brand-light/50 hover:border-brand-primary/40 active:border-b active:translate-y-0.5';
+
+          // Stile in base al feedback
           if (isSelected) {
             if (feedback === 'correct') {
-              buttonStyle = "bg-emerald-600 text-white border-emerald-600 shadow-md";
+              buttonClasses =
+                'bg-emerald-500 border-emerald-700 text-white border-b-4 shadow-md shadow-emerald-500/20';
             } else if (feedback === 'wrong') {
-              buttonStyle = "bg-rose-500 text-white border-rose-500 shadow-md";
+              buttonClasses =
+                'bg-rose-500 border-rose-700 text-white border-b-4 shadow-md shadow-rose-500/20 animate-shake';
+            } else {
+              buttonClasses =
+                'bg-brand-light border-brand-primary text-brand-primary border-b-4';
             }
           }
 
           return (
             <button
               key={option}
+              type="button"
               disabled={feedback === 'correct'}
-              onClick={() => onSelectOption(option)}
-              className={`py-3.5 px-4 rounded-xl font-bold text-sm transition-all border ${buttonStyle} active:scale-[0.98]`}
+              onClick={() => {
+                soundFX.playClick();
+                onSelectOption(option);
+              }}
+              className={`py-4 px-3 rounded-2xl font-black text-sm transition-all select-none cursor-pointer flex items-center justify-center text-center ${buttonClasses}`}
             >
               {option}
             </button>
