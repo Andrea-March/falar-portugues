@@ -4,8 +4,6 @@ import React, { useEffect } from 'react';
 import { soundFX } from '@/utils/sound';
 import { MultipleChoiceExercise } from '@/types/exercise';
 
-
-
 interface MultipleChoiceProps {
   exercise: MultipleChoiceExercise;
   selectedOption: string | null;
@@ -19,31 +17,36 @@ export default function MultipleChoice({
   feedback,
   onSelectOption,
 }: MultipleChoiceProps) {
-  useEffect(() => {console.log('MultipleChoice component rendered with exercise:', exercise);}, [exercise]);
+  useEffect(() => {
+    console.log('MultipleChoice component rendered with exercise:', exercise);
+  }, [exercise]);
+
   return (
     <div className="space-y-4 animate-in fade-in duration-200">
-      {/* 1. Consegna / Domanda */}
-      {exercise.question && (
+      {/* 1. Consegna / Domanda (prompt) */}
+      {exercise.prompt && (
         <h3 className="text-base font-black text-brand-dark tracking-tight leading-snug px-1">
-          {exercise.question}
+          {exercise.prompt}
         </h3>
       )}
 
       {/* 2. Frase guida con buco dinamico */}
       <div className="bg-brand-background/80 p-5 rounded-3xl border border-brand-border text-center shadow-2xs space-y-1.5">
         <p className="text-lg sm:text-xl font-black text-stone-900 leading-snug">
-          {exercise.sentence.replace(
-            '_____',
-            selectedOption ? `[ ${selectedOption} ]` : '______'
-          ).replace(
-            '___',
-            selectedOption ? `[ ${selectedOption} ]` : '______'
-          )}
+          {exercise.sentence
+            .replace(
+              '_____',
+              selectedOption ? `[ ${selectedOption} ]` : '______'
+            )
+            .replace(
+              '___',
+              selectedOption ? `[ ${selectedOption} ]` : '______'
+            )}
         </p>
 
-        {exercise.translation && (
+        {exercise.translationIt && (
           <p className="text-xs text-brand-muted font-bold italic">
-            "{exercise.translation}"
+            "{exercise.translationIt}"
           </p>
         )}
       </div>
