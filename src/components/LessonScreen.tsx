@@ -6,10 +6,12 @@ import { soundFX } from '@/utils/sound';
 import { useUser } from '@/context/UserContext';
 
 import VerbPractice from '@/components/exercises/VerbPractice';
-import lessonsData from '@/data/lessons.json';
 import VocabPractice, { VocabExercise } from './exercises/VocabPractice';
-import { SentenceExercise } from '@/types/verb';
-import LessonCompleteCard from './common/LessonCompleteCard';
+import LessonCompleteCard from '@/components/common/LessonCompleteCard';
+import lessonsData from '@/data/lessons.json';
+
+import { RawDirectExercise } from '@/utils/exerciseGenerator';
+import { SentenceExercise, Tense, Person } from '@/types/verb';
 
 export interface TheoryCard {
   title: string;
@@ -18,7 +20,7 @@ export interface TheoryCard {
   examples?: { pt: string; it: string }[];
 }
 
-export type LessonExercise = SentenceExercise | VocabExercise;
+export type LessonExercise = SentenceExercise | VocabExercise | RawDirectExercise;
 
 export interface LessonData {
   id: string;
@@ -55,7 +57,7 @@ const renderFormattedText = (text: string) => {
       return (
         <span
           key={index}
-          className="font-black text-amber-700 bg-amber-50 px-1 py-0.5 rounded-md border border-amber-200/60"
+          className="font-black text-brand-primary bg-brand-light px-1.5 py-0.5 rounded-md border border-brand-primary/20"
         >
           {part.slice(2, -2)}
         </span>
@@ -74,23 +76,28 @@ export default function LessonScreen({
 
   const lessons = lessonsData as Record<string, LessonData>;
   const lesson = lessons[nodeId];
+
   const [step, setStep] = useState<'theory' | 'practice' | 'complete'>(
     lesson?.theory && lesson.theory.length > 0 ? 'theory' : 'practice'
   );
   const [theoryIndex, setTheoryIndex] = useState(0);
 
+  const [lessonStats, setLessonStats] = useState({
+    xp: 15,
+    accuracy: 100,
+  });
+
   if (!lesson) {
     return (
-      <div className="p-8 text-center bg-white rounded-3xl border-2 border-stone-200 max-w-md mx-auto shadow-sm">
-        <div className="text-4xl mb-3">🔍</div>
-        <p className="text-stone-700 font-bold text-base">Lição não encontrada.</p>
+      <div className="w-full max-w-md mx-auto p-8 text-center bg-brand-surface rounded-3xl border border-brand-border shadow-xs">
+        <p className="text-brand-muted font-bold text-sm">Lição não encontrada.</p>
         <button
           type="button"
           onClick={() => {
             soundFX.playClick();
             onClose();
           }}
-          className="mt-5 px-5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-extrabold text-xs transition-colors"
+          className="mt-4 px-4 py-2 rounded-xl bg-brand-light text-brand-primary font-black text-xs hover:bg-brand-primary hover:text-white transition-colors cursor-pointer"
         >
           Voltar ao Mapa
         </button>
@@ -107,15 +114,30 @@ export default function LessonScreen({
     }
   };
 
-  const handleFinishPractice = () => {
+  const handleFinishPractice = (stats?: { total: number; errors: number }) => {
+    let accuracy = 100;
+    let earnedXp = 15;
+
+    if (stats && stats.total > 0) {
+      const correct = Math.max(0, stats.total - stats.errors);
+      accuracy = Math.round((correct / stats.total) * 100);
+
+      if (accuracy === 100) earnedXp = 20;
+      else if (accuracy >= 80) earnedXp = 15;
+      else earnedXp = 10;
+    }
+
+    setLessonStats({ xp: earnedXp, accuracy });
+    addXp(earnedXp);
     soundFX.playComplete();
-    addXp(15);
+
     confetti({
       particleCount: 70,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ['#f59e0b', '#10b981', '#3b82f6', '#ec4899'],
+      colors: ['#1d4ed8', '#f59e0b', '#10b981'],
     });
+
     setStep('complete');
   };
 
@@ -128,8 +150,7 @@ export default function LessonScreen({
     const progressPercent = ((theoryIndex + 1) / totalTheorySteps) * 100;
 
     return (
-      <div className="w-full max-w-md mx-auto bg-white rounded-3xl p-6 border-2 border-stone-200 shadow-xl space-y-6 animate-in fade-in zoom-in-95 duration-200">
-        {/* Barra di navigazione & Progresso */}
+      <div className="w-full max-w-md mx-auto bg-brand-surface rounded-3xl p-6 border border-brand-border shadow-xl space-y-6 animate-in fade-in duration-200">
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <button
@@ -138,48 +159,45 @@ export default function LessonScreen({
                 soundFX.playClick();
                 onClose();
               }}
-              className="w-8 h-8 flex items-center justify-center rounded-xl bg-stone-100 text-stone-400 hover:text-stone-700 hover:bg-stone-200 font-bold text-sm transition-colors cursor-pointer"
+              className="w-8 h-8 flex items-center justify-center rounded-xl bg-brand-background text-brand-muted hover:text-brand-dark font-bold text-sm transition-colors cursor-pointer"
             >
               ✕
             </button>
-            <span className="text-[11px] font-black uppercase tracking-wider text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200/80">
+            <span className="text-[11px] font-black uppercase tracking-wider text-brand-primary bg-brand-light px-2.5 py-1 rounded-lg border border-brand-primary/20">
               Passo {theoryIndex + 1} de {totalTheorySteps}
             </span>
           </div>
 
-          {/* Progress bar smooth */}
-          <div className="h-2.5 w-full bg-stone-100 rounded-full overflow-hidden p-0.5 border border-stone-200/60">
+          <div className="h-2 w-full bg-brand-background rounded-full overflow-hidden border border-brand-border/60">
             <div
-              className="h-full bg-amber-500 rounded-full transition-all duration-300 ease-out"
+              className="h-full bg-brand-primary rounded-full transition-all duration-300 ease-out"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
         </div>
 
-        {/* Titolo e Spiegazione */}
-        <div className="space-y-2.5">
+        <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-black text-stone-900 tracking-tight">
+            <h2 className="text-xl font-black text-brand-dark tracking-tight">
               {currentTheory.title}
             </h2>
             <button
               type="button"
               onClick={() => speakPt(currentTheory.title)}
-              className="p-2 bg-stone-50 border border-stone-200 hover:bg-amber-50 hover:border-amber-300 text-stone-600 rounded-xl transition-all active:scale-95 shadow-xs"
+              className="p-2 bg-brand-background border border-brand-border hover:bg-brand-light text-brand-dark rounded-xl transition-all cursor-pointer text-xs"
               title="Ouvir pronúncia"
             >
               🔊
             </button>
           </div>
-          <p className="text-sm text-stone-600 font-medium leading-relaxed">
+          <p className="text-sm text-brand-muted font-medium leading-relaxed">
             {renderFormattedText(currentTheory.description)}
           </p>
         </div>
 
-        {/* Tabella Coniugazione Verbi a Griglia */}
         {currentTheory.conjugation && (
-          <div className="bg-orange-50/50 rounded-2xl p-3.5 border-2 border-orange-200/70">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-orange-600 block mb-2 px-1">
+          <div className="bg-brand-light/50 rounded-2xl p-3.5 border border-brand-primary/20">
+            <span className="text-[10px] font-black uppercase tracking-wider text-brand-primary block mb-2 px-1">
               Conjugação • pt-PT
             </span>
             <div className="grid grid-cols-2 gap-2">
@@ -188,13 +206,13 @@ export default function LessonScreen({
                   key={item.pronoun}
                   type="button"
                   onClick={() => speakPt(`${item.pronoun} ${item.verb}`)}
-                  className="flex items-center justify-between p-2.5 bg-white rounded-xl border border-orange-200/80 hover:border-orange-400 hover:bg-orange-50/40 transition-all text-left shadow-2xs group cursor-pointer"
+                  className="flex items-center justify-between p-2.5 bg-brand-surface rounded-xl border border-brand-border hover:border-brand-primary/40 transition-all text-left shadow-2xs group cursor-pointer"
                 >
-                  <span className="text-xs font-semibold text-stone-400">
+                  <span className="text-xs font-semibold text-brand-muted">
                     {item.pronoun}
                   </span>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-black text-stone-800 group-hover:text-amber-600">
+                    <span className="text-xs font-black text-brand-dark group-hover:text-brand-primary">
                       {item.verb}
                     </span>
                     <span className="text-[11px] opacity-40 group-hover:opacity-100 transition-opacity">
@@ -207,30 +225,29 @@ export default function LessonScreen({
           </div>
         )}
 
-        {/* Esempi Contestuali */}
         {currentTheory.examples && (
           <div className="space-y-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-stone-400 px-1">
+            <span className="text-[10px] font-black uppercase tracking-wider text-brand-muted px-1">
               Exemplos do dia a dia
             </span>
             <div className="space-y-2">
               {currentTheory.examples.map((ex) => (
                 <div
                   key={ex.pt}
-                  className="p-3.5 bg-stone-50/80 rounded-2xl border border-stone-200 flex items-center justify-between gap-3 hover:border-stone-300 transition-colors"
+                  className="p-3.5 bg-brand-background/60 rounded-2xl border border-brand-border flex items-center justify-between gap-3"
                 >
                   <div className="space-y-0.5 min-w-0">
-                    <p className="font-extrabold text-stone-800 text-xs sm:text-sm">
+                    <p className="font-extrabold text-stone-900 text-xs sm:text-sm">
                       {renderFormattedText(ex.pt)}
                     </p>
-                    <p className="text-stone-500 font-medium text-xs">
+                    <p className="text-brand-muted font-medium text-xs">
                       {ex.it}
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={() => speakPt(ex.pt)}
-                    className="w-9 h-9 flex items-center justify-center bg-white rounded-xl border-2 border-stone-200 hover:border-amber-300 hover:bg-amber-50 active:scale-90 text-sm transition-all shrink-0 shadow-2xs cursor-pointer"
+                    className="w-9 h-9 flex items-center justify-center bg-brand-surface rounded-xl border border-brand-border hover:bg-brand-light text-xs transition-all shrink-0 cursor-pointer shadow-2xs"
                     title="Ouvir frase"
                   >
                     🔊
@@ -241,11 +258,10 @@ export default function LessonScreen({
           </div>
         )}
 
-        {/* Bottone Avanti stile 3D */}
         <button
           type="button"
           onClick={handleNextTheory}
-          className="w-full bg-amber-500 hover:bg-amber-400 border-b-4 border-amber-700 text-white font-black py-3.5 rounded-2xl active:border-b-0 active:translate-y-1 transition-all text-sm tracking-wide shadow-md uppercase cursor-pointer"
+          className="w-full bg-brand-primary hover:bg-brand-hover border-b-4 border-brand-dark text-white font-black py-3.5 rounded-2xl active:border-b-0 active:translate-y-1 transition-all text-sm tracking-wide uppercase shadow-md cursor-pointer select-none"
         >
           {theoryIndex < lesson.theory.length - 1 ? 'Continuar →' : 'Começar Exercícios →'}
         </button>
@@ -254,13 +270,13 @@ export default function LessonScreen({
   }
 
   // =========================================
-  // FASE 2: ESERCIZI
+  // FASE 2: ESERCIZI (Risoluzione del type casting)
   // =========================================
   if (step === 'practice') {
     return (
       <div className="w-full max-w-md mx-auto space-y-4 animate-in fade-in duration-200">
-        <div className="flex items-center justify-between px-2 bg-white/80 backdrop-blur-xs p-3 rounded-2xl border border-stone-200 shadow-2xs">
-          <span className="text-xs font-black text-stone-700 flex items-center gap-1.5 truncate">
+        <div className="flex items-center justify-between px-2 bg-brand-surface p-3 rounded-2xl border border-brand-border shadow-2xs">
+          <span className="text-xs font-black text-brand-dark flex items-center gap-1.5 truncate">
             <span>📖</span> {lesson.title}
           </span>
           <button
@@ -269,23 +285,26 @@ export default function LessonScreen({
               soundFX.playClick();
               onClose();
             }}
-            className="text-xs font-bold text-stone-400 hover:text-stone-700 px-2 py-1 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
+            className="text-xs font-bold text-brand-muted hover:text-brand-dark px-2 py-1 rounded-lg hover:bg-brand-background transition-colors cursor-pointer"
           >
             Sair ✕
           </button>
         </div>
 
+        {/* Caso 1: Esercizi Verbi -> Cast a RawDirectExercise[] */}
         {(!lesson.type || lesson.type === 'verb') && (
           <VerbPractice
-            exercises={lesson.exercises}
+            exercises={lesson.exercises as RawDirectExercise[] | undefined}
             filterVerbId={lesson.verbRefId}
             filterTense={lesson.tense}
             onFinish={handleFinishPractice}
           />
         )}
+
+        {/* Caso 2: Esercizi Vocabolario -> Cast a VocabExercise[] */}
         {lesson.type === 'vocab' && (
           <VocabPractice
-            exercises={lesson.exercises}
+            exercises={lesson.exercises as VocabExercise[] | undefined}
             onFinish={handleFinishPractice}
           />
         )}
@@ -297,11 +316,11 @@ export default function LessonScreen({
   // FASE 3: COMPLETAMENTO
   // =========================================
   return (
-      <LessonCompleteCard
-        title={lesson.title}
-        xpEarned={15}
-        accuracy={100}
-        onContinue={onCompleteNode}
-      />
-    );
+    <LessonCompleteCard
+      title={lesson.title}
+      xpEarned={lessonStats.xp}
+      accuracy={lessonStats.accuracy}
+      onContinue={onCompleteNode}
+    />
+  );
 }
