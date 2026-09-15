@@ -2,7 +2,7 @@
   {
     "id": "verb_ser",
     "infinitive": "ser",
-    "translation_it": "essere (permanente/caratteristica)",
+    "translationIt": "essere (permanente / caratteristica)",
     "type": "irregular",
     "group": "er",
     "conjugations": {
@@ -24,41 +24,39 @@
     "sentences": [
       {
         "id": "s_ser_2",
+        "type": "multiple_choice",
         "tense": "presente",
         "person": "tu",
-        "sentence_before": "Tu ",
-        "sentence_after": " o novo aluno de português?",
-        "correct_answer": "és",
-        "type": "multiple-choice",
-        "translation_it": "Tu sei il nuovo studente di portoghese?"
+        "sentence": "Tu _____ o novo aluno de português?",
+        "correctAnswer": "és",
+        "translationIt": "Tu sei il nuovo studente di portoghese?"
       },
       {
         "id": "s_ser_1",
+        "type": "fill_in_the_blank",
         "tense": "presente",
         "person": "eu",
-        "sentence_before": "Eu ",
-        "sentence_after": " italiano e moro em Lisboa.",
-        "correct_answer": "sou",
-        "type": "fill-in-the-blank",
-        "translation_it": "Io sono italiano e vivo a Lisbona."
+        "sentenceBefore": "Eu ",
+        "sentenceAfter": " italiano e moro em Lisboa.",
+        "correctAnswer": "sou",
+        "translationIt": "Io sono italiano e vivo a Lisbona."
       },
-
       {
         "id": "s_ser_3",
+        "type": "fill_in_the_blank",
         "tense": "preterito_perfeito",
-        "person": "eu",
-        "sentence_before": "Ontem eu ",
-        "sentence_after": " ao cinema com os meus amigos.",
-        "correct_answer": "fui",
-        "type": "fill-in-the-blank",
-        "translation_it": "Ieri sono stato al cinema con i miei amici."
+        "person": "ele_ela_voce",
+        "sentenceBefore": "Ontem ",
+        "sentenceAfter": " um dia muito especial.",
+        "correctAnswer": "foi",
+        "translationIt": "Ieri è stato un giorno molto speciale."
       }
     ]
   },
   {
     "id": "verb_estar",
     "infinitive": "estar",
-    "translation_it": "essere (temporaneo/stato/posizione)",
+    "translationIt": "essere (temporaneo / stato / posizione)",
     "type": "irregular",
     "group": "ar",
     "conjugations": {
@@ -80,20 +78,19 @@
     "sentences": [
       {
         "id": "s_est_1",
+        "type": "multiple_choice",
         "tense": "presente",
         "person": "tu",
-        "sentence_before": "Tu ",
-        "type": "multiple-choice",
-        "sentence_after": " a estudar para o exame?",
-        "correct_answer": "estás",
-        "translation_it": "Stai studiando per l'esame?"
+        "sentence": "Tu _____ a estudar para o exame?",
+        "correctAnswer": "estás",
+        "translationIt": "Stai studiando per l'esame?"
       }
     ]
   },
   {
     "id": "verb_ter",
     "infinitive": "ter",
-    "translation_it": "avere",
+    "translationIt": "avere",
     "type": "irregular",
     "group": "er",
     "conjugations": {
@@ -115,13 +112,13 @@
     "sentences": [
       {
         "id": "s_ter_1",
+        "type": "fill_in_the_blank",
         "tense": "presente",
         "person": "eu",
-        "sentence_before": "Eu não ",
-        "sentence_after": " tempo hoje.",
-        "type": "fill-in-the-blank",
-        "correct_answer": "tenho",
-        "translation_it": "Io non ho tempo oggi."
+        "sentenceBefore": "Eu não ",
+        "sentenceAfter": " tempo hoje.",
+        "correctAnswer": "tenho",
+        "translationIt": "Io non ho tempo oggi."
       }
     ]
   }

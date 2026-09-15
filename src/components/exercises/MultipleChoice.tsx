@@ -2,17 +2,9 @@
 
 import React, { useEffect } from 'react';
 import { soundFX } from '@/utils/sound';
+import { MultipleChoiceExercise } from '@/types/exercise';
 
-export interface MultipleChoiceExercise {
-  id: string | number;
-  type: string;
-  verb?: string;
-  question?: string;       // Aggiunto per le consegne
-  sentence: string;
-  translation?: string;    // Reso facoltativo
-  correctAnswer: string;
-  options: string[];
-}
+
 
 interface MultipleChoiceProps {
   exercise: MultipleChoiceExercise;

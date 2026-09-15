@@ -1,13 +1,12 @@
 'use client';
 
 import React from 'react';
-import MultipleChoice, { MultipleChoiceExercise } from './MultipleChoice';
-import FillInBlank, { FillInBlankExercise } from './FillInBlank';
-
-export type ExerciseType = MultipleChoiceExercise | FillInBlankExercise;
+import MultipleChoice from './MultipleChoice';
+import FillInBlank from './FillInBlank';
+import { Exercise } from '@/types/exercise';
 
 interface ExerciseRendererProps {
-  exercise: ExerciseType;
+  exercise: Exercise;
   selectedOption: string | null;
   feedback: 'idle' | 'correct' | 'wrong';
   onAnswer: (answer: string) => void;
@@ -20,33 +19,28 @@ export default function ExerciseRenderer({
   onAnswer,
 }: ExerciseRendererProps) {
   switch (exercise.type) {
-    // Gestisce sia 'multiple-choice' che 'multiple_choice'
-    case 'multiple-choice':
     case 'multiple_choice':
       return (
         <MultipleChoice
           key={exercise.id}
-          exercise={exercise as MultipleChoiceExercise}
+          exercise={exercise}
           selectedOption={selectedOption}
           feedback={feedback}
           onSelectOption={onAnswer}
         />
       );
 
-    // Gestisce sia 'fill-in-the-blank' che 'fill_in_the_blank'
-    case 'fill-in-the-blank':
     case 'fill_in_the_blank':
       return (
         <FillInBlank
           key={exercise.id}
-          exercise={exercise as FillInBlankExercise}
+          exercise={exercise}
           feedback={feedback}
           onSubmitAnswer={onAnswer}
         />
       );
 
     default:
-      console.warn(`Tipo di esercizio sconosciuto o non supportato: "${exercise.type}"`, exercise);
       return null;
   }
 }

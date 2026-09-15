@@ -1,40 +1,35 @@
-import { ExerciseType } from '@/components/exercises/ExerciseRenderer';
+import { Exercise } from '@/types/exercise';
 
-export interface RawDirectExercise {
+export interface VerbSentence {
   id: string;
   tense: string;
   person: string;
-  sentence_before: string;
-  sentence_after: string;
-  correct_answer: string;
-  translation_it: string;
-  options?: string[]; // Opzionale, se già presenti nel JSON
-  type: 'multiple-choice' | 'fill-in-the-blank';
+  type: 'multiple_choice' | 'fill_in_the_blank';
+  sentence?: string;
+  sentenceBefore?: string;
+  sentenceAfter?: string;
+  correctAnswer: string;
+  translationIt?: string;
+  options?: string[];
 }
 
-// Interfaccia del tuo verbs.json
 export interface VerbEntry {
   id: string;
   infinitive: string;
-  translation_it: string;
-  type: string;
-  group: string;
-  conjugations: {
-    [tense: string]: {
-      [person: string]: string;
-    };
-  };
-  sentences: RawDirectExercise[];
+  translationIt: string;
+  type: 'regular' | 'irregular';
+  group: 'ar' | 'er' | 'ir';
+  conjugations: Record<string, Record<string, string>>;
+  sentences: VerbSentence[];
 }
 
 export function generateExercisesFromVerbs(
   verbs: VerbEntry[],
   filterVerbId?: string,
   filterTense?: string
-): ExerciseType[] {
-  const exercises: ExerciseType[] = [];
+): Exercise[] {
+  const exercises: Exercise[] = [];
 
-  // Se è specificato filterVerbId, confronta sia l'ID esatto che l'infinito
   const targetVerbs = filterVerbId
     ? verbs.filter(
         (v) =>
@@ -45,91 +40,39 @@ export function generateExercisesFromVerbs(
 
   targetVerbs.forEach((verb) => {
     const targetSentences = filterTense
-        ? verb.sentences.filter((s) => s.tense === filterTense)
-        : verb.sentences;
-    targetSentences.forEach((sentence) => {
+      ? verb.sentences.filter((s) => s.tense === filterTense)
+      : verb.sentences;
 
-      const fullSentence = `${sentence.sentence_before}___${sentence.sentence_after}`;
-      const verbTitle = `${verb.infinitive.toUpperCase()} (${sentence.tense.replace('_', ' ')})`;
+    targetSentences.forEach((s) => {
+      const verbPrompt = `${verb.infinitive.toUpperCase()} (${s.tense.replace('_', ' ')})`;
 
-      if (sentence.type === 'multiple-choice') {
-        // Raccogliamo tutte le coniugazioni dello stesso tempo per creare le opzioni
-        const tenseConjugations = verb.conjugations[sentence.tense] || {};
-        const optionsSet = new Set<string>();
-
-        optionsSet.add(sentence.correct_answer);
-        Object.values(tenseConjugations).forEach((conj) => optionsSet.add(conj));
-
-        // Se sono meno di 4, possiamo aggiungere altre coniugazioni
-        const options = Array.from(optionsSet).slice(0, 4);
+      if (s.type === 'multiple_choice') {
+        const tenseConj = verb.conjugations?.[s.tense] || {};
+        const optionsSet = new Set<string>([s.correctAnswer, ...Object.values(tenseConj)]);
+        const options = Array.from(optionsSet).slice(0, 4).sort(() => Math.random() - 0.5);
 
         exercises.push({
-          id: exercises.length + 1,
-          type: 'multiple-choice',
-          verb: verbTitle,
-          sentence: fullSentence,
-          translation: sentence.translation_it,
-          correctAnswer: sentence.correct_answer,
-          options: options.sort(() => Math.random() - 0.5), // Mescola le opzioni
+          id: s.id,
+          type: 'multiple_choice',
+          prompt: verbPrompt,
+          sentence: s.sentence || `${s.sentenceBefore || ''}_____${s.sentenceAfter || ''}`,
+          translationIt: s.translationIt,
+          correctAnswer: s.correctAnswer,
+          options,
         });
-      } else if (sentence.type === 'fill-in-the-blank') {
+      } else {
         exercises.push({
-          id: exercises.length + 1,
-          type: 'fill-in-the-blank',
-          verb: verbTitle,
-          sentence: fullSentence,
-          translation: sentence.translation_it,
-          correctAnswer: sentence.correct_answer,
-          hint: `Infinito: ${verb.infinitive} (${verb.translation_it})`,
+          id: s.id,
+          type: 'fill_in_the_blank',
+          prompt: verbPrompt,
+          sentenceBefore: s.sentenceBefore || '',
+          sentenceAfter: s.sentenceAfter || '',
+          correctAnswer: s.correctAnswer,
+          translationIt: s.translationIt,
         });
       }
     });
   });
 
   return exercises;
-}
-
-export function normalizeDirectExercises(directExercises: RawDirectExercise[]): ExerciseType[] {
-  return directExercises.map((raw, index) => {
-    const fullSentence = `${raw.sentence_before}___${raw.sentence_after}`;
-    const verbTitle = `VERBO (${raw.tense.toUpperCase()})`;
-
-    if (raw.type === 'multiple-choice') {
-      // Se nel JSON ci sono già opzioni usiamo quelle, altrimenti ne generiamo di base
-      const rawOptions = raw.options && raw.options.length > 0 
-        ? raw.options 
-        : [raw.correct_answer];
-
-      return {
-        id: index + 1,
-        type: 'multiple-choice',
-        verb: verbTitle,
-        sentence: fullSentence,
-        translation: raw.translation_it,
-        correctAnswer: raw.correct_answer,
-        options: [...rawOptions].sort(() => Math.random() - 0.5),
-      };
-    } else if(raw.type === 'fill-in-the-blank') {
-      return {
-        id: index + 1,
-        type: 'fill-in-the-blank',
-        verb: verbTitle,
-        sentence: fullSentence,
-        translation: raw.translation_it,
-        correctAnswer: raw.correct_answer,
-        hint: `Persona: ${raw.person} | Tempo: ${raw.tense}`,
-      };
-    }
-
-    // Fallback per tipi di esercizi non riconosciuti
-    return {
-      id: index + 1,
-      type: 'fill-in-the-blank', // o 'fill-in-blank' a seconda del tuo tipo ExerciseType
-      verb: verbTitle,
-      sentence: fullSentence,
-      translation: raw.translation_it,
-      correctAnswer: raw.correct_answer,
-      hint: `Persona: ${raw.person} | Tempo: ${raw.tense}`,
-    };
-  });
 }

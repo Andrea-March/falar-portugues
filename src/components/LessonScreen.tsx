@@ -6,12 +6,11 @@ import { soundFX } from '@/utils/sound';
 import { useUser } from '@/context/UserContext';
 
 import VerbPractice from '@/components/exercises/VerbPractice';
-import VocabPractice, { VocabExercise } from './exercises/VocabPractice';
+import VocabPractice from './exercises/VocabPractice';
 import LessonCompleteCard from '@/components/common/LessonCompleteCard';
 import lessonsData from '@/data/lessons.json';
 
-import { RawDirectExercise } from '@/utils/exerciseGenerator';
-import { SentenceExercise, Tense, Person } from '@/types/verb';
+import { Exercise } from '@/types/exercise';
 
 export interface TheoryCard {
   title: string;
@@ -19,8 +18,6 @@ export interface TheoryCard {
   conjugation?: { pronoun: string; verb: string }[];
   examples?: { pt: string; it: string }[];
 }
-
-export type LessonExercise = SentenceExercise | VocabExercise | RawDirectExercise;
 
 export interface LessonData {
   id: string;
@@ -31,7 +28,7 @@ export interface LessonData {
   tense?: string;
   category?: string;
   scenarioId?: string;
-  exercises?: LessonExercise[];
+  exercises?: Exercise[];
 }
 
 interface LessonScreenProps {
@@ -74,7 +71,7 @@ export default function LessonScreen({
 }: LessonScreenProps) {
   const { addXp } = useUser();
 
-  const lessons = lessonsData as Record<string, LessonData>;
+  const lessons = lessonsData as unknown as Record<string, LessonData>;
   const lesson = lessons[nodeId];
 
   const [step, setStep] = useState<'theory' | 'practice' | 'complete'>(
@@ -142,7 +139,7 @@ export default function LessonScreen({
   };
 
   // =========================================
-  // FASE 1: TEORIA (SCHEDE SINTETICHE)
+  // FASE 1: TEORIA
   // =========================================
   if (step === 'theory' && lesson.theory && lesson.theory.length > 0) {
     const currentTheory = lesson.theory[theoryIndex];
@@ -270,7 +267,7 @@ export default function LessonScreen({
   }
 
   // =========================================
-  // FASE 2: ESERCIZI (Risoluzione del type casting)
+  // FASE 2: ESERCIZI (Tipi unificati puliti)
   // =========================================
   if (step === 'practice') {
     return (
@@ -291,20 +288,19 @@ export default function LessonScreen({
           </button>
         </div>
 
-        {/* Caso 1: Esercizi Verbi -> Cast a RawDirectExercise[] */}
+        {/* Niente più cast forzati: sia VerbPractice che VocabPractice accettano Exercise[] */}
         {(!lesson.type || lesson.type === 'verb') && (
           <VerbPractice
-            exercises={lesson.exercises as RawDirectExercise[] | undefined}
+            exercises={lesson.exercises}
             filterVerbId={lesson.verbRefId}
             filterTense={lesson.tense}
             onFinish={handleFinishPractice}
           />
         )}
 
-        {/* Caso 2: Esercizi Vocabolario -> Cast a VocabExercise[] */}
         {lesson.type === 'vocab' && (
           <VocabPractice
-            exercises={lesson.exercises as VocabExercise[] | undefined}
+            exercises={lesson.exercises}
             onFinish={handleFinishPractice}
           />
         )}

@@ -25,43 +25,39 @@
     "exercises": [
       {
         "id": "ex_1_1_1",
-        "tense": "presente",
-        "person": "eu",
-        "sentence_before": "Eu ",
-        "sentence_after": " de Roma.",
-        "correct_answer": "sou",
-        "translation_it": "Io sono di Roma.",
-        "type": "fill-in-the-blank"
+        "type": "fill_in_the_blank",
+        "prompt": "VERBO SER (PRESENTE)",
+        "sentenceBefore": "Eu ",
+        "sentenceAfter": " de Roma.",
+        "correctAnswer": "sou",
+        "translationIt": "Io sono di Roma."
       },
       {
         "id": "ex_1_1_2",
-        "tense": "presente",
-        "person": "ela",
-        "sentence_before": "Ela ",
-        "sentence_after": " professora.",
-        "correct_answer": "é",
-        "translation_it": "Lei è professoressa.",
-        "type": "fill-in-the-blank"
+        "type": "fill_in_the_blank",
+        "prompt": "VERBO SER (PRESENTE)",
+        "sentenceBefore": "Ela ",
+        "sentenceAfter": " professora.",
+        "correctAnswer": "é",
+        "translationIt": "Lei è professoressa."
       },
       {
         "id": "ex_1_1_3",
-        "tense": "presente",
-        "person": "eu",
-        "sentence_before": "Eu não ",
-        "sentence_after": " português.",
-        "correct_answer": "sou",
-        "translation_it": "Io non sono portoghese.",
-        "type": "fill-in-the-blank"
+        "type": "fill_in_the_blank",
+        "prompt": "VERBO SER (PRESENTE)",
+        "sentenceBefore": "Eu não ",
+        "sentenceAfter": " português.",
+        "correctAnswer": "sou",
+        "translationIt": "Io non sono portoghese."
       },
       {
         "id": "ex_1_1_4",
-        "tense": "presente",
-        "person": "nós",
-        "sentence_before": "Nós ",
-        "sentence_after": " amigos.",
-        "correct_answer": "somos",
-        "translation_it": "Noi siamo amici.",
-        "type": "fill-in-the-blank"
+        "type": "fill_in_the_blank",
+        "prompt": "VERBO SER (PRESENTE)",
+        "sentenceBefore": "Nós ",
+        "sentenceAfter": " amigos.",
+        "correctAnswer": "somos",
+        "translationIt": "Noi siamo amici."
       }
     ]
   },
@@ -83,32 +79,32 @@
         ]
       }
     ],
-   "exercises": [
-    {
-      "id": "ex_1_2_1",
-      "type": "multiple_choice",
-      "question": "Come saluti qualcuno la mattina?",
-      "sentence": "_____! Tudo bem?",
-      "options": ["Boa noite", "Bom dia", "Boa tarde", "Adeus"],
-      "correctAnswer": "Bom dia"
-    },
-    {
-      "id": "ex_1_2_2",
-      "type": "multiple_choice",
-      "question": "Come chiedi informalmente \"Come stai?\":",
-      "sentence": "Olá, como _____?",
-      "options": ["estás", "sou", "está", "chamas"],
-      "correctAnswer": "estás"
-    },
-    {
-      "id": "ex_1_2_3",
-      "type": "multiple_choice",
-      "question": "Cosa rispondi a \"Tudo bem?\":",
-      "sentence": "Tudo _____, obrigado!",
-      "options": ["mal", "bem", "dia", "noite"],
-      "correctAnswer": "bem"
-    }
-  ]
+    "exercises": [
+      {
+        "id": "ex_1_2_1",
+        "type": "multiple_choice",
+        "prompt": "Come saluti qualcuno la mattina?",
+        "sentence": "_____! Tudo bem?",
+        "options": ["Boa noite", "Bom dia", "Boa tarde", "Adeus"],
+        "correctAnswer": "Bom dia"
+      },
+      {
+        "id": "ex_1_2_2",
+        "type": "multiple_choice",
+        "prompt": "Come chiedi informalmente \"Come stai?\":",
+        "sentence": "Olá, como _____?",
+        "options": ["estás", "sou", "está", "chamas"],
+        "correctAnswer": "estás"
+      },
+      {
+        "id": "ex_1_2_3",
+        "type": "multiple_choice",
+        "prompt": "Cosa rispondi a \"Tudo bem?\":",
+        "sentence": "Tudo _____, obrigado!",
+        "options": ["mal", "bem", "dia", "noite"],
+        "correctAnswer": "bem"
+      }
+    ]
   },
 
   "node_1_3": {
@@ -131,7 +127,7 @@
       {
         "id": "ex_1_3_1",
         "type": "multiple_choice",
-        "question": "Come chiedi con cortesia al cameriere?",
+        "prompt": "Come chiedi con cortesia al cameriere?",
         "sentence": "Um café, _____.",
         "options": ["por favor", "obrigado", "olá", "de nada"],
         "correctAnswer": "por favor"
@@ -139,7 +135,7 @@
       {
         "id": "ex_1_3_2",
         "type": "multiple_choice",
-        "question": "Come chiedi educatamente un caffè al banco?",
+        "prompt": "Come chiedi educatamente un caffè al banco?",
         "sentence": "_____ um café, por favor.",
         "options": ["Queria", "Sou", "Estou", "Como"],
         "correctAnswer": "Queria"
@@ -147,7 +143,7 @@
       {
         "id": "ex_1_3_3",
         "type": "multiple_choice",
-        "question": "Se sei un uomo, come dici \"grazie\"?",
+        "prompt": "Se sei un uomo, come dici \"grazie\"?",
         "sentence": "_____, bom dia!",
         "options": ["Obrigado", "Obrigada", "De nada", "Por favor"],
         "correctAnswer": "Obrigado"
@@ -164,7 +160,7 @@
       {
         "id": "chk_1_1",
         "type": "multiple_choice",
-        "question": "Verifica del Capitolo 1 - Verbo Ser:",
+        "prompt": "Verifica del Capitolo 1 - Verbo Ser:",
         "sentence": "Você _____ de Portugal?",
         "options": ["é", "sou", "és", "somos"],
         "correctAnswer": "é"
@@ -172,7 +168,7 @@
       {
         "id": "chk_1_2",
         "type": "multiple_choice",
-        "question": "Completa l'ordinazione al bar:",
+        "prompt": "Completa l'ordinazione al bar:",
         "sentence": "Queria um pastel de _____, por favor.",
         "options": ["nata", "café", "dia", "noite"],
         "correctAnswer": "nata"
@@ -180,7 +176,7 @@
       {
         "id": "chk_1_3",
         "type": "multiple_choice",
-        "question": "Come saluti la sera tardi?",
+        "prompt": "Come saluti la sera tardi?",
         "sentence": "_____, até amanhã!",
         "options": ["Boa noite", "Bom dia", "Boa tarde", "Olá"],
         "correctAnswer": "Boa noite"

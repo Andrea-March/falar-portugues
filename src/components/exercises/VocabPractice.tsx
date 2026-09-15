@@ -4,21 +4,10 @@ import React, { useState } from 'react';
 import ExerciseRenderer from './ExerciseRenderer';
 import FeedbackSheet from './FeedbackSheet';
 import { soundFX } from '@/utils/sound';
-
-export interface VocabExercise {
-  id: string;
-  type?: string;
-  question?: string;
-  sentence?: string;
-  options?: string[];
-  correctAnswer?: string;
-  wordPt?: string;
-  wordIt?: string;
-  emoji?: string;
-}
+import { Exercise } from '@/types/exercise';
 
 interface VocabPracticeProps {
-  exercises?: VocabExercise[];
+  exercises?: Exercise[];
   onFinish: (stats?: { total: number; errors: number }) => void;
 }
 
@@ -27,20 +16,20 @@ export default function VocabPractice({ exercises = [], onFinish }: VocabPractic
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<'idle' | 'correct' | 'wrong'>('idle');
 
-  // Tracciamento errori per il calcolo dell'accuratezza nella LessonCompleteCard
+  // Tracciamento errori per accuratezza e XP
   const [errorCount, setErrorCount] = useState(0);
   const [hasFailedCurrentQuestion, setHasFailedCurrentQuestion] = useState(false);
 
-  const rawItem = exercises[currentIndex];
+  const currentExercise = exercises[currentIndex];
 
-  if (!rawItem) {
+  if (!currentExercise) {
     return (
       <div className="p-8 bg-brand-surface rounded-3xl border border-brand-border text-center shadow-xs">
         <p className="text-brand-muted font-bold text-sm">Nenhum exercício encontrado.</p>
         <button
           type="button"
           onClick={() => onFinish({ total: 0, errors: 0 })}
-          className="mt-4 bg-brand-primary text-white font-black px-5 py-2.5 rounded-xl text-xs active:scale-95 transition-all shadow-sm"
+          className="mt-4 bg-brand-primary text-white font-black px-5 py-2.5 rounded-xl text-xs active:scale-95 transition-all shadow-sm cursor-pointer"
         >
           Concluir
         </button>
@@ -48,26 +37,12 @@ export default function VocabPractice({ exercises = [], onFinish }: VocabPractic
     );
   }
 
-  // Risoluzione flessibile della risposta corretta
-  const resolvedCorrectAnswer = (rawItem.correctAnswer || rawItem.wordIt || '').trim();
-
-  // Normalizza l'esercizio per renderlo compatibile al 100% con ExerciseRenderer e MultipleChoice
-  const normalizedExercise = {
-    id: rawItem.id,
-    type: rawItem.type || 'multiple_choice',
-    verb: 'Vocabulário',
-    question: rawItem.question || 'Qual é a tradução correta?',
-    sentence: rawItem.sentence || (rawItem.wordPt ? `Como se diz "${rawItem.wordPt}"?` : '_____'),
-    correctAnswer: resolvedCorrectAnswer,
-    options: rawItem.options || [],
-  };
-
   const handleAnswer = (answer: string) => {
     if (feedback === 'correct') return;
 
     setSelectedOption(answer);
 
-    if (answer.trim().toLowerCase() === resolvedCorrectAnswer.toLowerCase()) {
+    if (answer.trim().toLowerCase() === currentExercise.correctAnswer.toLowerCase()) {
       soundFX.playSuccess();
       setFeedback('correct');
     } else {
@@ -88,7 +63,6 @@ export default function VocabPractice({ exercises = [], onFinish }: VocabPractic
       setFeedback('idle');
       setHasFailedCurrentQuestion(false);
     } else {
-      // Invia le metriche aggregate al genitore per la card trionfale
       onFinish({
         total: exercises.length,
         errors: errorCount,
@@ -96,19 +70,18 @@ export default function VocabPractice({ exercises = [], onFinish }: VocabPractic
     }
   };
 
-  const fullSentenceWithAnswer = normalizedExercise.sentence.includes('_____')
-    ? normalizedExercise.sentence.replace('_____', resolvedCorrectAnswer)
-    : normalizedExercise.sentence.includes('___')
-    ? normalizedExercise.sentence.replace('___', resolvedCorrectAnswer)
-    : rawItem.wordPt || resolvedCorrectAnswer;
+  const fullSentenceWithAnswer =
+    currentExercise.type === 'multiple_choice'
+      ? currentExercise.sentence.replace('_____', currentExercise.correctAnswer)
+      : `${currentExercise.sentenceBefore}${currentExercise.correctAnswer}${currentExercise.sentenceAfter}`;
 
   return (
     <div className="bg-brand-surface p-5 rounded-3xl border border-brand-border shadow-xs space-y-5 animate-in fade-in duration-200">
-      {/* Barra Progresso Lezione */}
+      {/* Barra Progresso */}
       <div>
         <div className="flex justify-between items-center mb-2">
           <span className="text-[11px] font-black text-brand-primary uppercase tracking-wider flex items-center gap-1.5">
-            <span>🗣️</span> {normalizedExercise.verb}
+            <span>🗣️</span> {currentExercise.prompt || 'Vocabulário'}
           </span>
           <span className="text-xs font-bold text-brand-muted">
             {currentIndex + 1} de {exercises.length}
@@ -122,18 +95,18 @@ export default function VocabPractice({ exercises = [], onFinish }: VocabPractic
         </div>
       </div>
 
-      {/* Render dell'Esercizio (condiviso con VerbPractice) */}
+      {/* Render Esercizio Unificato */}
       <ExerciseRenderer
-        exercise={normalizedExercise}
+        exercise={currentExercise}
         selectedOption={selectedOption}
         feedback={feedback}
         onAnswer={handleAnswer}
       />
 
-      {/* Feedback Bottom Sheet con Riproduzione Vocale */}
+      {/* Feedback Sheet */}
       <FeedbackSheet
         feedback={feedback}
-        correctAnswer={resolvedCorrectAnswer}
+        correctAnswer={currentExercise.correctAnswer}
         sentenceToSpeak={fullSentenceWithAnswer}
         onContinue={handleNext}
         onRetry={() => setFeedback('idle')}
