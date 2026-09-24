@@ -105,7 +105,7 @@ function defaultPrompt(ex: ContentExercise) {
 /** Converte un esercizio del contenuto nel formato usato dai componenti */
 export function toRuntimeExercise(ex: ContentExercise): RuntimeExercise {
   const { before, answer, after } = splitAnswer(ex.text);
-  const base = { id: ex.id, prompt: ex.prompt ?? defaultPrompt(ex), translationIt: ex.it, trains: ex.trains };
+  const base = { id: ex.id, prompt: ex.prompt ?? defaultPrompt(ex), translationIt: ex.it, context: ex.context, trains: ex.trains };
 
   if (ex.type === 'write') {
     return { ...base, type: 'fill_in_the_blank', sentenceBefore: before, sentenceAfter: after, correctAnswer: answer };

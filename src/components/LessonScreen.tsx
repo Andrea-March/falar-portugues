@@ -6,6 +6,7 @@ import { soundFX } from '@/utils/sound';
 import { useUser } from '@/context/UserContext';
 
 import PracticeSession from '@/components/exercises/PracticeSession';
+import DialoguePractice from '@/components/exercises/DialoguePractice';
 import LessonShell from '@/components/common/LessonShell';
 import type { PracticeStats } from '@/components/exercises/PracticeSession';
 import Mascot from '@/components/common/Mascot';
@@ -90,7 +91,9 @@ export default function LessonScreen(props: LessonScreenProps) {
 
 function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenProps & { content: NodeContent }) {
   const { addXp } = useUser();
-  const title = getCourseNode(nodeId)?.title ?? '';
+  const node = getCourseNode(nodeId);
+  const title = node?.title ?? '';
+  const isDialogue = node?.kind === 'dialogue';
   const theory = useMemo(() => theorySteps(content.theory ?? []), [content]);
   // Convertiti una volta sola: le opzioni della scelta multipla restano nello stesso ordine per tutta la lezione
   const exercises = useMemo(() => content.exercises.map(toRuntimeExercise), [content]);
@@ -219,7 +222,11 @@ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenPr
 
   // ---------- PRATICA ----------
   if (step === 'practice') {
-    return <PracticeSession exercises={exercises} onFinish={handleFinishPractice} onClose={onClose} />;
+    return isDialogue ? (
+      <DialoguePractice exercises={exercises} onFinish={handleFinishPractice} onClose={onClose} />
+    ) : (
+      <PracticeSession exercises={exercises} onFinish={handleFinishPractice} onClose={onClose} />
+    );
   }
 
   // ---------- COMPLETATA ----------

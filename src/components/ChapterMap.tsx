@@ -18,7 +18,7 @@ interface ChapterMapProps {
 
 // Pattern di scostamento orizzontale in percentuale (%)
 const X_OFFSETS = [50, 28, 50, 72];
-const ROW_HEIGHT = 112; // Spazio verticale tra i centri dei nodi (px)
+const ROW_HEIGHT = 130; // Spazio verticale tra i centri dei nodi (px): lascia posto all'etichetta sotto il nodo
 const NODE_SIZE = 76;   // Dimensione bottone nodo (px)
 
 export default function ChapterMap({
@@ -195,6 +195,15 @@ export default function ChapterMap({
                       </span>
                     </button>
 
+                    {/* Etichetta sempre visibile: l'argomento del nodo, senza dover toccare */}
+                    <p
+                      aria-hidden="true"
+                      className={`pointer-events-none absolute top-full mt-1.5 left-1/2 -translate-x-1/2 w-24 text-center text-[11px] font-extrabold leading-tight line-clamp-2 ${
+                        isLocked ? 'text-[#9aa4bd]' : isCurrent ? 'text-brand-primary' : 'text-brand-muted'
+                      }`}
+                    >
+                      {node.draft ? 'Em breve' : node.title}
+                    </p>
                   </div>
                 );
               })}

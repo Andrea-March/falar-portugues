@@ -44,6 +44,8 @@ const ExerciseBase = {
   it: NonEmpty.optional(),
   /** Consegna personalizzata; se manca la genera l'app */
   prompt: NonEmpty.optional(),
+  /** Battuta dell'altra persona prima di questa risposta (nodi "dialogue"): mostrata come bolla di chat */
+  context: NonEmpty.optional(),
   trains: z.array(TrainsRef).min(1, 'indica almeno una cosa allenata (verb:… o vocab:…)'),
 };
 

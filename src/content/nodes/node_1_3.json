@@ -2,16 +2,12 @@
   "id": "node_1_3",
   "theory": [
     {
-      "title": "Ordinare al bar a Lisbona",
-      "text": "Espressioni essenziali per ordinare da bere o mangiare in Portogallo:",
+      "title": "Uma conversa no café",
+      "text": "Em Portugal pedir um café é quase um ritual. Vais ler e responder a uma conversa real com o empregado de um café em Lisboa:",
       "examples": [
         {
-          "pt": "Um café, por favor.",
-          "it": "Un caffè (espresso), per favore."
-        },
-        {
-          "pt": "Queria um pastel de nata.",
-          "it": "Vorrei un pastel de nata."
+          "pt": "Queria um café, por favor.",
+          "it": "Vorrei un caffè, per favore."
         },
         {
           "pt": "Quanto é?",
@@ -27,37 +23,54 @@
   "exercises": [
     {
       "id": "ex_1_3_1",
-      "type": "choose",
-      "text": "Um café, {por favor}.",
-      "prompt": "Come chiedi con cortesia al cameriere?",
+      "type": "write",
+      "context": "Bom dia! O que deseja?",
+      "prompt": "Chiedi un caffè in modo cortese.",
+      "text": "Bom dia! {Queria} um café, por favor.",
+      "it": "Buongiorno! Vorrei un caffè, per favore.",
       "trains": [
-        "vocab:por-favor"
-      ],
-      "wrong": [
-        "obrigado",
-        "olá",
-        "de nada"
+        "vocab:queria"
       ]
     },
     {
       "id": "ex_1_3_2",
       "type": "choose",
-      "text": "{Queria} um café, por favor.",
-      "prompt": "Come chiedi educatamente un caffè al banco?",
+      "context": "Aqui está o café. Mais alguma coisa?",
+      "prompt": "Ordina anche un dolce, con cortesia.",
+      "text": "Sim, um pastel de nata, {por favor}.",
+      "it": "Sì, un pastel de nata, per favore.",
       "trains": [
-        "vocab:queria"
+        "vocab:por-favor"
       ],
       "wrong": [
-        "Sou",
-        "Estou",
-        "Como"
+        "obrigado",
+        "de nada",
+        "bom dia"
       ]
     },
     {
       "id": "ex_1_3_3",
       "type": "choose",
-      "text": "{Obrigado}, bom dia!",
-      "prompt": "Se sei un uomo, come dici \"grazie\"?",
+      "context": "Aqui está o pastel de nata. Foi tudo?",
+      "prompt": "Chiedi quanto costa il conto.",
+      "text": "Sim, foi tudo. {Quanto é}?",
+      "it": "Sì, è tutto. Quanto costa?",
+      "trains": [
+        "vocab:quanto-e"
+      ],
+      "wrong": [
+        "Como estás",
+        "Bom dia",
+        "Boa tarde"
+      ]
+    },
+    {
+      "id": "ex_1_3_4",
+      "type": "choose",
+      "context": "São dois euros e cinquenta.",
+      "prompt": "Se és um homem, como agradeces ao pagar?",
+      "text": "Aqui está. {Obrigado}!",
+      "it": "Ecco a lei. Grazie!",
       "trains": [
         "vocab:obrigado"
       ],

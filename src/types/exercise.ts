@@ -5,6 +5,8 @@ export interface BaseExercise {
   type: ExerciseType;
   prompt?: string;
   translationIt?: string;
+  /** Battuta dell'altra persona prima di questa risposta (nodi "dialogue") */
+  context?: string;
   /** Cosa allena (es. "verb:ser:presente:eu"), per il ripasso */
   trains?: string[];
 }
