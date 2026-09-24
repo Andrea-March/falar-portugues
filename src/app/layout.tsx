@@ -9,6 +9,17 @@ const nunito = Nunito({ subsets: ['latin'], weight: ['400', '600', '700', '800']
 export const metadata: Metadata = {
   title: 'FalaLuso - Aprender Português',
   description: 'Aprende português europeu de forma prática',
+  manifest: '/manifest.webmanifest',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-icon.png',
+  },
+  // Permette a iOS di aprirla a schermo intero senza barra di Safari
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'FalaLuso',
+  },
 };
 
 export const viewport: Viewport = {
