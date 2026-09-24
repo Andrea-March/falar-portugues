@@ -8,6 +8,12 @@
       "it": "Un caffè (espresso)"
     },
     {
+      "id": "bica",
+      "pt": "uma bica",
+      "it": "un espresso (a Lisbona)",
+      "note": "a Porto si dice «cimbalino»"
+    },
+    {
       "id": "por-favor",
       "pt": "por favor",
       "it": "per favore"
@@ -32,7 +38,7 @@
       "id": "obrigado",
       "pt": "Obrigado / Obrigada",
       "it": "Grazie",
-      "note": "obrigado se sei un uomo, obrigada se sei una donna"
+      "note": "«obrigado» se chi parla è un uomo, «obrigada» se è una donna"
     }
   ]
 }

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Check, Lock } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
 import Mascot from '@/components/common/Mascot';
-import { chapters as courseChapters, type Chapter, type CourseNode } from '@/content';
+import { chapters as courseChapters, KIND_LABELS, type Chapter, type CourseNode } from '@/content';
 
 /** Compatibilità con il codice esistente */
 export type Node = CourseNode;
@@ -18,7 +18,8 @@ interface ChapterMapProps {
 
 // Pattern di scostamento orizzontale in percentuale (%)
 const X_OFFSETS = [50, 28, 50, 72];
-const ROW_HEIGHT = 138; // Spazio verticale tra i centri dei nodi (px): lascia posto all'etichetta sotto il nodo
+const ROW_HEIGHT = 150; // Spazio verticale tra i centri dei nodi (px): lascia posto all'etichetta sotto il nodo
+const LABEL_SPACE = 58; // Altezza occupata dall'etichetta sotto il nodo (px)
 const NODE_SIZE = 76;   // Dimensione bottone nodo (px)
 
 export default function ChapterMap({
@@ -195,21 +196,29 @@ export default function ChapterMap({
                       </span>
                     </button>
 
-                    {/* Etichetta sempre visibile: l'argomento del nodo, senza dover toccare */}
-                    <p
+                    {/* Etichetta sempre visibile: categoria + argomento. Toccarla equivale a toccare il nodo */}
+                    <div
+                      data-node-ui
                       aria-hidden="true"
-                      className={`pointer-events-none absolute top-full mt-2.5 left-1/2 -translate-x-1/2 max-w-[108px] text-center text-[11px] font-extrabold leading-tight line-clamp-2 px-2.5 py-1 rounded-full border-2 ${
-                        isLocked
-                          ? 'bg-white/80 border-[#dde3f0] text-[#9aa4bd]'
-                          : isCompleted
-                          ? 'bg-brand-accentLight border-brand-accent text-brand-accentDark'
-                          : isCurrent
-                          ? 'bg-brand-primary border-brand-dark text-white shadow-sm'
-                          : 'bg-white border-brand-border text-ink shadow-sm'
+                      onClick={() => {
+                        soundFX.playClick();
+                        setOpenNodeId((id) => (id === node.id ? null : node.id));
+                      }}
+                      className={`absolute top-full mt-2.5 left-1/2 -translate-x-1/2 w-max max-w-[136px] rounded-xl px-2.5 py-1 text-center cursor-pointer select-none ${
+                        isCurrent ? 'bg-white shadow-md ring-2 ring-brand-primary/25' : 'bg-white/90 shadow-sm'
                       }`}
                     >
-                      {node.draft ? 'Em breve' : node.title}
-                    </p>
+                      <p
+                        className={`text-[10px] font-extrabold uppercase tracking-[0.09em] leading-tight ${
+                          isLocked ? 'text-[#a9b2c7]' : isCompleted ? 'text-brand-accentDark' : isCurrent ? 'text-brand-primary' : 'text-azulejo'
+                        }`}
+                      >
+                        {node.draft ? 'Em breve' : KIND_LABELS[node.kind]}
+                      </p>
+                      <p className={`font-display text-[15px] font-extrabold leading-tight line-clamp-2 ${isLocked ? 'text-[#9aa4bd]' : 'text-ink'}`}>
+                        {node.title}
+                      </p>
+                    </div>
                   </div>
                 );
               })}
@@ -222,7 +231,7 @@ export default function ChapterMap({
                 const isDraft = Boolean(node.draft);
                 const isLocked = !checkIsUnlocked(node, index, chapterIndex, chapters) || isDraft;
                 const posX = X_OFFSETS[index % X_OFFSETS.length];
-                const top = index * ROW_HEIGHT + ROW_HEIGHT / 2 + NODE_SIZE / 2 + 34; // sotto l'etichetta del nodo
+                const top = index * ROW_HEIGHT + ROW_HEIGHT / 2 + NODE_SIZE / 2 + LABEL_SPACE; // sotto l'etichetta
                 const tone = isLocked
                   ? 'bg-[#e6eaf3] border-[#c7cfdf] text-brand-muted'
                   : isCompleted
@@ -243,6 +252,7 @@ export default function ChapterMap({
                       className={`absolute -top-2 w-4 h-4 rotate-45 -translate-x-1/2 rounded-sm ${arrowBg}`}
                       style={{ left: `${posX}%` }}
                     />
+                    <p className="text-xs font-extrabold uppercase tracking-[0.09em] opacity-80">{KIND_LABELS[node.kind]}</p>
                     <h3 className="text-2xl font-extrabold leading-tight">{node.title}</h3>
                     <p className="font-semibold mt-0.5 opacity-90">{node.subtitle}</p>
                     {isLocked ? (

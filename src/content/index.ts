@@ -10,6 +10,7 @@ import { verbList, vocabSetList, nodeLoaders } from './registry.generated';
 import type { Exercise as RuntimeExercise } from '@/types/exercise';
 
 export type { Chapter, CourseNode, NodeContent, Verb, VocabItem, Person };
+export type { Speaker } from './schema';
 
 // ---------- Corso e mappa ----------
 
@@ -18,6 +19,17 @@ export const chapters: Chapter[] = course.chapters;
 const allNodes: CourseNode[] = chapters.flatMap((c) => c.nodes);
 
 export const getCourseNode = (id: string) => allNodes.find((n) => n.id === id);
+
+/** Categoria del nodo, mostrata sopra il titolo sulla mappa */
+export const KIND_LABELS: Record<CourseNode['kind'], string> = {
+  verb: 'Verbo',
+  vocab: 'Vocabulário',
+  dialogue: 'Conversa',
+  checkpoint: 'Desafio',
+};
+
+/** Titolo completo, per i punti dove la categoria non si vede (es. fine lezione) */
+export const fullNodeTitle = (node: CourseNode) => (node.kind === 'verb' ? `Verbo ${node.title.toLowerCase()}` : node.title);
 
 /** Nodo successivo nel percorso (o lo stesso, se è l'ultimo) */
 export function nextNodeId(id: string): string {
@@ -105,7 +117,7 @@ function defaultPrompt(ex: ContentExercise) {
 /** Converte un esercizio del contenuto nel formato usato dai componenti */
 export function toRuntimeExercise(ex: ContentExercise): RuntimeExercise {
   const { before, answer, after } = splitAnswer(ex.text);
-  const base = { id: ex.id, prompt: ex.prompt ?? defaultPrompt(ex), translationIt: ex.it, context: ex.context, trains: ex.trains };
+  const base = { id: ex.id, prompt: ex.prompt ?? defaultPrompt(ex), translationIt: ex.it, context: ex.context, contextIt: ex.contextIt, trains: ex.trains };
 
   if (ex.type === 'write') {
     return { ...base, type: 'fill_in_the_blank', sentenceBefore: before, sentenceAfter: after, correctAnswer: answer };

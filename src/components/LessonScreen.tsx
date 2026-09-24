@@ -13,7 +13,7 @@ import Mascot from '@/components/common/Mascot';
 import { Volume2 } from 'lucide-react';
 import { speakPortuguese } from '@/utils/textToSpeech';
 import LessonCompleteCard from '@/components/common/LessonCompleteCard';
-import { getCourseNode, loadNode, theorySteps, toRuntimeExercise, type NodeContent } from '@/content';
+import { fullNodeTitle, getCourseNode, loadNode, theorySteps, toRuntimeExercise, type NodeContent } from '@/content';
 import ParadigmStep from '@/components/theory/ParadigmStep';
 
 interface LessonScreenProps {
@@ -92,7 +92,7 @@ export default function LessonScreen(props: LessonScreenProps) {
 function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenProps & { content: NodeContent }) {
   const { addXp } = useUser();
   const node = getCourseNode(nodeId);
-  const title = node?.title ?? '';
+  const title = node ? fullNodeTitle(node) : '';
   const isDialogue = node?.kind === 'dialogue';
   const theory = useMemo(() => theorySteps(content.theory ?? []), [content]);
   // Convertiti una volta sola: le opzioni della scelta multipla restano nello stesso ordine per tutta la lezione
@@ -223,7 +223,7 @@ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenPr
   // ---------- PRATICA ----------
   if (step === 'practice') {
     return isDialogue ? (
-      <DialoguePractice exercises={exercises} onFinish={handleFinishPractice} onClose={onClose} />
+      <DialoguePractice exercises={exercises} speaker={content.speaker} onFinish={handleFinishPractice} onClose={onClose} />
     ) : (
       <PracticeSession exercises={exercises} onFinish={handleFinishPractice} onClose={onClose} />
     );

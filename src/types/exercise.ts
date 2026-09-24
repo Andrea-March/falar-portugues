@@ -7,6 +7,8 @@ export interface BaseExercise {
   translationIt?: string;
   /** Battuta dell'altra persona prima di questa risposta (nodi "dialogue") */
   context?: string;
+  /** Traduzione italiana di "context" */
+  contextIt?: string;
   /** Cosa allena (es. "verb:ser:presente:eu"), per il ripasso */
   trains?: string[];
 }

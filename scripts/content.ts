@@ -90,6 +90,8 @@ function checkExercise(file: string, ex: Exercise) {
   if (prev) fail(file, `${where}: id già usato in ${prev}`);
   else exerciseIds.set(ex.id, relative(ROOT, file));
 
+  if (ex.contextIt && !ex.context) fail(file, `${where}: "contextIt" senza "context"`);
+
   const answer = answerOf(ex.text);
   const verbTargets: { verb: Verb; tense: string; person: string }[] = [];
 

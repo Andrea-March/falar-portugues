@@ -26,10 +26,20 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   });
 }
 
+/**
+ * Riferimento all'ultima frase: alcuni browser (Chrome) eliminano l'oggetto dalla
+ * memoria prima della fine della lettura, e allora "onend" non arriva mai.
+ */
+const alive = new Set<SpeechSynthesisUtterance>();
+
+/**
+ * Legge una frase in pt-PT. `onEnd` (facoltativo) viene chiamato a fine lettura,
+ * se la lettura viene interrotta, o dopo una breve pausa se l'audio è disattivato.
+ * Non è garantito che arrivi una sola volta: chi lo usa per avanzare deve proteggersi.
+ */
 export function speakPortuguese(text: string, onEnd?: () => void) {
   if (typeof window === 'undefined' || !('speechSynthesis' in window) || !isAudioEnabled()) {
-    // Áudio desligado: mesmo assim dá um pequeno intervalo antes de continuar,
-    // para o ritmo da conversa não ficar instantâneo.
+    // Audio spento: una piccola pausa, così il ritmo resta naturale
     if (onEnd) setTimeout(onEnd, 450);
     return;
   }
@@ -55,10 +65,18 @@ export function speakPortuguese(text: string, onEnd?: () => void) {
     utterance.onend = onEnd;
     utterance.onerror = onEnd;
   }
+  alive.add(utterance);
+  const release = () => alive.delete(utterance);
+  utterance.addEventListener('end', release);
+  utterance.addEventListener('error', release);
 
   window.speechSynthesis.speak(utterance);
 }
 
+/** Durata indicativa della lettura, usata come rete di sicurezza se "onend" non arriva */
+export const estimateSpeechMs = (text: string) => Math.min(9000, 1200 + text.length * 85);
+
 export function stopSpeaking() {
+  alive.clear();
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel();
 }

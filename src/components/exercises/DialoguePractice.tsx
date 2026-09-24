@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Volume2 } from 'lucide-react';
+import { CheckCheck, Languages, SendHorizontal, Volume2 } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
-import { speakPortuguese, stopSpeaking } from '@/utils/textToSpeech';
+import { estimateSpeechMs, speakPortuguese, stopSpeaking } from '@/utils/textToSpeech';
 import { matchAnswer, accentMistakes } from '@/utils/answerCheck';
 import { useUser } from '@/context/UserContext';
-import { Exercise } from '@/types/exercise';
+import type { Exercise, MultipleChoiceExercise } from '@/types/exercise';
+import type { Speaker } from '@/content';
 import LessonShell from '@/components/common/LessonShell';
 import Mascot from '@/components/common/Mascot';
 import { SentenceWithGap } from './ExerciseRenderer';
@@ -14,115 +15,92 @@ import FeedbackSheet from './FeedbackSheet';
 import type { Feedback, PracticeStats } from './PracticeSession';
 
 const SPECIAL_CHARS = ['á', 'à', 'â', 'ã', 'ç', 'é', 'ê', 'í', 'ó', 'ô', 'õ', 'ú'];
-/** Pausa prima della lettura, per non sovrapporre voce e suono di successo */
-const SPEAK_DELAY_MS = 550;
+/** Pausa tra il suono di successo e la lettura della frase */
+const SPEAK_DELAY_MS = 450;
+/** Quanto resta visibile "sta scrivendo…" prima della battuta dell'interlocutore */
+const typingMs = (text: string) => Math.min(1600, 550 + text.length * 18);
+
+const DEFAULT_SPEAKER: Speaker = { name: 'Empregado', avatar: '🧑‍🍳' };
+
+/**
+ * typing    → l'interlocutore "sta scrivendo", poi compare la sua battuta
+ * answering → tocca all'utente
+ * sent      → risposta inviata: si legge la frase e si passa da soli al turno dopo
+ */
+type Phase = 'typing' | 'answering' | 'sent';
+
+interface Message {
+  key: string;
+  from: 'npc' | 'me';
+  text: string;
+  translation?: string;
+}
 
 interface DialoguePracticeProps {
   exercises: Exercise[];
+  speaker?: Speaker;
   onFinish: (stats: PracticeStats) => void;
   onClose: () => void;
 }
 
-/** Una battuta già conclusa, mostrata come cronologia della conversazione */
-interface Turn {
-  id: string;
-  context?: string;
-  reply: string;
-  translation?: string;
-}
-
-function SpeakIcon({ text }: { text: string }) {
-  return (
-    <button
-      type="button"
-      onClick={() => speakPortuguese(text)}
-      aria-label="Ouvir"
-      className="text-brand-muted hover:text-azulejo transition-colors shrink-0 p-1 -m-1 cursor-pointer"
-    >
-      <Volume2 size={16} strokeWidth={2.5} />
-    </button>
-  );
-}
-
-/** Bolha da outra pessoa (esquerda) */
-function NpcBubble({ text }: { text: string }) {
-  return (
-    <div className="flex items-end gap-2 max-w-[88%] animate-bubble-in-left">
-      <span
-        className="w-9 h-9 rounded-full bg-azulejo-light border-2 border-azulejo/25 flex items-center justify-center text-base shrink-0"
-        aria-hidden="true"
-      >
-        🧑🏽‍🍳
-      </span>
-      <div className="bg-white border-2 border-brand-border rounded-2xl rounded-bl-sm px-4 py-2.5 flex items-start gap-2 shadow-sm">
-        <p className="font-bold text-ink leading-snug">{text}</p>
-        <SpeakIcon text={text} />
-      </div>
-    </div>
-  );
-}
-
-/** Bolha do utilizador, já enviada (direita) */
-function UserBubble({ children, translation }: { children: React.ReactNode; translation?: string }) {
-  return (
-    <div className="flex justify-end animate-bubble-in-right">
-      <div className="max-w-[88%] bg-brand-light border-2 border-brand-primary/20 rounded-2xl rounded-br-sm px-4 py-2.5 text-right shadow-sm">
-        <p className="font-bold text-ink leading-snug">{children}</p>
-        {translation && <p className="text-[13px] text-brand-muted font-semibold mt-0.5">{translation}</p>}
-      </div>
-    </div>
-  );
-}
-
-/** Bolha do utilizador ainda a ser composta (o turno corrente, antes de confermare) */
-function LiveUserBubble({ before, after, value, feedback }: { before: string; after: string; value: string; feedback: Feedback }) {
-  return (
-    <div className="flex justify-end">
-      <div className="max-w-[88%] bg-brand-background border-2 border-dashed border-brand-border rounded-2xl rounded-br-sm px-4 py-2.5 text-right">
-        <SentenceWithGap before={before} after={after} value={value} feedback={feedback} />
-      </div>
-    </div>
-  );
-}
-
 /**
- * Come PracticeSession, ma disposto come una conversazione di chat: le battute
- * già completate restano visibili sopra, come cronologia, mentre il turno
- * corrente si compone in basso.
+ * Conversazione in stile chat. Ogni esercizio è un turno: la battuta dell'altra
+ * persona ("context") arriva dopo l'indicatore "sta scrivendo", l'utente completa
+ * la propria risposta in basso e, se è giusta, la risposta viene "inviata", letta
+ * ad alta voce e si passa da soli al turno successivo. Solo errori e soluzione
+ * mostrata chiedono un tocco, per lasciare il tempo di leggere.
  */
-export default function DialoguePractice({ exercises, onFinish, onClose }: DialoguePracticeProps) {
+export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER, onFinish, onClose }: DialoguePracticeProps) {
   const { progress } = useUser();
   const [index, setIndex] = useState(0);
-  const [turns, setTurns] = useState<Turn[]>([]);
+  const [phase, setPhase] = useState<Phase>(() => (exercises[0]?.context ? 'typing' : 'answering'));
+  const [messages, setMessages] = useState<Message[]>([]);
   const [answer, setAnswer] = useState('');
   const [feedback, setFeedback] = useState<Feedback>('idle');
   const [accentHint, setAccentHint] = useState(false);
-  const [errorCount, setErrorCount] = useState(0);
-  const [failedCurrent, setFailedCurrent] = useState(false);
   const [combo, setCombo] = useState(0);
-  const [bestCombo, setBestCombo] = useState(0);
-  const speakTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Valori letti dentro timer e callback della voce: in un ref non diventano "vecchi"
+  const stats = useRef({ errors: 0, bestCombo: 0, failedCurrent: false });
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const mounted = useRef(true);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(
-    () => () => {
-      if (speakTimer.current) clearTimeout(speakTimer.current);
-      stopSpeaking();
-    },
-    []
-  );
+  const later = (fn: () => void, ms: number) => {
+    timers.current.push(setTimeout(() => mounted.current && fn(), ms));
+  };
+  const clearTimers = () => {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+  };
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, [index, feedback, turns.length]);
+    mounted.current = true;
+    const t = timers;
+    return () => {
+      mounted.current = false;
+      t.current.forEach(clearTimeout);
+      stopSpeaking();
+    };
+  }, []);
 
   const exercise = exercises[index];
 
-  // Legge ad alta voce la battuta dell'altra persona non appena compare
+  // "Sta scrivendo…" → compare la battuta dell'interlocutore, che viene letta subito
   useEffect(() => {
-    if (exercise?.context) speakPortuguese(exercise.context);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exercise?.id]);
+    if (phase !== 'typing' || !exercise?.context) return;
+    const { id, context, contextIt } = exercise;
+    const t = setTimeout(() => {
+      setMessages((m) => [...m, { key: `npc-${id}`, from: 'npc', text: context, translation: contextIt }]);
+      setPhase('answering');
+      speakPortuguese(context);
+    }, typingMs(context));
+    return () => clearTimeout(t);
+  }, [phase, exercise]);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [messages.length, phase, feedback, accentHint]);
 
   if (!exercise) {
     return (
@@ -141,52 +119,63 @@ export default function DialoguePractice({ exercises, onFinish, onClose }: Dialo
 
   const isChoice = exercise.type === 'multiple_choice';
   const [gapBefore, gapAfter] = isChoice
-    ? ((): [string, string] => {
+    ? (() => {
         const [b, a = ''] = exercise.sentence.split(/_{3,}/);
         return [b, a];
       })()
     : [exercise.sentenceBefore, exercise.sentenceAfter];
-  const fullSentence = isChoice
-    ? exercise.sentence.replace(/_{3,}/, exercise.correctAnswer)
-    : `${exercise.sentenceBefore}${exercise.correctAnswer}${exercise.sentenceAfter}`;
+  const fullSentence = `${gapBefore}${exercise.correctAnswer}${gapAfter}`;
+
+  // ---------- Flusso ----------
+
+  const goNext = () => {
+    const nextIndex = index + 1;
+    if (nextIndex >= exercises.length) {
+      onFinish({ total: exercises.length, errors: stats.current.errors, bestCombo: stats.current.bestCombo });
+      return;
+    }
+    stats.current.failedCurrent = false;
+    setIndex(nextIndex);
+    setAnswer('');
+    setFeedback('idle');
+    setAccentHint(false);
+    setPhase(exercises[nextIndex].context ? 'typing' : 'answering');
+  };
+
+  /** La risposta diventa un messaggio inviato */
+  const sendReply = () => {
+    setMessages((m) => [...m, { key: `me-${exercise.id}`, from: 'me', text: fullSentence, translation: exercise.translationIt }]);
+    setPhase('sent');
+  };
 
   const countError = () => {
-    if (!failedCurrent) {
-      setErrorCount((n) => n + 1);
-      setFailedCurrent(true);
-    }
-  };
-
-  const speakLater = () => {
-    if (speakTimer.current) clearTimeout(speakTimer.current);
-    speakTimer.current = setTimeout(() => speakPortuguese(fullSentence), SPEAK_DELAY_MS);
-  };
-
-  /** Passa alla battuta successiva (o chiude la conversazione se era l'ultima) */
-  const advance = () => {
-    setTurns((prev) => [...prev, { id: exercise.id, context: exercise.context, reply: fullSentence, translation: exercise.translationIt }]);
-    if (index + 1 < exercises.length) {
-      setIndex((i) => i + 1);
-      setAnswer('');
-      setFeedback('idle');
-      setAccentHint(false);
-      setFailedCurrent(false);
-    } else {
-      onFinish({ total: exercises.length, errors: errorCount, bestCombo });
+    if (!stats.current.failedCurrent) {
+      stats.current.errors += 1;
+      stats.current.failedCurrent = true;
     }
   };
 
   const markCorrect = () => {
-    const newCombo = failedCurrent ? 0 : combo + 1;
+    const newCombo = stats.current.failedCurrent ? 0 : combo + 1;
+    stats.current.bestCombo = Math.max(stats.current.bestCombo, newCombo);
     setCombo(newCombo);
-    setBestCombo((b) => Math.max(b, newCombo));
     setAccentHint(false);
     setFeedback('correct');
     soundFX.playSuccess(newCombo);
-    // Conversazione fluida: niente popup da chiudere a mano. Si legge la frase
-    // e, appena finita (o subito se l'audio è disattivato), si passa da soli.
-    if (speakTimer.current) clearTimeout(speakTimer.current);
-    speakTimer.current = setTimeout(() => speakPortuguese(fullSentence, advance), SPEAK_DELAY_MS);
+    sendReply();
+
+    // Si passa al turno dopo a fine lettura; la stima della durata fa da rete
+    // di sicurezza per i browser dove "fine lettura" non arriva.
+    let moved = false;
+    const moveOn = () => {
+      if (moved) return;
+      moved = true;
+      later(goNext, 250);
+    };
+    later(() => {
+      speakPortuguese(fullSentence, () => mounted.current && moveOn());
+      later(moveOn, estimateSpeechMs(fullSentence));
+    }, SPEAK_DELAY_MS);
   };
 
   const markWrong = () => {
@@ -202,7 +191,22 @@ export default function DialoguePractice({ exercises, onFinish, onClose }: Dialo
     setAccentHint(false);
     setAnswer(exercise.correctAnswer);
     setFeedback('revealed');
-    speakLater();
+    later(() => speakPortuguese(fullSentence), SPEAK_DELAY_MS);
+  };
+
+  const continueAfterReveal = () => {
+    soundFX.playClick();
+    clearTimers();
+    stopSpeaking();
+    setFeedback('idle'); // chiude il pannello: niente doppio tocco su "Continuar"
+    sendReply();
+    later(goNext, 600);
+  };
+
+  const retry = () => {
+    soundFX.playClick();
+    if (isChoice) setAnswer('');
+    setFeedback('idle');
   };
 
   const evaluate = (value: string, explicit: boolean) => {
@@ -218,7 +222,7 @@ export default function DialoguePractice({ exercises, onFinish, onClose }: Dialo
   };
 
   const handleChange = (value: string) => {
-    if (feedback !== 'idle') return;
+    if (phase !== 'answering' || feedback !== 'idle') return;
     setAnswer(value);
     if (isChoice) {
       evaluate(value, true);
@@ -228,23 +232,11 @@ export default function DialoguePractice({ exercises, onFinish, onClose }: Dialo
     }
   };
 
-  /** Solo per "Ver a solução" dopo un errore: qui il tocco resta, serve a dare il tempo di leggere */
-  const continueAfterReveal = () => {
-    soundFX.playClick();
-    if (speakTimer.current) clearTimeout(speakTimer.current);
-    stopSpeaking();
-    advance();
-  };
+  // ---------- Vista ----------
 
-  const retry = () => {
-    soundFX.playClick();
-    if (isChoice) setAnswer('');
-    setFeedback('idle');
-  };
-
-  const done = index + (feedback === 'correct' || feedback === 'revealed' ? 1 : 0);
-  const wrongLetters = accentHint ? accentMistakes(answer, exercise.correctAnswer) : null;
-  const locked = feedback !== 'idle';
+  const done = index + (phase === 'sent' ? 1 : 0);
+  const showSheet = feedback === 'wrong' || feedback === 'revealed';
+  const canAnswer = phase === 'answering' && feedback === 'idle';
 
   return (
     <LessonShell
@@ -252,7 +244,7 @@ export default function DialoguePractice({ exercises, onFinish, onClose }: Dialo
       hearts={progress.hearts}
       onClose={onClose}
       footer={
-        feedback === 'correct' ? undefined : (
+        showSheet ? (
           <FeedbackSheet
             key={`${exercise.id}-${feedback}`}
             mode={isChoice ? 'choice' : 'typing'}
@@ -267,204 +259,317 @@ export default function DialoguePractice({ exercises, onFinish, onClose }: Dialo
             onContinue={continueAfterReveal}
             onRetry={retry}
           />
+        ) : isChoice ? (
+          <ChoiceComposer key={exercise.id} exercise={exercise} disabled={!canAnswer} onPick={handleChange} />
+        ) : (
+          <WriteComposer
+            key={exercise.id}
+            exerciseId={exercise.id}
+            value={answer}
+            disabled={!canAnswer}
+            accentHint={accentHint}
+            wrongLetters={accentHint ? accentMistakes(answer, exercise.correctAnswer) : null}
+            onChange={handleChange}
+            onSubmit={() => canAnswer && answer.trim() && evaluate(answer, true)}
+            onDontKnow={reveal}
+          />
         )
       }
     >
-      <div className="space-y-4 pb-2">
-        {/* Cronologia: battute già concluse */}
-        {turns.map((t) => (
-          <React.Fragment key={t.id}>
-            {t.context && <NpcBubble text={t.context} />}
-            <UserBubble translation={t.translation}>{t.reply}</UserBubble>
-          </React.Fragment>
-        ))}
+      <ChatHeader speaker={speaker} typing={phase === 'typing'} />
 
-        {/* Turno corrente */}
-        <div key={exercise.id} className="space-y-4 animate-fade-in">
-          {exercise.context && <NpcBubble text={exercise.context} />}
+      <div className="space-y-2.5 pt-3 pb-2" aria-live="polite">
+        <p className="text-center">
+          <span className="inline-block rounded-lg bg-brand-background text-brand-muted text-xs font-extrabold uppercase tracking-wide px-2.5 py-1">
+            Hoje
+          </span>
+        </p>
 
-          {exercise.prompt && (
-            <p className="text-center text-sm font-bold text-brand-muted px-4">{exercise.prompt}</p>
-          )}
+        {messages.map((m) =>
+          m.from === 'npc' ? <NpcBubble key={m.key} text={m.text} translation={m.translation} /> : <MyBubble key={m.key} text={m.text} translation={m.translation} />
+        )}
 
-          <LiveUserBubble before={gapBefore} after={gapAfter} value={answer} feedback={feedback} />
+        {phase === 'typing' && <TypingBubble />}
 
-          {isChoice ? (
-            <ChoiceReplies exercise={exercise} value={answer} feedback={feedback} onChange={handleChange} />
-          ) : (
-            <WriteReply
-              exerciseId={exercise.id}
-              value={answer}
-              locked={locked}
-              accentHint={accentHint}
-              wrongLetters={wrongLetters}
-              onChange={handleChange}
-              onSubmit={() => {
-                if (!locked && answer.trim()) evaluate(answer, true);
-              }}
-            />
-          )}
-        </div>
+        {phase === 'answering' && (
+          <div key={exercise.id} className="space-y-2.5 pt-1">
+            {exercise.prompt && (
+              <p className="text-center animate-fade-in">
+                <span className="inline-block rounded-xl bg-brand-accentLight text-brand-accentDark text-sm font-bold px-3 py-1.5 leading-snug">
+                  {exercise.prompt}
+                </span>
+              </p>
+            )}
+            <DraftBubble before={gapBefore} after={gapAfter} value={answer} feedback={feedback} />
+          </div>
+        )}
 
-        <div ref={bottomRef} />
+        <div ref={bottomRef} className="h-1" />
       </div>
     </LessonShell>
   );
 }
 
-function ChoiceReplies({
-  exercise,
-  value,
-  feedback,
-  onChange,
-}: {
-  exercise: Extract<Exercise, { type: 'multiple_choice' }>;
-  value: string;
-  feedback: Feedback;
-  onChange: (v: string) => void;
-}) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (feedback !== 'idle' || e.metaKey || e.ctrlKey || e.altKey) return;
-      const n = Number(e.key);
-      if (n >= 1 && n <= exercise.options.length) onChange(exercise.options[n - 1]);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [exercise.options, feedback, onChange]);
+// ---------- Pezzi della chat ----------
 
+function ChatHeader({ speaker, typing }: { speaker: Speaker; typing: boolean }) {
   return (
-    <div className="grid gap-2.5 pt-1" role="radiogroup" aria-label="Respostas possíveis">
-      {exercise.options.map((option, i) => {
-        const isSelected = value === option;
-        const isRevealedAnswer = feedback === 'revealed' && option === exercise.correctAnswer;
-        const tone = isRevealedAnswer
-          ? 'bg-azulejo-light border-azulejo text-azulejo-dark'
-          : !isSelected
-          ? 'bg-white border-brand-border text-ink hover:bg-brand-background'
-          : feedback === 'correct'
-          ? 'bg-ok-light border-ok text-ok-dark animate-pop'
-          : feedback === 'wrong'
-          ? 'bg-ko-light border-ko text-ko-dark animate-shake'
-          : 'bg-azulejo-light border-azulejo text-azulejo-dark';
-
-        return (
-          <button
-            key={option}
-            type="button"
-            role="radio"
-            aria-checked={isSelected}
-            disabled={feedback !== 'idle'}
-            onClick={() => onChange(option)}
-            className={`btn-3d !justify-start border-2 border-b-[5px] px-4 py-3 text-lg disabled:opacity-100 ${tone}`}
-          >
-            <span className="w-7 h-7 rounded-lg border-2 border-current/30 text-sm flex items-center justify-center opacity-60 shrink-0">
-              {i + 1}
-            </span>
-            {option}
-          </button>
-        );
-      })}
+    <div className="sticky top-0 z-10 -mx-5 sm:-mx-6 -mt-4 px-5 sm:px-6 py-3 bg-white/95 backdrop-blur border-b-2 border-brand-border flex items-center gap-3">
+      <span
+        className="w-11 h-11 rounded-full bg-azulejo-light border-2 border-azulejo/25 flex items-center justify-center text-2xl shrink-0"
+        aria-hidden="true"
+      >
+        {speaker.avatar}
+      </span>
+      <div className="min-w-0">
+        <p className="font-extrabold text-ink leading-tight truncate">{speaker.name}</p>
+        <p className={`text-sm font-bold leading-tight truncate ${typing ? 'text-ok-dark' : 'text-brand-muted'}`}>
+          {typing ? 'a escrever…' : speaker.role ?? 'online'}
+        </p>
+      </div>
     </div>
   );
 }
 
-function WriteReply({
+function IconButton({ label, onClick, children }: { label: string; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className="text-brand-muted hover:text-azulejo transition-colors p-1 -m-1 rounded-md cursor-pointer"
+    >
+      {children}
+    </button>
+  );
+}
+
+/** Battuta dell'interlocutore (sinistra) */
+function NpcBubble({ text, translation }: { text: string; translation?: string }) {
+  const [showIt, setShowIt] = useState(false);
+  return (
+    <div className="flex animate-bubble-in-left">
+      <div className="max-w-[85%] bg-white border-2 border-brand-border rounded-2xl rounded-tl-md px-3.5 py-2 shadow-sm">
+        <p className="font-bold text-ink text-[17px] leading-snug">{text}</p>
+        {showIt && translation && <p className="text-sm text-brand-muted font-semibold mt-0.5 animate-fade-in">{translation}</p>}
+        <div className="flex justify-end gap-3 mt-1">
+          {translation && (
+            <IconButton label={showIt ? 'Esconder tradução' : 'Ver tradução'} onClick={() => setShowIt((v) => !v)}>
+              <Languages size={16} strokeWidth={2.5} />
+            </IconButton>
+          )}
+          <IconButton label="Ouvir" onClick={() => speakPortuguese(text)}>
+            <Volume2 size={16} strokeWidth={2.5} />
+          </IconButton>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Risposta inviata dall'utente (destra) */
+function MyBubble({ text, translation }: { text: string; translation?: string }) {
+  return (
+    <div className="flex justify-end animate-bubble-in-right">
+      <button
+        type="button"
+        onClick={() => speakPortuguese(text)}
+        aria-label={`Ouvir: ${text}`}
+        className="max-w-[85%] text-left bg-ok-light border-2 border-ok/25 rounded-2xl rounded-tr-md px-3.5 py-2 shadow-sm cursor-pointer"
+      >
+        <p className="font-bold text-ink text-[17px] leading-snug">{text}</p>
+        <span className="flex items-end justify-between gap-3 mt-0.5">
+          <span className="text-[13px] text-ok-dark/80 font-semibold leading-snug">{translation}</span>
+          <CheckCheck size={16} strokeWidth={2.5} className="text-azulejo shrink-0" aria-hidden="true" />
+        </span>
+      </button>
+    </div>
+  );
+}
+
+/** Risposta in composizione: la frase con lo spazio da completare */
+function DraftBubble({ before, after, value, feedback }: { before: string; after: string; value: string; feedback: Feedback }) {
+  return (
+    <div className="flex justify-end animate-bubble-in-right">
+      <div className="max-w-[85%] bg-white border-2 border-dashed border-ok/50 rounded-2xl rounded-tr-md px-3.5 py-2">
+        <p className="font-bold text-ink text-[17px]">
+          <SentenceWithGap before={before} after={after} value={value} feedback={feedback} />
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function TypingBubble() {
+  return (
+    <div className="flex animate-bubble-in-left" aria-label="A escrever">
+      <div className="bg-white border-2 border-brand-border rounded-2xl rounded-tl-md px-4 py-3.5 flex gap-1.5 shadow-sm">
+        {[0, 1, 2].map((i) => (
+          <span key={i} className="w-2 h-2 rounded-full bg-brand-muted animate-typing-dot" style={{ animationDelay: `${i * 0.16}s` }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ---------- Barra di risposta (in basso, come la tastiera di una chat) ----------
+
+function ChoiceComposer({ exercise, disabled, onPick }: { exercise: MultipleChoiceExercise; disabled: boolean; onPick: (v: string) => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (disabled || e.metaKey || e.ctrlKey || e.altKey) return;
+      const n = Number(e.key);
+      if (n >= 1 && n <= exercise.options.length) onPick(exercise.options[n - 1]);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [exercise.options, disabled, onPick]);
+
+  const oneColumn = exercise.options.some((o) => o.length > 16);
+
+  return (
+    <div className="border-t-2 border-brand-border bg-white">
+      <div
+        role="group"
+        aria-label="Respostas possíveis"
+        className={`max-w-2xl mx-auto px-4 sm:px-6 py-4 grid gap-2.5 transition-opacity ${oneColumn ? 'grid-cols-1' : 'grid-cols-2'} ${
+          disabled ? 'opacity-45' : ''
+        }`}
+      >
+        {exercise.options.map((option) => (
+          <button
+            key={option}
+            type="button"
+            disabled={disabled}
+            onClick={() => onPick(option)}
+            className="btn-3d btn-ghost !border-b-[4px] px-3 py-3 text-[17px] disabled:cursor-default"
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function WriteComposer({
   exerciseId,
   value,
-  locked,
+  disabled,
   accentHint,
   wrongLetters,
   onChange,
   onSubmit,
+  onDontKnow,
 }: {
   exerciseId: string;
   value: string;
-  locked: boolean;
+  disabled: boolean;
   accentHint: boolean;
   wrongLetters: Set<number> | null;
   onChange: (v: string) => void;
   onSubmit: () => void;
+  onDontKnow: () => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const inputTone = locked
-    ? 'border-brand-border bg-brand-background text-ink'
-    : accentHint
-    ? 'border-brand-accentHover bg-brand-accentLight focus:bg-white'
-    : 'border-brand-border bg-white focus:border-azulejo';
+
+  // Quando tocca all'utente, il cursore è già nel campo
+  useEffect(() => {
+    if (!disabled) inputRef.current?.focus();
+  }, [disabled]);
+
+  const insert = (char: string) => {
+    soundFX.playClick();
+    const el = inputRef.current;
+    const start = el?.selectionStart ?? value.length;
+    const end = el?.selectionEnd ?? value.length;
+    onChange(value.slice(0, start) + char + value.slice(end));
+    requestAnimationFrame(() => {
+      el?.focus();
+      el?.setSelectionRange(start + 1, start + 1);
+    });
+  };
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit();
-      }}
-      className="space-y-3 pt-1"
-    >
-      <label htmlFor={`dlg-answer-${exerciseId}`} className="sr-only">A tua resposta</label>
-      <input
-        ref={inputRef}
-        id={`dlg-answer-${exerciseId}`}
-        type="text"
-        value={value}
-        readOnly={locked}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="Escreve a tua resposta"
-        autoFocus
-        autoComplete="off"
-        autoCapitalize="off"
-        autoCorrect="off"
-        spellCheck={false}
-        aria-describedby={accentHint ? `dlg-hint-${exerciseId}` : undefined}
-        className={`w-full border-2 rounded-2xl px-4 py-4 text-xl font-bold outline-none transition-colors placeholder:text-brand-muted/70 placeholder:font-semibold ${inputTone}`}
-      />
+    <div className="border-t-2 border-brand-border bg-white">
+      <div className={`max-w-2xl mx-auto px-4 sm:px-6 py-3 space-y-2.5 transition-opacity ${disabled ? 'opacity-45' : ''}`}>
+        {accentHint && wrongLetters && (
+          <div id={`dlg-hint-${exerciseId}`} role="status" className="rounded-2xl bg-brand-accentLight border-2 border-brand-accent px-4 py-2.5 text-brand-accentDark font-bold animate-pop">
+            Quase! Confere os acentos
+            {wrongLetters.size > 0 && (
+              <span className="block text-lg font-extrabold text-ink">
+                {[...value.trim()].map((ch, i) =>
+                  wrongLetters.has(i) ? (
+                    <span key={i} className="text-ko underline decoration-[3px] underline-offset-4">{ch}</span>
+                  ) : (
+                    <span key={i}>{ch}</span>
+                  )
+                )}
+              </span>
+            )}
+          </div>
+        )}
 
-      {accentHint && wrongLetters && (
-        <div
-          id={`dlg-hint-${exerciseId}`}
-          role="status"
-          className="rounded-2xl bg-brand-accentLight border-2 border-brand-accent px-4 py-3 text-brand-accentDark font-bold animate-pop"
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSubmit();
+          }}
+          className="flex items-center gap-2"
         >
-          Quase! Confere os acentos
-          {wrongLetters.size > 0 && (
-            <span className="block mt-1 text-lg font-extrabold text-ink">
-              {[...value.trim()].map((ch, i) =>
-                wrongLetters.has(i) ? (
-                  <span key={i} className="text-ko underline decoration-[3px] underline-offset-4">{ch}</span>
-                ) : (
-                  <span key={i}>{ch}</span>
-                )
-              )}
-            </span>
-          )}
-        </div>
-      )}
+          <label htmlFor={`dlg-answer-${exerciseId}`} className="sr-only">A tua resposta</label>
+          <input
+            ref={inputRef}
+            id={`dlg-answer-${exerciseId}`}
+            type="text"
+            value={value}
+            disabled={disabled}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="Escreve a palavra que falta"
+            autoComplete="off"
+            autoCapitalize="off"
+            autoCorrect="off"
+            spellCheck={false}
+            aria-describedby={accentHint ? `dlg-hint-${exerciseId}` : undefined}
+            className={`flex-1 min-w-0 border-2 rounded-full px-5 py-3 text-lg font-bold outline-none transition-colors placeholder:text-brand-muted/70 placeholder:font-semibold ${
+              accentHint ? 'border-brand-accentHover bg-brand-accentLight' : 'border-brand-border bg-brand-background focus:border-ok focus:bg-white'
+            }`}
+          />
+          <button
+            type="submit"
+            disabled={disabled || !value.trim()}
+            aria-label="Enviar"
+            className="btn-3d btn-ok w-12 h-12 !rounded-full !border-b-4 shrink-0 disabled:opacity-40"
+          >
+            <SendHorizontal size={22} strokeWidth={2.6} />
+          </button>
+        </form>
 
-      {!locked && (
-        <div className="flex flex-wrap gap-2" aria-label="Caracteres especiais">
-          {SPECIAL_CHARS.map((char) => (
-            <button
-              key={char}
-              type="button"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => {
-                soundFX.playClick();
-                const el = inputRef.current;
-                const start = el?.selectionStart ?? value.length;
-                const end = el?.selectionEnd ?? value.length;
-                onChange(value.slice(0, start) + char + value.slice(end));
-                requestAnimationFrame(() => {
-                  el?.focus();
-                  el?.setSelectionRange(start + 1, start + 1);
-                });
-              }}
-              className="btn-3d btn-ghost w-11 h-11 text-lg !border-b-[4px]"
-            >
-              {char}
-            </button>
-          ))}
+        <div className="flex items-center gap-2">
+          <div className="flex-1 flex gap-1.5 overflow-x-auto pb-0.5" aria-label="Caracteres especiais">
+            {SPECIAL_CHARS.map((char) => (
+              <button
+                key={char}
+                type="button"
+                disabled={disabled}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => insert(char)}
+                className="btn-3d btn-ghost w-9 h-9 text-base !border-b-[3px] shrink-0"
+              >
+                {char}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={onDontKnow}
+            className="shrink-0 text-brand-muted hover:text-ink font-extrabold text-sm px-2 py-2 cursor-pointer"
+          >
+            Não sei
+          </button>
         </div>
-      )}
-    </form>
+      </div>
+    </div>
   );
 }

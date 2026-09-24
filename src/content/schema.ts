@@ -46,6 +46,8 @@ const ExerciseBase = {
   prompt: NonEmpty.optional(),
   /** Battuta dell'altra persona prima di questa risposta (nodi "dialogue"): mostrata come bolla di chat */
   context: NonEmpty.optional(),
+  /** Traduzione italiana della battuta in "context" (si mostra toccando la bolla) */
+  contextIt: NonEmpty.optional(),
   trains: z.array(TrainsRef).min(1, 'indica almeno una cosa allenata (verb:… o vocab:…)'),
 };
 
@@ -101,8 +103,19 @@ export const PLURAL: Person[] = ['nos', 'eles_elas_voces'];
 
 // ---------- File: una lezione (src/content/nodes/<id>.json) ----------
 
+/** Interlocutore di un nodo "dialogue": nome e avatar in cima alla chat */
+export const Speaker = z.strictObject({
+  name: NonEmpty,
+  /** Riga sotto il nome, es. "Empregado · Café Nicola" */
+  role: NonEmpty.optional(),
+  /** Un'emoji */
+  avatar: NonEmpty,
+});
+export type Speaker = z.infer<typeof Speaker>;
+
 export const NodeContent = z.strictObject({
   id: Slug,
+  speaker: Speaker.optional(),
   theory: z.array(TheoryItem).optional(),
   exercises: z.array(Exercise).min(1),
 });
