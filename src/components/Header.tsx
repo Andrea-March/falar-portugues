@@ -1,6 +1,7 @@
 'use client';
 
 import { Flame, Heart, Zap } from 'lucide-react';
+import AudioToggle from '@/components/common/AudioToggle';
 
 interface HeaderProps {
   streak: number;
@@ -44,6 +45,7 @@ export default function Header({ streak, xp, hearts = 0 }: HeaderProps) {
             label="Vidas"
             tone="bg-brand-light text-brand-dark"
           />
+          <AudioToggle className="ml-0.5" />
         </div>
       </div>
     </header>

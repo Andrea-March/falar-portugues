@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import chaptersData from '@/data/chapters.json';
 import { Check, Lock } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
@@ -43,7 +43,22 @@ export default function ChapterMap({
   onSelectNode,
 }: ChapterMapProps) {
   const chapters = chaptersData as Chapter[];
-  const [activeTooltipId, setActiveTooltipId] = useState<string | null>(null);
+  const [openNodeId, setOpenNodeId] = useState<string | null>(null);
+
+  // Il fumetto si chiude toccando altrove o con Esc
+  useEffect(() => {
+    if (!openNodeId) return;
+    const onPointer = (e: PointerEvent) => {
+      if (!(e.target as HTMLElement).closest('[data-node-ui]')) setOpenNodeId(null);
+    };
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpenNodeId(null);
+    document.addEventListener('pointerdown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('pointerdown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [openNodeId]);
 
   // Calcola lo sblocco in sequenza
   const checkIsUnlocked = (
@@ -146,7 +161,7 @@ export default function ChapterMap({
                 const mascotOnRight = posX <= 50;
 
                 const tone = isLocked
-                  ? 'bg-[#e6eaf3] border-[#c7cfdf] text-[#9aa4bd] cursor-not-allowed'
+                  ? 'bg-[#e6eaf3] border-[#c7cfdf] text-[#9aa4bd]'
                   : isCompleted
                   ? 'bg-brand-accent border-brand-accentHover text-brand-accentDark'
                   : isCurrent
@@ -179,34 +194,78 @@ export default function ChapterMap({
 
                     <button
                       type="button"
-                      disabled={isLocked}
+                      data-node-ui
                       aria-label={`${node.title}${isCompleted ? ' (concluída)' : isLocked ? ' (bloqueada)' : ''}`}
-                      onMouseEnter={() => setActiveTooltipId(node.id)}
-                      onMouseLeave={() => setActiveTooltipId(null)}
-                      onFocus={() => setActiveTooltipId(node.id)}
-                      onBlur={() => setActiveTooltipId(null)}
+                      aria-expanded={openNodeId === node.id}
                       onClick={() => {
                         soundFX.playClick();
-                        onSelectNode?.(node);
+                        setOpenNodeId((id) => (id === node.id ? null : node.id));
                       }}
                       style={{ width: `${NODE_SIZE}px`, height: `${NODE_SIZE - 6}px` }}
-                      className={`relative rounded-[50%] border-b-[8px] flex items-center justify-center text-3xl select-none transition-[transform,border-width] duration-100 ${
-                        isLocked ? '' : 'cursor-pointer active:translate-y-[5px] active:border-b-[3px]'
-                      } ${tone}`}
+                      className={`relative rounded-[50%] border-b-[8px] flex items-center justify-center text-3xl select-none cursor-pointer transition-[transform,border-width] duration-100 active:translate-y-[5px] active:border-b-[3px] ${tone} ${
+                        openNodeId === node.id ? 'scale-105' : ''
+                      }`}
                     >
                       <span className={isLocked ? 'grayscale opacity-60' : ''}>
                         {isLocked ? <Lock size={26} strokeWidth={2.6} /> : isCompleted ? <Check size={32} strokeWidth={3.5} /> : node.icon}
                       </span>
                     </button>
 
-                    {activeTooltipId === node.id && (
-                      <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 whitespace-nowrap z-30 px-3 py-1.5 bg-ink text-white rounded-xl text-sm font-bold animate-fade-in">
-                        {node.title}
-                      </div>
-                    )}
                   </div>
                 );
               })}
+
+              {(() => {
+                const index = chapter.nodes.findIndex((n) => n.id === openNodeId);
+                if (index === -1) return null;
+                const node = chapter.nodes[index];
+                const isCompleted = completedNodeIds.includes(node.id);
+                const isLocked = !checkIsUnlocked(node, index, chapterIndex, chapters);
+                const posX = X_OFFSETS[index % X_OFFSETS.length];
+                const top = index * ROW_HEIGHT + ROW_HEIGHT / 2 + NODE_SIZE / 2 + 12;
+                const tone = isLocked
+                  ? 'bg-[#e6eaf3] border-[#c7cfdf] text-brand-muted'
+                  : isCompleted
+                  ? 'bg-brand-accent border-brand-accentHover text-brand-accentDark'
+                  : 'bg-brand-primary border-brand-dark text-white';
+                const arrowBg = isLocked ? 'bg-[#e6eaf3]' : isCompleted ? 'bg-brand-accent' : 'bg-brand-primary';
+
+                return (
+                  <div
+                    data-node-ui
+                    role="dialog"
+                    aria-label={node.title}
+                    className={`absolute inset-x-0 z-30 rounded-3xl border-b-[6px] px-5 py-4 animate-pop ${tone}`}
+                    style={{ top }}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={`absolute -top-2 w-4 h-4 rotate-45 -translate-x-1/2 rounded-sm ${arrowBg}`}
+                      style={{ left: `${posX}%` }}
+                    />
+                    <h3 className="text-2xl font-extrabold leading-tight">{node.title}</h3>
+                    <p className="font-semibold mt-0.5 opacity-90">{node.subtitle}</p>
+                    {isLocked ? (
+                      <p className="mt-3 font-bold">Completa as lições anteriores para desbloquear.</p>
+                    ) : (
+                      <button
+                        type="button"
+                        autoFocus
+                        onClick={() => {
+                          soundFX.playClick();
+                          setOpenNodeId(null);
+                          onSelectNode?.(node);
+                        }}
+                        className={`btn-3d w-full mt-4 py-3.5 text-lg bg-white ${
+                          isCompleted ? 'border-brand-accentHover text-brand-accentDark' : 'border-brand-border text-brand-primary'
+                        }`}
+                      >
+                        {isCompleted ? 'Rever' : 'Começar'}
+                      </button>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           </section>
         );

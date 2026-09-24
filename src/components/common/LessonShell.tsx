@@ -4,6 +4,7 @@ import React from 'react';
 import { X, Heart } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
 import FullscreenPortal from './FullscreenPortal';
+import AudioToggle from './AudioToggle';
 
 interface LessonShellProps {
   /** 0–100 */
@@ -53,6 +54,8 @@ export default function LessonShell({ progress, hearts, onClose, footer, childre
             <span className="absolute top-1 left-2 right-2 h-1 rounded-full bg-white/35" />
           </div>
         </div>
+
+        <AudioToggle />
 
         {hearts !== undefined && (
           <span className="flex items-center gap-1 font-extrabold text-brand-primary text-lg tabular-nums" aria-label={`${hearts} vidas`}>

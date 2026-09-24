@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { soundFX } from '@/utils/sound';
+import { speakPortuguese, stopSpeaking } from '@/utils/textToSpeech';
+import { matchAnswer } from '@/utils/answerCheck';
 import { useUser } from '@/context/UserContext';
 import { Exercise } from '@/types/exercise';
 import LessonShell from '@/components/common/LessonShell';
@@ -9,7 +11,13 @@ import Mascot from '@/components/common/Mascot';
 import ExerciseRenderer from './ExerciseRenderer';
 import FeedbackSheet from './FeedbackSheet';
 
-export type Feedback = 'idle' | 'correct' | 'wrong';
+/**
+ * idle     → l'utente sta rispondendo
+ * correct  → giusta
+ * wrong    → sbagliata (conta come errore), si può riprovare o vedere la soluzione
+ * revealed → soluzione mostrata ("Não sei" o "Ver a solução"), conta come errore e si prosegue
+ */
+export type Feedback = 'idle' | 'correct' | 'wrong' | 'revealed';
 
 interface PracticeSessionProps {
   exercises: Exercise[];
@@ -17,15 +25,26 @@ interface PracticeSessionProps {
   onClose: () => void;
 }
 
-const normalize = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ');
+/** Pausa prima della lettura, per non sovrapporre voce e suono di successo */
+const SPEAK_DELAY_MS = 550;
 
 export default function PracticeSession({ exercises, onFinish, onClose }: PracticeSessionProps) {
   const { progress } = useUser();
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState('');
   const [feedback, setFeedback] = useState<Feedback>('idle');
+  const [accentHint, setAccentHint] = useState(false);
   const [errorCount, setErrorCount] = useState(0);
   const [failedCurrent, setFailedCurrent] = useState(false);
+  const speakTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (speakTimer.current) clearTimeout(speakTimer.current);
+      stopSpeaking();
+    },
+    []
+  );
 
   const exercise = exercises[index];
 
@@ -44,27 +63,79 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
     );
   }
 
-  const check = () => {
-    if (!answer.trim() || feedback !== 'idle') return;
-    if (normalize(answer) === normalize(exercise.correctAnswer)) {
-      soundFX.playSuccess();
-      setFeedback('correct');
+  const isChoice = exercise.type === 'multiple_choice';
+  const fullSentence = isChoice
+    ? exercise.sentence.replace(/_{3,}/, exercise.correctAnswer)
+    : `${exercise.sentenceBefore}${exercise.correctAnswer}${exercise.sentenceAfter}`;
+
+  const countError = () => {
+    if (!failedCurrent) {
+      setErrorCount((n) => n + 1);
+      setFailedCurrent(true);
+    }
+  };
+
+  const speakLater = () => {
+    if (speakTimer.current) clearTimeout(speakTimer.current);
+    speakTimer.current = setTimeout(() => speakPortuguese(fullSentence), SPEAK_DELAY_MS);
+  };
+
+  const markCorrect = () => {
+    setAccentHint(false);
+    setFeedback('correct');
+    soundFX.playSuccess();
+    speakLater();
+  };
+
+  const markWrong = () => {
+    setFeedback('wrong');
+    soundFX.playError();
+    countError();
+  };
+
+  const reveal = () => {
+    countError();
+    setAccentHint(false);
+    setAnswer(exercise.correctAnswer);
+    setFeedback('revealed');
+    speakLater();
+  };
+
+  /** Valuta una risposta; `explicit` = l'utente ha premuto Verificar/Invio */
+  const evaluate = (value: string, explicit: boolean) => {
+    const result = matchAnswer(value, exercise.correctAnswer);
+    if (result === 'exact') return markCorrect();
+    if (!explicit) return;
+    if (result === 'accents') {
+      setAccentHint(true);
+      soundFX.playClick();
     } else {
-      soundFX.playError();
-      setFeedback('wrong');
-      if (!failedCurrent) {
-        setErrorCount((n) => n + 1);
-        setFailedCurrent(true);
-      }
+      markWrong();
+    }
+  };
+
+  const handleChange = (value: string) => {
+    if (feedback !== 'idle') return;
+    setAnswer(value);
+    if (isChoice) {
+      // Scelta multipla: il primo tocco è la risposta
+      evaluate(value, true);
+    } else {
+      // Scrittura: accettata appena è giusta, senza bisogno di confermare
+      setAccentHint(false);
+      evaluate(value, false);
     }
   };
 
   const next = () => {
     soundFX.playClick();
+    if (speakTimer.current) clearTimeout(speakTimer.current);
+    stopSpeaking();
     if (index + 1 < exercises.length) {
       setIndex((i) => i + 1);
       setAnswer('');
       setFeedback('idle');
+      setAccentHint(false);
       setFailedCurrent(false);
     } else {
       onFinish({ total: exercises.length, errors: errorCount });
@@ -73,17 +144,12 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
 
   const retry = () => {
     soundFX.playClick();
-    setAnswer('');
+    // Nella scrittura si tiene quello che si è scritto, così si corregge senza ricominciare
+    if (isChoice) setAnswer('');
     setFeedback('idle');
   };
 
-  const fullSentence =
-    exercise.type === 'multiple_choice'
-      ? exercise.sentence.replace(/_{3,}/, exercise.correctAnswer)
-      : `${exercise.sentenceBefore}${exercise.correctAnswer}${exercise.sentenceAfter}`;
-
-  // L'avanzamento cresce quando la risposta è giusta, come su Duolingo
-  const done = index + (feedback === 'correct' ? 1 : 0);
+  const done = index + (feedback === 'correct' || feedback === 'revealed' ? 1 : 0);
 
   return (
     <LessonShell
@@ -93,11 +159,14 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
       footer={
         <FeedbackSheet
           key={`${exercise.id}-${feedback}`}
+          mode={isChoice ? 'choice' : 'typing'}
           feedback={feedback}
           canCheck={answer.trim().length > 0}
           correctAnswer={exercise.correctAnswer}
-          sentenceToSpeak={fullSentence}
-          onCheck={check}
+          sentence={fullSentence}
+          onCheck={() => evaluate(answer, true)}
+          onDontKnow={reveal}
+          onReveal={reveal}
           onContinue={next}
           onRetry={retry}
         />
@@ -108,8 +177,9 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
         exercise={exercise}
         value={answer}
         feedback={feedback}
-        onChange={(v) => feedback === 'idle' && setAnswer(v)}
-        onSubmit={check}
+        accentHint={accentHint}
+        onChange={handleChange}
+        onSubmit={() => evaluate(answer, true)}
       />
     </LessonShell>
   );

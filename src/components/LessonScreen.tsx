@@ -10,6 +10,7 @@ import VocabPractice from './exercises/VocabPractice';
 import LessonShell from '@/components/common/LessonShell';
 import Mascot from '@/components/common/Mascot';
 import { Volume2 } from 'lucide-react';
+import { speakPortuguese } from '@/utils/textToSpeech';
 import LessonCompleteCard from '@/components/common/LessonCompleteCard';
 import lessonsData from '@/data/lessons.json';
 
@@ -40,15 +41,7 @@ interface LessonScreenProps {
   onCompleteNode: () => void;
 }
 
-const speakPt = (text: string) => {
-  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'pt-PT';
-    utterance.rate = 0.88;
-    window.speechSynthesis.speak(utterance);
-  }
-};
+const speakPt = speakPortuguese;
 
 const renderFormattedText = (text: string) =>
   text.split(/(\*\*.*?\*\*)/g).map((part, index) =>

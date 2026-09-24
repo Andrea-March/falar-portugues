@@ -7,39 +7,62 @@ import Mascot from '@/components/common/Mascot';
 import type { Feedback } from './PracticeSession';
 
 interface FeedbackSheetProps {
+  mode: 'choice' | 'typing';
   feedback: Feedback;
   canCheck: boolean;
   correctAnswer: string;
-  sentenceToSpeak?: string;
+  sentence: string;
   onCheck: () => void;
+  onDontKnow: () => void;
+  onReveal: () => void;
   onContinue: () => void;
   onRetry: () => void;
 }
 
 const PRAISE = ['Muito bem!', 'Excelente!', 'Perfeito!', 'Boa!', 'Isso mesmo!'];
 
-/**
- * Barra d'azione in fondo allo schermo: "Verificar" finché non si risponde,
- * poi diventa il pannello verde o rosso con la reazione della mascotte.
- * I suoni sono gestiti in PracticeSession (prima venivano riprodotti due volte).
- */
+function SentenceButton({ sentence, tone }: { sentence: string; tone: string }) {
+  return (
+    <button
+      type="button"
+      onClick={() => speakPortuguese(sentence)}
+      className={`mt-1 inline-flex items-start gap-1.5 font-bold text-[15px] text-left hover:underline cursor-pointer ${tone}`}
+    >
+      <Volume2 size={18} strokeWidth={2.5} className="mt-0.5 shrink-0" /> {sentence}
+    </button>
+  );
+}
+
 export default function FeedbackSheet({
+  mode,
   feedback,
   canCheck,
   correctAnswer,
-  sentenceToSpeak,
+  sentence,
   onCheck,
+  onDontKnow,
+  onReveal,
   onContinue,
   onRetry,
 }: FeedbackSheetProps) {
-  const [showSolution, setShowSolution] = useState(false);
   const [praise] = useState(() => PRAISE[Math.floor(Math.random() * PRAISE.length)]);
 
+  // ---- In attesa di risposta ----
   if (feedback === 'idle') {
+    if (mode === 'choice') {
+      return (
+        <div className="border-t-2 border-brand-border">
+          <p className="max-w-2xl mx-auto px-5 sm:px-6 py-6 text-center text-brand-muted font-bold">Toca na resposta certa</p>
+        </div>
+      );
+    }
     return (
       <div className="border-t-2 border-brand-border">
-        <div className="max-w-2xl mx-auto px-5 sm:px-6 py-5">
-          <button type="button" onClick={onCheck} disabled={!canCheck} className="btn-3d btn-primary w-full py-4 text-lg">
+        <div className="max-w-2xl mx-auto px-5 sm:px-6 py-5 flex gap-3">
+          <button type="button" onClick={onDontKnow} className="btn-3d btn-ghost px-5 py-4 text-lg">
+            Não sei
+          </button>
+          <button type="button" onClick={onCheck} disabled={!canCheck} className="btn-3d btn-primary flex-1 py-4 text-lg">
             Verificar
           </button>
         </div>
@@ -47,54 +70,72 @@ export default function FeedbackSheet({
     );
   }
 
-  const ok = feedback === 'correct';
+  // ---- Giusta ----
+  if (feedback === 'correct') {
+    return (
+      <div role="status" aria-live="polite" className="animate-slide-up bg-ok-light">
+        <div className="max-w-2xl mx-auto px-5 sm:px-6 py-5 space-y-4">
+          <div className="flex items-center gap-3">
+            <Mascot mood="cheer" size={64} />
+            <div className="flex-1 min-w-0">
+              <p className="font-display text-2xl font-extrabold leading-tight text-ok-dark">{praise}</p>
+              <SentenceButton sentence={sentence} tone="text-ok-dark" />
+            </div>
+          </div>
+          <button type="button" autoFocus onClick={onContinue} className="btn-3d btn-ok w-full py-4 text-lg">
+            Continuar
+          </button>
+        </div>
+      </div>
+    );
+  }
 
+  // ---- Soluzione mostrata ----
+  if (feedback === 'revealed') {
+    return (
+      <div role="status" aria-live="polite" className="animate-slide-up bg-azulejo-light">
+        <div className="max-w-2xl mx-auto px-5 sm:px-6 py-5 space-y-4">
+          <div className="flex items-center gap-3">
+            <Mascot mood="think" size={64} />
+            <div className="flex-1 min-w-0">
+              <p className="font-display text-2xl font-extrabold leading-tight text-azulejo-dark">
+                A resposta certa é “{correctAnswer}”
+              </p>
+              <SentenceButton sentence={sentence} tone="text-azulejo-dark" />
+            </div>
+          </div>
+          <button
+            type="button"
+            autoFocus
+            onClick={onContinue}
+            className="btn-3d w-full py-4 text-lg bg-azulejo border-azulejo-dark text-white hover:brightness-110"
+          >
+            Continuar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ---- Sbagliata ----
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      className={`animate-slide-up ${ok ? 'bg-ok-light' : 'bg-ko-light'}`}
-    >
+    <div role="status" aria-live="polite" className="animate-slide-up bg-ko-light">
       <div className="max-w-2xl mx-auto px-5 sm:px-6 py-5 space-y-4">
         <div className="flex items-center gap-3">
-          <Mascot mood={ok ? 'cheer' : 'sad'} size={64} />
+          <Mascot mood="sad" size={64} />
           <div className="flex-1 min-w-0">
-            <p className={`font-display text-2xl font-extrabold leading-tight ${ok ? 'text-ok-dark' : 'text-ko-dark'}`}>
-              {ok ? praise : 'Quase!'}
-            </p>
-            {ok && sentenceToSpeak && (
-              <button
-                type="button"
-                onClick={() => speakPortuguese(sentenceToSpeak)}
-                className="mt-1 inline-flex items-center gap-1.5 text-ok-dark font-bold text-[15px] hover:underline cursor-pointer"
-              >
-                <Volume2 size={18} strokeWidth={2.5} /> {sentenceToSpeak}
-              </button>
-            )}
-            {!ok &&
-              (showSolution ? (
-                <p className="mt-1 text-ko-dark font-semibold text-[15px] animate-fade-in">
-                  Resposta certa: <span className="font-extrabold">{correctAnswer}</span>
-                </p>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setShowSolution(true)}
-                  className="mt-1 text-ko-dark font-bold text-[15px] underline underline-offset-2 cursor-pointer"
-                >
-                  Ver a solução
-                </button>
-              ))}
+            <p className="font-display text-2xl font-extrabold leading-tight text-ko-dark">Ainda não</p>
+            <button
+              type="button"
+              onClick={onReveal}
+              className="mt-1 text-ko-dark font-bold text-[15px] underline underline-offset-2 cursor-pointer"
+            >
+              Ver a solução
+            </button>
           </div>
         </div>
-
-        <button
-          type="button"
-          autoFocus
-          onClick={ok ? onContinue : onRetry}
-          className={`btn-3d w-full py-4 text-lg ${ok ? 'btn-ok' : 'btn-ko'}`}
-        >
-          {ok ? 'Continuar' : 'Tentar de novo'}
+        <button type="button" autoFocus onClick={onRetry} className="btn-3d btn-ko w-full py-4 text-lg">
+          Tentar de novo
         </button>
       </div>
     </div>

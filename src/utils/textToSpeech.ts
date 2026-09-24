@@ -1,18 +1,52 @@
-export function speakPortuguese(text: string) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-    console.warn('Speech synthesis non è supportata da questo browser.');
-    return;
-  }
+'use client';
 
-  // Interrompe eventuali audio ancora in riproduzione
+import { isAudioEnabled } from './audioSettings';
+
+let cachedVoice: SpeechSynthesisVoice | null | undefined;
+
+/**
+ * Sceglie una voce di portoghese europeo. Se il dispositivo non ne ha,
+ * usiamo comunque lang="pt-PT" (evitando di selezionare esplicitamente una voce pt-BR).
+ */
+function europeanVoice(): SpeechSynthesisVoice | null {
+  if (cachedVoice !== undefined) return cachedVoice;
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) return null; // lista non ancora pronta: riproveremo
+  const norm = (l: string) => l.replace('_', '-').toLowerCase();
+  cachedVoice =
+    voices.find((v) => norm(v.lang) === 'pt-pt' && /natural|neural|premium|enhanced/i.test(v.name)) ??
+    voices.find((v) => norm(v.lang) === 'pt-pt') ??
+    null;
+  return cachedVoice;
+}
+
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+  window.speechSynthesis.addEventListener?.('voiceschanged', () => {
+    cachedVoice = undefined;
+  });
+}
+
+export function speakPortuguese(text: string) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window) || !isAudioEnabled()) return;
+
   window.speechSynthesis.cancel();
 
-  // Rimuovi eventuali tratti di sottolineatura usati per la risposta vuota
-  const cleanText = text.replace(/___/g, '').trim();
+  const clean = text
+    .replace(/\*\*/g, '')
+    .replace(/_{3,}/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!clean) return;
 
-  const utterance = new SpeechSynthesisUtterance(cleanText);
-  utterance.lang = 'pt-PT'; // Imposta l'accento in Portoghese Europeo
-  utterance.rate = 0.9;     // Velocità leggermente ridotta per facilitare l'ascolto
+  const utterance = new SpeechSynthesisUtterance(clean);
+  utterance.lang = 'pt-PT';
+  utterance.rate = 0.9;
+  const voice = europeanVoice();
+  if (voice) utterance.voice = voice;
 
   window.speechSynthesis.speak(utterance);
+}
+
+export function stopSpeaking() {
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel();
 }

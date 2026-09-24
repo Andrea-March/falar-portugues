@@ -1,177 +1,99 @@
-// Utility per effetti sonori avanzati tramite Web Audio API
+'use client';
+
+import { isAudioEnabled } from './audioSettings';
+
+/**
+ * Effetti sonori da file (public/sounds). Per cambiare un suono basta cambiare
+ * il percorso qui sotto: le varianti disponibili si ascoltano su /sound-lab
+ * (solo in sviluppo) e si rigenerano con scripts/generate-sounds.py.
+ */
+export const SOUND_FILES = {
+  click: '/sounds/click-b.mp3',
+  correct: '/sounds/correct-a.mp3',
+  wrong: '/sounds/wrong-a.mp3',
+  complete: '/sounds/complete-a.mp3',
+} as const;
+
+export type SoundName = keyof typeof SOUND_FILES;
+
 class SoundFX {
   private ctx: AudioContext | null = null;
+  private buffers = new Map<string, AudioBuffer>();
+  private loading = new Map<string, Promise<AudioBuffer | null>>();
 
-  private init() {
-    if (!this.ctx && typeof window !== 'undefined') {
-      const AudioCtx =
+  /** Un solo AudioContext per tutta l'app (i browser ne permettono pochi) */
+  private context(): AudioContext | null {
+    if (typeof window === 'undefined') return null;
+    if (!this.ctx) {
+      const Ctx =
         window.AudioContext ||
-        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      this.ctx = new AudioCtx();
+        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!Ctx) return null;
+      this.ctx = new Ctx();
     }
-    if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
-    }
+    if (this.ctx.state === 'suspended') void this.ctx.resume();
+    return this.ctx;
   }
 
-  /**
-   * Suono Risposta Corretta:
-   * Fanfara trionfale a 3 note (Do5 - Sol5 - Do6) con riverbero morbido e timbro caldo.
-   */
-  playSuccess() {
-    this.init();
-    if (!this.ctx) return;
-
-    const now = this.ctx.currentTime;
-    
-    // Frequenze note: C5, G5, C6
-    const notes = [523.25, 783.99, 1046.5];
-    const times = [0, 0.08, 0.16];
-
-    notes.forEach((freq, idx) => {
-      if (!this.ctx) return;
-
-      const osc = this.ctx.createOscillator();
-      const oscHarmonic = this.ctx.createOscillator(); // Secondo oscillatore per dare corpo al suono
-      const gain = this.ctx.createGain();
-
-      const noteTime = now + times[idx];
-
-      // Onda triangolare per un suono morbido + ottava alta in sine per brillantezza
-      osc.type = 'triangle';
-      oscHarmonic.type = 'sine';
-
-      osc.frequency.setValueAtTime(freq, noteTime);
-      oscHarmonic.frequency.setValueAtTime(freq * 2, noteTime);
-
-      // Inviluppo morbido con attacco rapido e decadimento naturale
-      gain.gain.setValueAtTime(0, noteTime);
-      gain.gain.linearRampToValueAtTime(0.12, noteTime + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, noteTime + 0.4);
-
-      osc.connect(gain);
-      oscHarmonic.connect(gain);
-      gain.connect(this.ctx.destination);
-
-      osc.start(noteTime);
-      oscHarmonic.start(noteTime);
-
-      osc.stop(noteTime + 0.4);
-      oscHarmonic.stop(noteTime + 0.4);
-    });
+  private load(url: string): Promise<AudioBuffer | null> {
+    const cached = this.loading.get(url);
+    if (cached) return cached;
+    const ctx = this.context();
+    if (!ctx) return Promise.resolve(null);
+    const p = fetch(url)
+      .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(`${r.status} ${url}`))))
+      .then((data) => ctx.decodeAudioData(data))
+      .then((buf) => {
+        this.buffers.set(url, buf);
+        return buf;
+      })
+      .catch((err) => {
+        console.warn('Suono non caricato:', err);
+        this.loading.delete(url);
+        return null;
+      });
+    this.loading.set(url, p);
+    return p;
   }
 
-  /**
-   * Suono Risposta Errata:
-   * Doppio "thud" grave e smorzato con leggera stonatura per feedback negativo e gentile.
-   */
-  playError() {
-    this.init();
-    if (!this.ctx) return;
-
-    const now = this.ctx.currentTime;
-
-    // Due impulsi gravi a frequenze leggermente calanti
-    const pulses = [
-      { freq: 220, start: 0, duration: 0.12 },
-      { freq: 160, start: 0.1, duration: 0.2 },
-    ];
-
-    pulses.forEach((p) => {
-      if (!this.ctx) return;
-
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      const startTime = now + p.start;
-
-      // Onda sawtooth filtrata per un suono 'pieno' ma non fastidioso
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(p.freq, startTime);
-      osc.frequency.exponentialRampToValueAtTime(p.freq * 0.7, startTime + p.duration);
-
-      gain.gain.setValueAtTime(0, startTime);
-      gain.gain.linearRampToValueAtTime(0.1, startTime + 0.01);
-      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + p.duration);
-
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-
-      osc.start(startTime);
-      osc.stop(startTime + p.duration);
-    });
+  /** Scarica in anticipo tutti i suoni, così il primo "giusto" non ha ritardo */
+  preload() {
+    Object.values(SOUND_FILES).forEach((u) => void this.load(u));
   }
-  /**
-   * Suono fine esercizio o completamento:
-   */
-  playComplete() {
-    this.init();
-    if (!this.ctx) return;
 
-    const now = this.ctx.currentTime;
-
-    // Sequenza arpeggio trionfale: Do5 -> Mi5 -> Sol5 -> Si5 -> Do6
-    const notes = [
-      { freq: 523.25, time: 0, duration: 0.15 },    // C5
-      { freq: 659.25, time: 0.1, duration: 0.15 },  // E5
-      { freq: 783.99, time: 0.2, duration: 0.2 },   // G5
-      { freq: 987.77, time: 0.32, duration: 0.25 }, // B5
-      { freq: 1046.5, time: 0.45, duration: 0.7 },  // C6 (Accordo finale prolungato)
-    ];
-
-    notes.forEach((n) => {
-      if (!this.ctx) return;
-
-      const osc1 = this.ctx.createOscillator();
-      const osc2 = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-
-      const startTime = now + n.time;
-
-      osc1.type = 'triangle';
-      osc2.type = 'sine';
-
-      osc1.frequency.setValueAtTime(n.freq, startTime);
-      osc2.frequency.setValueAtTime(n.freq * 2, startTime); // Ottava superiore brillante
-
-      gain.gain.setValueAtTime(0, startTime);
-      gain.gain.linearRampToValueAtTime(0.15, startTime + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + n.duration);
-
-      osc1.connect(gain);
-      osc2.connect(gain);
-      gain.connect(this.ctx.destination);
-
-      osc1.start(startTime);
-      osc2.start(startTime);
-
-      osc1.stop(startTime + n.duration);
-      osc2.stop(startTime + n.duration);
-    });
-  }
-  playClick(){
-    try {
-      const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
-      const osc = ctx.createOscillator();
+  play(name: SoundName, volume = 1) {
+    if (!isAudioEnabled()) return;
+    const ctx = this.context();
+    if (!ctx) return;
+    const url = SOUND_FILES[name];
+    const start = (buf: AudioBuffer | null) => {
+      if (!buf) return;
+      const src = ctx.createBufferSource();
       const gain = ctx.createGain();
-
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(600, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.04);
-
-      gain.gain.setValueAtTime(0.08, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start();
-      osc.stop(ctx.currentTime + 0.04);
-    } catch {
-      // AudioContext non supportato o bloccato dall'utente
-    }
+      gain.gain.value = volume;
+      src.buffer = buf;
+      src.connect(gain).connect(ctx.destination);
+      src.start();
+    };
+    const ready = this.buffers.get(url);
+    if (ready) start(ready);
+    else void this.load(url).then(start);
+    // Al primo suono carichiamo anche gli altri
+    this.preload();
   }
 
-  
+  playClick() {
+    this.play('click', 0.8);
+  }
+  playSuccess() {
+    this.play('correct');
+  }
+  playError() {
+    this.play('wrong');
+  }
+  playComplete() {
+    this.play('complete');
+  }
 }
 
 export const soundFX = new SoundFX();
