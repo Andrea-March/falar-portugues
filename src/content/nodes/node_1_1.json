@@ -26,35 +26,53 @@
     {
       "id": "ex_1_1_1",
       "type": "write",
-      "text": "Eu {sou} de Roma.",
-      "it": "Io sono di Roma.",
-      "trains": [
-        "verb:ser:presente:eu"
-      ]
-    },
-    {
-      "id": "ex_1_1_2",
-      "type": "write",
-      "text": "Ela {é} professora.",
-      "it": "Lei è professoressa.",
+      "text": "O senhor {é} o novo vizinho?",
+      "it": "Lei (formale) è il nuovo vicino?",
       "trains": [
         "verb:ser:presente:ele_ela_voce"
       ]
     },
     {
+      "id": "ex_1_1_2",
+      "type": "write",
+      "text": "Eles {são} de Coimbra.",
+      "it": "Loro sono di Coimbra.",
+      "trains": [
+        "verb:ser:presente:eles_elas_voces"
+      ]
+    },
+    {
       "id": "ex_1_1_3",
       "type": "write",
-      "text": "Eu não {sou} português.",
-      "it": "Io non sono portoghese.",
+      "text": "Tu {és} estudante de línguas?",
+      "it": "Tu sei studente di lingue?",
       "trains": [
-        "verb:ser:presente:eu"
+        "verb:ser:presente:tu"
       ]
     },
     {
       "id": "ex_1_1_4",
       "type": "write",
-      "text": "Nós {somos} amigos.",
-      "it": "Noi siamo amici.",
+      "text": "Eu {sou} arquiteto em Lisboa.",
+      "it": "Io sono architetto a Lisbona.",
+      "trains": [
+        "verb:ser:presente:eu"
+      ]
+    },
+    {
+      "id": "ex_1_1_5",
+      "type": "write",
+      "text": "Vós {sois} muito bem-vindos.",
+      "it": "Voi siete molto benvenuti.",
+      "trains": [
+        "verb:ser:presente:vos"
+      ]
+    },
+    {
+      "id": "ex_1_1_6",
+      "type": "write",
+      "text": "Nós {somos} portugueses.",
+      "it": "Noi siamo portoghesi.",
       "trains": [
         "verb:ser:presente:nos"
       ]

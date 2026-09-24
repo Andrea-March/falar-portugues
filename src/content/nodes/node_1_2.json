@@ -17,44 +17,123 @@
     {
       "id": "ex_1_2_1",
       "type": "choose",
-      "text": "{Bom dia}! Tudo bem?",
-      "prompt": "Come saluti qualcuno la mattina?",
+      "text": "{Olá}! Tudo bem contigo?",
+      "it": "Ciao! Va tutto bene con te?",
+      "prompt": "Qual è il saluto informale più comune (equivalente a \"Ciao\")?",
       "trains": [
-        "vocab:bom-dia"
+        "vocab:ola"
       ],
       "wrong": [
-        "Boa noite",
-        "Boa tarde",
-        "Adeus"
+        "Adeus",
+        "Obrigado",
+        "Por favor"
       ]
     },
     {
       "id": "ex_1_2_2",
-      "type": "choose",
-      "text": "Olá, como {estás}?",
-      "prompt": "Come chiedi informalmente \"Come stai?\"",
+      "type": "write",
+      "text": "{Olá}, eu sou o Pedro.",
+      "it": "Ciao, io sono Pedro.",
       "trains": [
-        "vocab:como-estas",
-        "verb:estar:presente:tu"
-      ],
-      "wrong": [
-        "sou",
-        "está",
-        "chamas"
+        "vocab:ola"
       ]
     },
     {
       "id": "ex_1_2_3",
       "type": "choose",
-      "text": "Tudo {bem}, obrigado!",
-      "prompt": "Cosa rispondi a \"Tudo bem?\"",
+      "text": "{Bom dia}! Já tomaste o pequeno-almoço?",
+      "it": "Buongiorno! Hai già fatto colazione?",
+      "prompt": "Come saluti qualcuno la mattina?",
       "trains": [
-        "vocab:tudo-bem"
+        "vocab:bom-dia"
       ],
       "wrong": [
-        "mal",
-        "dia",
-        "noite"
+        "Boa tarde",
+        "Boa noite",
+        "De nada"
+      ]
+    },
+    {
+      "id": "ex_1_2_4",
+      "type": "write",
+      "text": "{Bom dia} a todos!",
+      "it": "Buongiorno a tutti!",
+      "trains": [
+        "vocab:bom-dia"
+      ]
+    },
+    {
+      "id": "ex_1_2_5",
+      "type": "choose",
+      "text": "{Boa tarde}! Posso entrar?",
+      "it": "Buon pomeriggio! Posso entrare?",
+      "prompt": "Come saluti nel pomeriggio dopo pranzo?",
+      "trains": [
+        "vocab:boa-tarde"
+      ],
+      "wrong": [
+        "Bom dia",
+        "Boa noite",
+        "Tchau"
+      ]
+    },
+    {
+      "id": "ex_1_2_6",
+      "type": "write",
+      "text": "{Boa tarde}, doutor Silva.",
+      "it": "Buon pomeriggio, dottor Silva.",
+      "trains": [
+        "vocab:boa-tarde"
+      ]
+    },
+    {
+      "id": "ex_1_2_7",
+      "type": "choose",
+      "text": "{Boa noite}, até amanhã!",
+      "it": "Buonasera / Buonanotte, a domani!",
+      "prompt": "Come saluti la sera o prima di andare a dormire?",
+      "trains": [
+        "vocab:boa-noite"
+      ],
+      "wrong": [
+        "Bom dia",
+        "Boa tarde",
+        "Com licença"
+      ]
+    },
+    {
+      "id": "ex_1_2_8",
+      "type": "write",
+      "text": "{Boa noite}, durmam bem.",
+      "it": "Buonanotte, dormite bene.",
+      "trains": [
+        "vocab:boa-noite"
+      ]
+    },
+    {
+      "id": "ex_1_2_9",
+      "type": "choose",
+      "text": "Olá Ana, {como estás}?",
+      "it": "Ciao Ana, come stai?",
+      "prompt": "Come chiedi a un amico in modo informale \"Come stai?\"",
+      "trains": [
+        "vocab:como-estas",
+        "verb:estar:presente:tu"
+      ],
+      "wrong": [
+        "como é",
+        "como chamas",
+        "onde estás"
+      ]
+    },
+    {
+      "id": "ex_1_2_10",
+      "type": "write",
+      "text": "{Como estás} hoje?",
+      "it": "Come stai oggi?",
+      "trains": [
+        "vocab:como-estas",
+        "verb:estar:presente:tu"
       ]
     }
   ]
