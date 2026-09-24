@@ -1,0 +1,35 @@
+{
+  "id": "estar",
+  "infinitive": "estar",
+  "it": "essere (temporaneo / stato / posizione)",
+  "regular": false,
+  "group": "ar",
+  "conjugations": {
+    "presente": {
+      "eu": "estou",
+      "tu": "estás",
+      "ele_ela_voce": "está",
+      "nos": "estamos",
+      "eles_elas_voces": "estão"
+    },
+    "preterito_perfeito": {
+      "eu": "estive",
+      "tu": "estiveste",
+      "ele_ela_voce": "esteve",
+      "nos": "estivemos",
+      "eles_elas_voces": "estiveram"
+    }
+  },
+  "exercises": [
+    {
+      "id": "s_est_1",
+      "type": "choose",
+      "text": "Tu {estás} a estudar para o exame?",
+      "it": "Stai studiando per l'esame?",
+      "trains": [
+        "verb:estar:presente:tu"
+      ],
+      "wrongFrom": "verb-forms"
+    }
+  ]
+}

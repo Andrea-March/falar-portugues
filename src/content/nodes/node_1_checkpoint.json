@@ -1,0 +1,42 @@
+{
+  "id": "node_1_checkpoint",
+  "exercises": [
+    {
+      "id": "chk_1_1",
+      "type": "choose",
+      "text": "Você {é} de Portugal?",
+      "trains": [
+        "verb:ser:presente:ele_ela_voce"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "chk_1_2",
+      "type": "choose",
+      "text": "Queria um pastel de {nata}, por favor.",
+      "prompt": "Completa l'ordinazione al bar",
+      "trains": [
+        "vocab:pastel-de-nata"
+      ],
+      "wrong": [
+        "café",
+        "dia",
+        "noite"
+      ]
+    },
+    {
+      "id": "chk_1_3",
+      "type": "choose",
+      "text": "{Boa noite}, até amanhã!",
+      "prompt": "Come saluti la sera tardi?",
+      "trains": [
+        "vocab:boa-noite"
+      ],
+      "wrong": [
+        "Bom dia",
+        "Boa tarde",
+        "Olá"
+      ]
+    }
+  ]
+}

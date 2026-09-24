@@ -1,0 +1,34 @@
+{
+  "id": "ter",
+  "infinitive": "ter",
+  "it": "avere",
+  "regular": false,
+  "group": "er",
+  "conjugations": {
+    "presente": {
+      "eu": "tenho",
+      "tu": "tens",
+      "ele_ela_voce": "tem",
+      "nos": "temos",
+      "eles_elas_voces": "têm"
+    },
+    "preterito_perfeito": {
+      "eu": "tive",
+      "tu": "tiveste",
+      "ele_ela_voce": "teve",
+      "nos": "tivemos",
+      "eles_elas_voces": "tiveram"
+    }
+  },
+  "exercises": [
+    {
+      "id": "s_ter_1",
+      "type": "write",
+      "text": "Eu não {tenho} tempo hoje.",
+      "it": "Io non ho tempo oggi.",
+      "trains": [
+        "verb:ter:presente:eu"
+      ]
+    }
+  ]
+}

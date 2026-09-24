@@ -1,0 +1,53 @@
+{
+  "id": "ser",
+  "infinitive": "ser",
+  "it": "essere (permanente / caratteristica)",
+  "regular": false,
+  "group": "er",
+  "conjugations": {
+    "presente": {
+      "eu": "sou",
+      "tu": "és",
+      "ele_ela_voce": "é",
+      "nos": "somos",
+      "eles_elas_voces": "são"
+    },
+    "preterito_perfeito": {
+      "eu": "fui",
+      "tu": "foste",
+      "ele_ela_voce": "foi",
+      "nos": "fomos",
+      "eles_elas_voces": "foram"
+    }
+  },
+  "exercises": [
+    {
+      "id": "s_ser_2",
+      "type": "choose",
+      "text": "Tu {és} o novo aluno de português?",
+      "it": "Tu sei il nuovo studente di portoghese?",
+      "trains": [
+        "verb:ser:presente:tu"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "s_ser_1",
+      "type": "write",
+      "text": "Eu {sou} italiano e moro em Lisboa.",
+      "it": "Io sono italiano e vivo a Lisbona.",
+      "trains": [
+        "verb:ser:presente:eu"
+      ]
+    },
+    {
+      "id": "s_ser_3",
+      "type": "write",
+      "text": "Ontem {foi} um dia muito especial.",
+      "it": "Ieri è stato un giorno molto speciale.",
+      "trains": [
+        "verb:ser:preterito_perfeito:ele_ela_voce"
+      ]
+    }
+  ]
+}

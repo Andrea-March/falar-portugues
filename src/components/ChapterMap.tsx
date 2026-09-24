@@ -1,30 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import chaptersData from '@/data/chapters.json';
 import { Check, Lock } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
 import Mascot from '@/components/common/Mascot';
+import { chapters as courseChapters, type Chapter, type CourseNode } from '@/content';
 
-export interface Node {
-  id: string;
-  title: string;
-  subtitle: string;
-  type: 'verb' | 'vocabulary' | 'dialogue' | 'checkpoint';
-  refId?: string;
-  tense?: string;
-  requiredNodes?: string[];
-  icon: string;
-}
-
-export interface Chapter {
-  id: string;
-  number: number;
-  title: string;
-  description: string;
-  icon: string;
-  nodes: Node[];
-}
+/** Compatibilità con il codice esistente */
+export type Node = CourseNode;
+export type { Chapter };
 
 interface ChapterMapProps {
   completedNodeIds?: string[];
@@ -42,7 +26,7 @@ export default function ChapterMap({
   currentNodeId = 'node_1_2',
   onSelectNode,
 }: ChapterMapProps) {
-  const chapters = chaptersData as Chapter[];
+  const chapters = courseChapters;
   const [openNodeId, setOpenNodeId] = useState<string | null>(null);
 
   // Il fumetto si chiude toccando altrove o con Esc
@@ -72,8 +56,8 @@ export default function ChapterMap({
     if (node.id === currentNodeId) return true;
 
     // 2. Requisiti espliciti definiti (come nei nodi checkpoint)
-    if (node.requiredNodes && node.requiredNodes.length > 0) {
-      return node.requiredNodes.every((reqId) => completedNodeIds.includes(reqId));
+    if (node.requires && node.requires.length > 0) {
+      return node.requires.every((reqId) => completedNodeIds.includes(reqId));
     }
 
     // 3. È il primo nodo di un capitolo
@@ -155,7 +139,7 @@ export default function ChapterMap({
               {chapter.nodes.map((node, index) => {
                 const isCompleted = completedNodeIds.includes(node.id);
                 const isCurrent = node.id === currentNodeId && !isCompleted;
-                const isLocked = !checkIsUnlocked(node, index, chapterIndex, chapters);
+                const isLocked = !checkIsUnlocked(node, index, chapterIndex, chapters) || Boolean(node.draft);
                 const posX = X_OFFSETS[index % X_OFFSETS.length];
                 const posY = index * ROW_HEIGHT + ROW_HEIGHT / 2;
                 const mascotOnRight = posX <= 50;
@@ -195,7 +179,7 @@ export default function ChapterMap({
                     <button
                       type="button"
                       data-node-ui
-                      aria-label={`${node.title}${isCompleted ? ' (concluída)' : isLocked ? ' (bloqueada)' : ''}`}
+                      aria-label={`${node.title}${isCompleted ? ' (concluída)' : node.draft ? ' (em breve)' : isLocked ? ' (bloqueada)' : ''}`}
                       aria-expanded={openNodeId === node.id}
                       onClick={() => {
                         soundFX.playClick();
@@ -220,7 +204,8 @@ export default function ChapterMap({
                 if (index === -1) return null;
                 const node = chapter.nodes[index];
                 const isCompleted = completedNodeIds.includes(node.id);
-                const isLocked = !checkIsUnlocked(node, index, chapterIndex, chapters);
+                const isDraft = Boolean(node.draft);
+                const isLocked = !checkIsUnlocked(node, index, chapterIndex, chapters) || isDraft;
                 const posX = X_OFFSETS[index % X_OFFSETS.length];
                 const top = index * ROW_HEIGHT + ROW_HEIGHT / 2 + NODE_SIZE / 2 + 12;
                 const tone = isLocked
@@ -246,7 +231,9 @@ export default function ChapterMap({
                     <h3 className="text-2xl font-extrabold leading-tight">{node.title}</h3>
                     <p className="font-semibold mt-0.5 opacity-90">{node.subtitle}</p>
                     {isLocked ? (
-                      <p className="mt-3 font-bold">Completa as lições anteriores para desbloquear.</p>
+                      <p className="mt-3 font-bold">
+                        {isDraft ? 'Em breve: esta lição está a ser preparada.' : 'Completa as lições anteriores para desbloquear.'}
+                      </p>
                     ) : (
                       <button
                         type="button"

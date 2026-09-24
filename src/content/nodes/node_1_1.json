@@ -1,0 +1,61 @@
+{
+  "id": "node_1_1",
+  "theory": [
+    {
+      "title": "Identità e Origine",
+      "text": "Il verbo **Ser** si usa per caratteristiche permanenti, nazionalità, origini e professioni.",
+      "verb": {
+        "verb": "ser",
+        "tense": "presente"
+      },
+      "examples": [
+        {
+          "pt": "Eu sou italiano.",
+          "it": "Io sono italiano."
+        },
+        {
+          "pt": "Ela é médica.",
+          "it": "Lei è medica."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "ex_1_1_1",
+      "type": "write",
+      "text": "Eu {sou} de Roma.",
+      "it": "Io sono di Roma.",
+      "trains": [
+        "verb:ser:presente:eu"
+      ]
+    },
+    {
+      "id": "ex_1_1_2",
+      "type": "write",
+      "text": "Ela {é} professora.",
+      "it": "Lei è professoressa.",
+      "trains": [
+        "verb:ser:presente:ele_ela_voce"
+      ]
+    },
+    {
+      "id": "ex_1_1_3",
+      "type": "write",
+      "text": "Eu não {sou} português.",
+      "it": "Io non sono portoghese.",
+      "trains": [
+        "verb:ser:presente:eu"
+      ]
+    },
+    {
+      "id": "ex_1_1_4",
+      "type": "write",
+      "text": "Nós {somos} amigos.",
+      "it": "Noi siamo amici.",
+      "trains": [
+        "verb:ser:presente:nos"
+      ]
+    }
+  ]
+}

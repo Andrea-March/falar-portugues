@@ -1,38 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import rawVerbsData from '@/data/verbs.json';
+import { verbs, PERSON_LABELS, TENSE_LABELS, type Person } from '@/content';
 import AudioButton from '@/components/common/AudioButton';
 import { soundFX } from '@/utils/sound';
-
-interface ConjugationSet {
-  eu: string;
-  tu: string;
-  ele_ela_voce: string;
-  nos: string;
-  eles_elas_voces: string;
-}
-
-interface VerbEntry {
-  id: string;
-  infinitive: string;
-  translation_it: string;
-  type: string;
-  group: string;
-  conjugations: {
-    presente: ConjugationSet;
-    preterito_perfeito?: ConjugationSet;
-    [key: string]: ConjugationSet | undefined;
-  };
-}
 
 interface VerbStudyProps {
   onStartPractice?: (verbId: string, tense?: string) => void;
 }
 
 export default function VerbStudy({ onStartPractice }: VerbStudyProps) {
-  const rawData = rawVerbsData as unknown as { verbs?: VerbEntry[] } | VerbEntry[];
-  const verbs: VerbEntry[] = Array.isArray(rawData) ? rawData : rawData.verbs || [];
 
   const [selectedVerbId, setSelectedVerbId] = useState<string>(verbs[0]?.id || '');
   const [selectedTense, setSelectedTense] = useState<string>('presente');
@@ -43,23 +20,12 @@ export default function VerbStudy({ onStartPractice }: VerbStudyProps) {
   const filteredVerbs = verbs.filter(
     (v) =>
       v.infinitive.toLowerCase().includes(search.toLowerCase()) ||
-      v.translation_it.toLowerCase().includes(search.toLowerCase())
+      v.it.toLowerCase().includes(search.toLowerCase())
   );
 
-  const pronouns = [
-    { key: 'eu', label: 'Eu' },
-    { key: 'tu', label: 'Tu' },
-    { key: 'ele_ela_voce', label: 'Ele / Ela / Você' },
-    { key: 'nos', label: 'Nós' },
-    { key: 'eles_elas_voces', label: 'Eles / Elas / Vocês' },
-  ];
+  const pronouns = (Object.keys(PERSON_LABELS) as Person[]).map((key) => ({ key, label: PERSON_LABELS[key] }));
 
-  const tenseLabels: Record<string, string> = {
-    presente: 'Presente do Indicativo',
-    preterito_perfeito: 'Pretérito Perfeito',
-    preterito_imperfeito: 'Pretérito Imperfeito',
-    futuro: 'Futuro do Indicativo',
-  };
+  const tenseLabels = TENSE_LABELS;
 
   return (
     <div className="space-y-4">
@@ -113,11 +79,11 @@ export default function VerbStudy({ onStartPractice }: VerbStudyProps) {
                   {selectedVerb.infinitive}
                 </h2>
                 <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-brand-light text-brand-primary border border-brand-primary/20">
-                  {selectedVerb.type || 'Verbo'}
+                  {selectedVerb.regular ? 'Regular' : 'Irregular'}
                 </span>
               </div>
               <p className="text-xs text-brand-muted font-bold mt-0.5">
-                "{selectedVerb.translation_it}"
+                “{selectedVerb.it}”
               </p>
             </div>
             <AudioButton textToSpeak={selectedVerb.infinitive} />
@@ -153,7 +119,7 @@ export default function VerbStudy({ onStartPractice }: VerbStudyProps) {
           <div className="space-y-2 pt-1">
             {pronouns.map(({ key, label }) => {
               const tenseData = selectedVerb.conjugations?.[selectedTense];
-              const conjugation = tenseData?.[key as keyof ConjugationSet];
+              const conjugation = tenseData?.[key];
               const textToSpeak = `${label} ${conjugation || ''}`;
 
               return (
@@ -186,7 +152,7 @@ export default function VerbStudy({ onStartPractice }: VerbStudyProps) {
                 }}
                 className="w-full bg-brand-primary hover:bg-brand-hover border-b-4 border-brand-dark text-white font-black py-3.5 px-4 rounded-2xl active:border-b-0 active:translate-y-1 transition-all text-xs sm:text-sm uppercase tracking-wider shadow-md shadow-brand-primary/20 flex items-center justify-center gap-2 cursor-pointer select-none"
               >
-                <span>🎯 Praticar "{selectedVerb.infinitive}"</span>
+                <span>🎯 Praticar “{selectedVerb.infinitive}”</span>
                 <span>→</span>
               </button>
             </div>

@@ -1,24 +1,18 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import rawVerbData from '@/data/verbs.json';
-import { generateExercisesFromVerbs, VerbEntry } from '@/utils/exerciseGenerator';
-import { Exercise } from '@/types/exercise';
+import { verbExercises } from '@/content';
 import PracticeSession, { type PracticeStats } from './PracticeSession';
 
 interface VerbPracticeProps {
-  exercises?: Exercise[];
-  filterVerbId?: string;
-  filterTense?: string;
+  verbId: string;
+  tense?: string;
   onFinish: (stats: PracticeStats) => void;
   onClose: () => void;
 }
 
-export default function VerbPractice({ exercises: directExercises, filterVerbId, filterTense, onFinish, onClose }: VerbPracticeProps) {
-  const exercises = useMemo(() => {
-    if (directExercises && directExercises.length > 0) return directExercises;
-    return generateExercisesFromVerbs(rawVerbData as unknown as VerbEntry[], filterVerbId, filterTense);
-  }, [directExercises, filterVerbId, filterTense]);
-
+/** Pratica di un singolo verbo (sezione Gramática) */
+export default function VerbPractice({ verbId, tense, onFinish, onClose }: VerbPracticeProps) {
+  const exercises = useMemo(() => verbExercises(verbId, tense), [verbId, tense]);
   return <PracticeSession exercises={exercises} onFinish={onFinish} onClose={onClose} />;
 }

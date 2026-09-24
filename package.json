@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "content": "tsx scripts/content.ts",
+    "content:check": "tsx scripts/content.ts --check",
+    "predev": "npm run content",
     "dev": "next dev",
+    "prebuild": "npm run content",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -25,6 +29,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
     "tailwindcss": "^4",
-    "typescript": "^6.0.3"
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "zod": "^4.6.5"
   }
 }

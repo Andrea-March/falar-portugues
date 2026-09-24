@@ -1,0 +1,38 @@
+{
+  "id": "cafe",
+  "title": "No café",
+  "items": [
+    {
+      "id": "um-cafe",
+      "pt": "Um café",
+      "it": "Un caffè (espresso)"
+    },
+    {
+      "id": "por-favor",
+      "pt": "por favor",
+      "it": "per favore"
+    },
+    {
+      "id": "queria",
+      "pt": "Queria…",
+      "it": "Vorrei…",
+      "note": "modo cortese per ordinare"
+    },
+    {
+      "id": "pastel-de-nata",
+      "pt": "pastel de nata",
+      "it": "pastel de nata (pasticcino alla crema)"
+    },
+    {
+      "id": "quanto-e",
+      "pt": "Quanto é?",
+      "it": "Quanto costa?"
+    },
+    {
+      "id": "obrigado",
+      "pt": "Obrigado / Obrigada",
+      "it": "Grazie",
+      "note": "obrigado se sei un uomo, obrigada se sei una donna"
+    }
+  ]
+}

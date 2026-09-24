@@ -1,0 +1,61 @@
+{
+  "id": "node_1_2",
+  "theory": [
+    {
+      "title": "Saluti di base",
+      "text": "Ecco i saluti principali usati ogni giorno in Portogallo:",
+      "vocab": [
+        "ola",
+        "bom-dia",
+        "boa-tarde",
+        "boa-noite",
+        "como-estas"
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "ex_1_2_1",
+      "type": "choose",
+      "text": "{Bom dia}! Tudo bem?",
+      "prompt": "Come saluti qualcuno la mattina?",
+      "trains": [
+        "vocab:bom-dia"
+      ],
+      "wrong": [
+        "Boa noite",
+        "Boa tarde",
+        "Adeus"
+      ]
+    },
+    {
+      "id": "ex_1_2_2",
+      "type": "choose",
+      "text": "Olá, como {estás}?",
+      "prompt": "Come chiedi informalmente \"Come stai?\"",
+      "trains": [
+        "vocab:como-estas",
+        "verb:estar:presente:tu"
+      ],
+      "wrong": [
+        "sou",
+        "está",
+        "chamas"
+      ]
+    },
+    {
+      "id": "ex_1_2_3",
+      "type": "choose",
+      "text": "Tudo {bem}, obrigado!",
+      "prompt": "Cosa rispondi a \"Tudo bem?\"",
+      "trains": [
+        "vocab:tudo-bem"
+      ],
+      "wrong": [
+        "mal",
+        "dia",
+        "noite"
+      ]
+    }
+  ]
+}

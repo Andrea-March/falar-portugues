@@ -1,0 +1,38 @@
+{
+  "id": "cumprimentos",
+  "title": "Cumprimentos",
+  "items": [
+    {
+      "id": "ola",
+      "pt": "Olá!",
+      "it": "Ciao!",
+      "note": "informale"
+    },
+    {
+      "id": "bom-dia",
+      "pt": "Bom dia!",
+      "it": "Buongiorno!"
+    },
+    {
+      "id": "boa-tarde",
+      "pt": "Boa tarde!",
+      "it": "Buon pomeriggio!"
+    },
+    {
+      "id": "boa-noite",
+      "pt": "Boa noite!",
+      "it": "Buona sera / Buona notte!"
+    },
+    {
+      "id": "como-estas",
+      "pt": "Como estás?",
+      "it": "Come stai?",
+      "note": "informale, con \"tu\""
+    },
+    {
+      "id": "tudo-bem",
+      "pt": "Tudo bem?",
+      "it": "Tutto bene? / Come va?"
+    }
+  ]
+}

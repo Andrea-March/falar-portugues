@@ -5,6 +5,8 @@ export interface BaseExercise {
   type: ExerciseType;
   prompt?: string;
   translationIt?: string;
+  /** Cosa allena (es. "verb:ser:presente:eu"), per il ripasso */
+  trains?: string[];
 }
 
 export interface MultipleChoiceExercise extends BaseExercise {

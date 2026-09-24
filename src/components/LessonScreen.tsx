@@ -1,40 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import confetti from 'canvas-confetti';
 import { soundFX } from '@/utils/sound';
 import { useUser } from '@/context/UserContext';
 
-import VerbPractice from '@/components/exercises/VerbPractice';
-import VocabPractice from './exercises/VocabPractice';
+import PracticeSession from '@/components/exercises/PracticeSession';
 import LessonShell from '@/components/common/LessonShell';
 import type { PracticeStats } from '@/components/exercises/PracticeSession';
 import Mascot from '@/components/common/Mascot';
 import { Volume2 } from 'lucide-react';
 import { speakPortuguese } from '@/utils/textToSpeech';
 import LessonCompleteCard from '@/components/common/LessonCompleteCard';
-import lessonsData from '@/data/lessons.json';
-
-import { Exercise } from '@/types/exercise';
-
-export interface TheoryCard {
-  title: string;
-  description: string;
-  conjugation?: { pronoun: string; verb: string }[];
-  examples?: { pt: string; it: string }[];
-}
-
-export interface LessonData {
-  id: string;
-  title: string;
-  type?: 'verb' | 'vocab' | 'chat';
-  theory?: TheoryCard[];
-  verbRefId?: string;
-  tense?: string;
-  category?: string;
-  scenarioId?: string;
-  exercises?: Exercise[];
-}
+import { getCourseNode, loadNode, resolveTheory, toRuntimeExercise, type NodeContent } from '@/content';
 
 interface LessonScreenProps {
   nodeId: string;
@@ -68,30 +46,57 @@ function SpeakButton({ text, label }: { text: string; label: string }) {
   );
 }
 
-export default function LessonScreen({ nodeId, onClose, onCompleteNode }: LessonScreenProps) {
-  const { addXp } = useUser();
-  const lessons = lessonsData as unknown as Record<string, LessonData>;
-  const lesson = lessons[nodeId];
+/** Carica la lezione (file separato) e poi mostra teoria, pratica e fine */
+export default function LessonScreen(props: LessonScreenProps) {
+  const [loaded, setLoaded] = useState<{ id: string; content: NodeContent | null } | null>(null);
 
-  const [step, setStep] = useState<'theory' | 'practice' | 'complete'>(
-    lesson?.theory && lesson.theory.length > 0 ? 'theory' : 'practice'
-  );
-  const [theoryIndex, setTheoryIndex] = useState(0);
-  const [lessonStats, setLessonStats] = useState({ xp: 15, accuracy: 100, bestCombo: 0 });
+  useEffect(() => {
+    let alive = true;
+    loadNode(props.nodeId).then((content) => {
+      if (alive) setLoaded({ id: props.nodeId, content });
+    });
+    return () => {
+      alive = false;
+    };
+  }, [props.nodeId]);
 
-  if (!lesson) {
+  if (!loaded || loaded.id !== props.nodeId) {
     return (
-      <LessonShell progress={0} onClose={onClose}>
+      <LessonShell progress={0} onClose={props.onClose}>
+        <div className="flex justify-center pt-24" aria-busy="true" aria-label="A carregar a lição">
+          <Mascot mood="think" size={96} />
+        </div>
+      </LessonShell>
+    );
+  }
+
+  if (!loaded.content) {
+    return (
+      <LessonShell progress={0} onClose={props.onClose}>
         <div className="flex flex-col items-center text-center gap-4 pt-16">
           <Mascot mood="sad" size={120} />
           <h2 className="text-2xl font-extrabold">Não encontrámos esta lição</h2>
-          <button type="button" onClick={() => { soundFX.playClick(); onClose(); }} className="btn-3d btn-primary px-8 py-3.5 text-lg">
+          <button type="button" onClick={() => { soundFX.playClick(); props.onClose(); }} className="btn-3d btn-primary px-8 py-3.5 text-lg">
             Voltar ao percurso
           </button>
         </div>
       </LessonShell>
     );
   }
+
+  return <LessonFlow key={props.nodeId} {...props} content={loaded.content} />;
+}
+
+function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenProps & { content: NodeContent }) {
+  const { addXp } = useUser();
+  const title = getCourseNode(nodeId)?.title ?? '';
+  const theory = useMemo(() => (content.theory ?? []).map(resolveTheory), [content]);
+  // Convertiti una volta sola: le opzioni della scelta multipla restano nello stesso ordine per tutta la lezione
+  const exercises = useMemo(() => content.exercises.map(toRuntimeExercise), [content]);
+
+  const [step, setStep] = useState<'theory' | 'practice' | 'complete'>(theory.length > 0 ? 'theory' : 'practice');
+  const [theoryIndex, setTheoryIndex] = useState(0);
+  const [lessonStats, setLessonStats] = useState({ xp: 15, accuracy: 100, bestCombo: 0 });
 
   const handleFinishPractice = (stats?: PracticeStats) => {
     let accuracy = 100;
@@ -113,9 +118,9 @@ export default function LessonScreen({ nodeId, onClose, onCompleteNode }: Lesson
   };
 
   // ---------- TEORIA ----------
-  if (step === 'theory' && lesson.theory && lesson.theory.length > 0) {
-    const card = lesson.theory[theoryIndex];
-    const total = lesson.theory.length;
+  if (step === 'theory' && theory.length > 0) {
+    const card = theory[theoryIndex];
+    const total = theory.length;
     const isLast = theoryIndex === total - 1;
 
     return (
@@ -154,7 +159,7 @@ export default function LessonScreen({ nodeId, onClose, onCompleteNode }: Lesson
             <h2 className="text-3xl font-extrabold text-ink leading-tight">{card.title}</h2>
             <SpeakButton text={card.title} label="Ouvir o título" />
           </div>
-          <p className="text-lg text-ink/80 font-semibold leading-relaxed">{renderFormattedText(card.description)}</p>
+          <p className="text-lg text-ink/80 font-semibold leading-relaxed">{renderFormattedText(card.text)}</p>
 
           {card.conjugation && (
             <div className="rounded-3xl border-2 border-azulejo/25 bg-azulejo-light p-3">
@@ -181,7 +186,10 @@ export default function LessonScreen({ nodeId, onClose, onCompleteNode }: Lesson
                 <div key={ex.pt} className="flex items-center gap-3 rounded-2xl border-2 border-brand-border p-4">
                   <div className="flex-1 min-w-0">
                     <p className="text-lg font-bold text-ink">{renderFormattedText(ex.pt)}</p>
-                    <p className="text-brand-muted font-semibold">{ex.it}</p>
+                    <p className="text-brand-muted font-semibold">
+                      {ex.it}
+                      {ex.note && <span className="text-brand-muted/80 font-semibold italic"> · {ex.note}</span>}
+                    </p>
                   </div>
                   <SpeakButton text={ex.pt.replace(/\*\*/g, '')} label="Ouvir a frase" />
                 </div>
@@ -195,23 +203,13 @@ export default function LessonScreen({ nodeId, onClose, onCompleteNode }: Lesson
 
   // ---------- PRATICA ----------
   if (step === 'practice') {
-    return lesson.type === 'vocab' ? (
-      <VocabPractice exercises={lesson.exercises} onFinish={handleFinishPractice} onClose={onClose} />
-    ) : (
-      <VerbPractice
-        exercises={lesson.exercises}
-        filterVerbId={lesson.verbRefId}
-        filterTense={lesson.tense}
-        onFinish={handleFinishPractice}
-        onClose={onClose}
-      />
-    );
+    return <PracticeSession exercises={exercises} onFinish={handleFinishPractice} onClose={onClose} />;
   }
 
   // ---------- COMPLETATA ----------
   return (
     <LessonCompleteCard
-      title={lesson.title}
+      title={title}
       xpEarned={lessonStats.xp}
       accuracy={lessonStats.accuracy}
       bestCombo={lessonStats.bestCombo}

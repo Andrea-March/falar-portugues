@@ -3,17 +3,16 @@
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
-import ChapterMap, { Node } from '@/components/ChapterMap';
+import ChapterMap from '@/components/ChapterMap';
+import { nextNodeId, type CourseNode } from '@/content';
 import { useUser } from '@/context/UserContext';
 import Mascot from '@/components/common/Mascot';
-import chaptersData from '@/data/chapters.json';
-import { Chapter } from '@/components/ChapterMap';
 import GrammarHub from '@/components/GrammarHub';
 import LessonScreen from '@/components/LessonScreen';
 
 export default function Home() {
   const { progress, completeNode, isLoaded } = useUser();
-  const [activeNode, setActiveNode] = useState<Node | null>(null);
+  const [activeNode, setActiveNode] = useState<CourseNode | null>(null);
   const [activeTab, setActiveTab] = useState<'home' | 'grammar' | 'vocab' | 'chat'>('home');
 
   if (!isLoaded) {
@@ -32,7 +31,7 @@ export default function Home() {
         onClose={() => setActiveNode(null)}
         onCompleteNode={() => {
           // Gli XP sono già stati assegnati a fine esercizi (LessonScreen): qui 0 per non contarli due volte
-          completeNode(activeNode.id, getNextNodeId(activeNode.id), 0);
+          completeNode(activeNode.id, nextNodeId(activeNode.id), 0);
           setActiveNode(null);
         }}
       />
@@ -85,24 +84,4 @@ function ComingSoon({ title, text, onBack }: { title: string; text: string; onBa
       </button>
     </div>
   );
-}
-
-/**
- * Calcola in modo dinamico il nodo successivo leggendo la struttura dal JSON
- */
-function getNextNodeId(currentId: string): string {
-  const chapters = chaptersData as Chapter[];
-  
-  // Appiattisce tutti i nodi di tutti i capitoli in un unico array ordinato
-  const allNodes = chapters.flatMap((chapter) => chapter.nodes);
-  
-  const currentIndex = allNodes.findIndex((node) => node.id === currentId);
-  
-  // Se il nodo esiste ed c'è un nodo successivo, restituisce il prossimo ID
-  if (currentIndex !== -1 && currentIndex < allNodes.length - 1) {
-    return allNodes[currentIndex + 1].id;
-  }
-  
-  // Se è l'ultimo nodo in assoluto, mantiene il nodo corrente
-  return currentId;
 }

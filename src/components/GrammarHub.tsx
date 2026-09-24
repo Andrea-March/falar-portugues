@@ -42,7 +42,7 @@ export default function GrammarHub() {
       setPracticeVerbId(null);
       setPracticeTense(undefined);
     };
-    return <VerbPractice filterVerbId={practiceVerbId} filterTense={practiceTense} onFinish={back} onClose={back} />;
+    return <VerbPractice verbId={practiceVerbId} tense={practiceTense} onFinish={back} onClose={back} />;
   }
 
   // Vista 2: Consultazione Verbo (VerbStudy)

@@ -1,0 +1,71 @@
+{
+  "id": "node_1_3",
+  "theory": [
+    {
+      "title": "Ordinare al bar a Lisbona",
+      "text": "Espressioni essenziali per ordinare da bere o mangiare in Portogallo:",
+      "examples": [
+        {
+          "pt": "Um café, por favor.",
+          "it": "Un caffè (espresso), per favore."
+        },
+        {
+          "pt": "Queria um pastel de nata.",
+          "it": "Vorrei un pastel de nata."
+        },
+        {
+          "pt": "Quanto é?",
+          "it": "Quanto costa?"
+        },
+        {
+          "pt": "Obrigado / Obrigada",
+          "it": "Grazie (M/F)"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "ex_1_3_1",
+      "type": "choose",
+      "text": "Um café, {por favor}.",
+      "prompt": "Come chiedi con cortesia al cameriere?",
+      "trains": [
+        "vocab:por-favor"
+      ],
+      "wrong": [
+        "obrigado",
+        "olá",
+        "de nada"
+      ]
+    },
+    {
+      "id": "ex_1_3_2",
+      "type": "choose",
+      "text": "{Queria} um café, por favor.",
+      "prompt": "Come chiedi educatamente un caffè al banco?",
+      "trains": [
+        "vocab:queria"
+      ],
+      "wrong": [
+        "Sou",
+        "Estou",
+        "Como"
+      ]
+    },
+    {
+      "id": "ex_1_3_3",
+      "type": "choose",
+      "text": "{Obrigado}, bom dia!",
+      "prompt": "Se sei un uomo, come dici \"grazie\"?",
+      "trains": [
+        "vocab:obrigado"
+      ],
+      "wrong": [
+        "Obrigada",
+        "De nada",
+        "Por favor"
+      ]
+    }
+  ]
+}
