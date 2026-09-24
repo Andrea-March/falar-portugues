@@ -2,11 +2,11 @@
 
 import React from 'react';
 import { Exercise } from '@/types/exercise';
-import PracticeSession from './PracticeSession';
+import PracticeSession, { type PracticeStats } from './PracticeSession';
 
 interface VocabPracticeProps {
   exercises?: Exercise[];
-  onFinish: (stats: { total: number; errors: number }) => void;
+  onFinish: (stats: PracticeStats) => void;
   onClose: () => void;
 }
 

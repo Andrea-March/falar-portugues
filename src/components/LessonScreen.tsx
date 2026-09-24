@@ -8,6 +8,7 @@ import { useUser } from '@/context/UserContext';
 import VerbPractice from '@/components/exercises/VerbPractice';
 import VocabPractice from './exercises/VocabPractice';
 import LessonShell from '@/components/common/LessonShell';
+import type { PracticeStats } from '@/components/exercises/PracticeSession';
 import Mascot from '@/components/common/Mascot';
 import { Volume2 } from 'lucide-react';
 import { speakPortuguese } from '@/utils/textToSpeech';
@@ -76,7 +77,7 @@ export default function LessonScreen({ nodeId, onClose, onCompleteNode }: Lesson
     lesson?.theory && lesson.theory.length > 0 ? 'theory' : 'practice'
   );
   const [theoryIndex, setTheoryIndex] = useState(0);
-  const [lessonStats, setLessonStats] = useState({ xp: 15, accuracy: 100 });
+  const [lessonStats, setLessonStats] = useState({ xp: 15, accuracy: 100, bestCombo: 0 });
 
   if (!lesson) {
     return (
@@ -92,14 +93,14 @@ export default function LessonScreen({ nodeId, onClose, onCompleteNode }: Lesson
     );
   }
 
-  const handleFinishPractice = (stats?: { total: number; errors: number }) => {
+  const handleFinishPractice = (stats?: PracticeStats) => {
     let accuracy = 100;
     let earnedXp = 15;
     if (stats && stats.total > 0) {
       accuracy = Math.round((Math.max(0, stats.total - stats.errors) / stats.total) * 100);
       earnedXp = accuracy === 100 ? 20 : accuracy >= 80 ? 15 : 10;
     }
-    setLessonStats({ xp: earnedXp, accuracy });
+    setLessonStats({ xp: earnedXp, accuracy, bestCombo: stats?.bestCombo ?? 0 });
     addXp(earnedXp);
     soundFX.playComplete();
     confetti({
@@ -213,6 +214,7 @@ export default function LessonScreen({ nodeId, onClose, onCompleteNode }: Lesson
       title={lesson.title}
       xpEarned={lessonStats.xp}
       accuracy={lessonStats.accuracy}
+      bestCombo={lessonStats.bestCombo}
       onContinue={onCompleteNode}
     />
   );

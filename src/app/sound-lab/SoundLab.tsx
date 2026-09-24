@@ -1,9 +1,23 @@
 'use client';
 
 import { Play } from 'lucide-react';
-import { SOUND_FILES, type SoundName } from '@/utils/sound';
+import { SOUND_FILES } from '@/utils/sound';
 
-const GROUPS: { name: SoundName; label: string; variants: { file: string; note: string }[] }[] = [
+const USE_LABELS: Record<keyof typeof SOUND_FILES, string> = {
+  click: 'in uso',
+  correct: 'risposte 1–3 di fila',
+  correct2: '4ª di fila',
+  correct3: '5ª di fila e oltre',
+  wrong: 'in uso',
+  complete: 'in uso',
+};
+
+const usedBy = (file: string) =>
+  (Object.keys(SOUND_FILES) as (keyof typeof SOUND_FILES)[])
+    .filter((k) => SOUND_FILES[k] === `/sounds/${file}.mp3`)
+    .map((k) => USE_LABELS[k]);
+
+const GROUPS: { name: string; label: string; variants: { file: string; note: string }[] }[] = [
   {
     name: 'correct',
     label: 'Risposta giusta',
@@ -58,7 +72,8 @@ export default function SoundLab() {
         <section key={g.name} className="space-y-3">
           <h2 className="text-xl font-extrabold">{g.label}</h2>
           {g.variants.map((v) => {
-            const active = SOUND_FILES[g.name] === `/sounds/${v.file}.mp3`;
+            const uses = usedBy(v.file);
+            const active = uses.length > 0;
             return (
               <button
                 key={v.file}
@@ -71,7 +86,7 @@ export default function SoundLab() {
                 <Play size={20} strokeWidth={2.6} />
                 <span className="font-extrabold">{v.file}</span>
                 <span className="font-semibold text-brand-muted">{v.note}</span>
-                {active && <span className="ml-auto text-sm">in uso</span>}
+                {active && <span className="ml-auto text-sm text-right">{uses.join(', ')}</span>}
               </button>
             );
           })}

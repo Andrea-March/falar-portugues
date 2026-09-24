@@ -4,13 +4,13 @@ import React, { useMemo } from 'react';
 import rawVerbData from '@/data/verbs.json';
 import { generateExercisesFromVerbs, VerbEntry } from '@/utils/exerciseGenerator';
 import { Exercise } from '@/types/exercise';
-import PracticeSession from './PracticeSession';
+import PracticeSession, { type PracticeStats } from './PracticeSession';
 
 interface VerbPracticeProps {
   exercises?: Exercise[];
   filterVerbId?: string;
   filterTense?: string;
-  onFinish: (stats: { total: number; errors: number }) => void;
+  onFinish: (stats: PracticeStats) => void;
   onClose: () => void;
 }
 

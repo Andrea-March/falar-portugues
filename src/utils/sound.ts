@@ -10,11 +10,18 @@ import { isAudioEnabled } from './audioSettings';
 export const SOUND_FILES = {
   click: '/sounds/click-b.mp3',
   correct: '/sounds/correct-a.mp3',
+  /** 4ª risposta giusta di fila */
+  correct2: '/sounds/correct-b.mp3',
+  /** 5ª di fila e oltre */
+  correct3: '/sounds/correct-c.mp3',
   wrong: '/sounds/wrong-a.mp3',
   complete: '/sounds/complete-a.mp3',
 } as const;
 
 export type SoundName = keyof typeof SOUND_FILES;
+
+/** Da quante risposte di fila si mostra il badge "N seguidas!" (coincide col primo cambio di suono) */
+export const COMBO_BADGE_FROM = 4;
 
 class SoundFX {
   private ctx: AudioContext | null = null;
@@ -85,8 +92,9 @@ class SoundFX {
   playClick() {
     this.play('click', 0.8);
   }
-  playSuccess() {
-    this.play('correct');
+  /** `combo` = risposte giuste di fila (inclusa questa): il suono "sale" con la serie */
+  playSuccess(combo = 1) {
+    this.play(combo >= 5 ? 'correct3' : combo === 4 ? 'correct2' : 'correct');
   }
   playError() {
     this.play('wrong');

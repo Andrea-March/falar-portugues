@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Volume2 } from 'lucide-react';
+import { Sparkles, Volume2 } from 'lucide-react';
+import { COMBO_BADGE_FROM } from '@/utils/sound';
 import { speakPortuguese } from '@/utils/textToSpeech';
 import Mascot from '@/components/common/Mascot';
 import type { Feedback } from './PracticeSession';
@@ -9,6 +10,8 @@ import type { Feedback } from './PracticeSession';
 interface FeedbackSheetProps {
   mode: 'choice' | 'typing';
   feedback: Feedback;
+  /** Risposte giuste di fila, inclusa quella attuale */
+  combo: number;
   canCheck: boolean;
   correctAnswer: string;
   sentence: string;
@@ -36,6 +39,7 @@ function SentenceButton({ sentence, tone }: { sentence: string; tone: string }) 
 export default function FeedbackSheet({
   mode,
   feedback,
+  combo,
   canCheck,
   correctAnswer,
   sentence,
@@ -78,7 +82,18 @@ export default function FeedbackSheet({
           <div className="flex items-center gap-3">
             <Mascot mood="cheer" size={64} />
             <div className="flex-1 min-w-0">
-              <p className="font-display text-2xl font-extrabold leading-tight text-ok-dark">{praise}</p>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <p className="font-display text-2xl font-extrabold leading-tight text-ok-dark">{praise}</p>
+                {combo >= COMBO_BADGE_FROM && (
+                  <span
+                    className="inline-flex items-center gap-1 rounded-full bg-brand-accent text-brand-accentDark border-b-[3px] border-brand-accentHover px-3 py-0.5 font-display text-lg font-extrabold animate-pop"
+                    aria-label={`${combo} respostas certas seguidas`}
+                  >
+                    <Sparkles size={18} strokeWidth={2.6} />
+                    {combo} seguidas!
+                  </span>
+                )}
+              </div>
               <SentenceButton sentence={sentence} tone="text-ok-dark" />
             </div>
           </div>

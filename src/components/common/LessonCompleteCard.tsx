@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Zap, Target, Flame } from 'lucide-react';
+import { Zap, Target, Flame, Sparkles } from 'lucide-react';
+import { COMBO_BADGE_FROM } from '@/utils/sound';
 import { soundFX } from '@/utils/sound';
 import FullscreenPortal from './FullscreenPortal';
 import Mascot from './Mascot';
@@ -11,6 +12,8 @@ interface LessonCompleteCardProps {
   xpEarned?: number;
   accuracy?: number;
   streakDays?: number;
+  /** Serie migliore nella lezione: il riquadro compare solo se ha raggiunto il badge */
+  bestCombo?: number;
   onContinue: () => void;
 }
 
@@ -26,7 +29,7 @@ function StatTile({ icon, value, label, tone }: { icon: React.ReactNode; value: 
   );
 }
 
-export default function LessonCompleteCard({ title, xpEarned = 15, accuracy = 100, streakDays, onContinue }: LessonCompleteCardProps) {
+export default function LessonCompleteCard({ title, xpEarned = 15, accuracy = 100, streakDays, bestCombo = 0, onContinue }: LessonCompleteCardProps) {
   const headline = accuracy === 100 ? 'Sem erros!' : accuracy >= 80 ? 'Lição concluída!' : 'Concluída, continua assim!';
 
   return (
@@ -51,6 +54,14 @@ export default function LessonCompleteCard({ title, xpEarned = 15, accuracy = 10
               icon={<Target size={22} strokeWidth={2.5} />}
               tone="bg-ok border-ok text-ok-dark"
             />
+            {bestCombo >= COMBO_BADGE_FROM && (
+              <StatTile
+                label="Seguidas"
+                value={`${bestCombo}`}
+                icon={<Sparkles size={22} strokeWidth={2.5} />}
+                tone="bg-azulejo border-azulejo text-azulejo-dark"
+              />
+            )}
             {streakDays !== undefined && (
               <StatTile
                 label="Dias"

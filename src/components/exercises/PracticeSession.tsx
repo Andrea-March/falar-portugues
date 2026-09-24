@@ -19,9 +19,16 @@ import FeedbackSheet from './FeedbackSheet';
  */
 export type Feedback = 'idle' | 'correct' | 'wrong' | 'revealed';
 
+export interface PracticeStats {
+  total: number;
+  errors: number;
+  /** Serie più lunga di risposte giuste al primo tentativo */
+  bestCombo: number;
+}
+
 interface PracticeSessionProps {
   exercises: Exercise[];
-  onFinish: (stats: { total: number; errors: number }) => void;
+  onFinish: (stats: PracticeStats) => void;
   onClose: () => void;
 }
 
@@ -36,6 +43,9 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
   const [accentHint, setAccentHint] = useState(false);
   const [errorCount, setErrorCount] = useState(0);
   const [failedCurrent, setFailedCurrent] = useState(false);
+  // Serie di risposte giuste al primo tentativo: un errore o "Não sei" la azzera
+  const [combo, setCombo] = useState(0);
+  const [bestCombo, setBestCombo] = useState(0);
   const speakTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(
@@ -55,7 +65,7 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
           <Mascot mood="think" size={120} />
           <h2 className="text-2xl font-extrabold">Ainda não há exercícios aqui</h2>
           <p className="text-brand-muted font-semibold">Esta lição está a ser preparada.</p>
-          <button type="button" onClick={() => onFinish({ total: 0, errors: 0 })} className="btn-3d btn-primary px-8 py-3.5 text-lg mt-2">
+          <button type="button" onClick={() => onFinish({ total: 0, errors: 0, bestCombo: 0 })} className="btn-3d btn-primary px-8 py-3.5 text-lg mt-2">
             Concluir
           </button>
         </div>
@@ -81,19 +91,24 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
   };
 
   const markCorrect = () => {
+    const newCombo = failedCurrent ? 0 : combo + 1;
+    setCombo(newCombo);
+    setBestCombo((b) => Math.max(b, newCombo));
     setAccentHint(false);
     setFeedback('correct');
-    soundFX.playSuccess();
+    soundFX.playSuccess(newCombo);
     speakLater();
   };
 
   const markWrong = () => {
     setFeedback('wrong');
     soundFX.playError();
+    setCombo(0);
     countError();
   };
 
   const reveal = () => {
+    setCombo(0);
     countError();
     setAccentHint(false);
     setAnswer(exercise.correctAnswer);
@@ -138,7 +153,7 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
       setAccentHint(false);
       setFailedCurrent(false);
     } else {
-      onFinish({ total: exercises.length, errors: errorCount });
+      onFinish({ total: exercises.length, errors: errorCount, bestCombo });
     }
   };
 
@@ -161,6 +176,7 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
           key={`${exercise.id}-${feedback}`}
           mode={isChoice ? 'choice' : 'typing'}
           feedback={feedback}
+          combo={combo}
           canCheck={answer.trim().length > 0}
           correctAnswer={exercise.correctAnswer}
           sentence={fullSentence}
