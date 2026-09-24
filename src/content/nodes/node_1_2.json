@@ -113,7 +113,7 @@
     {
       "id": "ex_1_2_9",
       "type": "choose",
-      "text": "Olá Ana, {como estás}?",
+      "text": "Olá Ana, como {estás}?",
       "it": "Ciao Ana, come stai?",
       "prompt": "Come chiedi a un amico in modo informale \"Come stai?\"",
       "trains": [
@@ -121,15 +121,15 @@
         "verb:estar:presente:tu"
       ],
       "wrong": [
-        "como é",
-        "como chamas",
-        "onde estás"
+        "é",
+        "chamas",
+        "estás"
       ]
     },
     {
       "id": "ex_1_2_10",
       "type": "write",
-      "text": "{Como estás} hoje?",
+      "text": "Como {estás} hoje?",
       "it": "Come stai oggi?",
       "trains": [
         "vocab:como-estas",
