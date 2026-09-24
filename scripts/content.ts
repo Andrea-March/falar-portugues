@@ -139,6 +139,13 @@ for (const { file, data } of verbs.values()) data.exercises.forEach((e) => check
 for (const { file, data } of nodes.values()) {
   data.exercises.forEach((e) => checkExercise(file, e));
   data.theory?.forEach((card, i) => {
+    if ('paradigm' in card) {
+      const where = `teoria[${i}] (paradigma)`;
+      const v = verbs.get(card.paradigm.verb)?.data;
+      if (!v) fail(file, `${where}: il verbo "${card.paradigm.verb}" non esiste`);
+      else if (!v.conjugations[card.paradigm.tense]) fail(file, `${where}: il verbo "${card.paradigm.verb}" non ha il tempo "${card.paradigm.tense}"`);
+      return;
+    }
     const where = `teoria[${i}] "${card.title}"`;
     if (card.verb) {
       const v = verbs.get(card.verb.verb)?.data;

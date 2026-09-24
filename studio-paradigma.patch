@@ -1,0 +1,610 @@
+diff --git a/scripts/content.ts b/scripts/content.ts
+index 5798287..deaafa7 100644
+--- a/scripts/content.ts
++++ b/scripts/content.ts
+@@ -139,6 +139,13 @@ for (const { file, data } of verbs.values()) data.exercises.forEach((e) => check
+ for (const { file, data } of nodes.values()) {
+   data.exercises.forEach((e) => checkExercise(file, e));
+   data.theory?.forEach((card, i) => {
++    if ('paradigm' in card) {
++      const where = `teoria[${i}] (paradigma)`;
++      const v = verbs.get(card.paradigm.verb)?.data;
++      if (!v) fail(file, `${where}: il verbo "${card.paradigm.verb}" non esiste`);
++      else if (!v.conjugations[card.paradigm.tense]) fail(file, `${where}: il verbo "${card.paradigm.verb}" non ha il tempo "${card.paradigm.tense}"`);
++      return;
++    }
+     const where = `teoria[${i}] "${card.title}"`;
+     if (card.verb) {
+       const v = verbs.get(card.verb.verb)?.data;
+diff --git a/src/components/LessonScreen.tsx b/src/components/LessonScreen.tsx
+index 325636d..ea1f134 100644
+--- a/src/components/LessonScreen.tsx
++++ b/src/components/LessonScreen.tsx
+@@ -1,6 +1,6 @@
+ 'use client';
+ 
+-import React, { useEffect, useMemo, useState } from 'react';
++import React, { useEffect, useMemo, useRef, useState } from 'react';
+ import confetti from 'canvas-confetti';
+ import { soundFX } from '@/utils/sound';
+ import { useUser } from '@/context/UserContext';
+@@ -12,7 +12,8 @@ import Mascot from '@/components/common/Mascot';
+ import { Volume2 } from 'lucide-react';
+ import { speakPortuguese } from '@/utils/textToSpeech';
+ import LessonCompleteCard from '@/components/common/LessonCompleteCard';
+-import { getCourseNode, loadNode, resolveTheory, toRuntimeExercise, type NodeContent } from '@/content';
++import { getCourseNode, loadNode, theorySteps, toRuntimeExercise, type NodeContent } from '@/content';
++import ParadigmStep from '@/components/theory/ParadigmStep';
+ 
+ interface LessonScreenProps {
+   nodeId: string;
+@@ -90,12 +91,15 @@ export default function LessonScreen(props: LessonScreenProps) {
+ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenProps & { content: NodeContent }) {
+   const { addXp } = useUser();
+   const title = getCourseNode(nodeId)?.title ?? '';
+-  const theory = useMemo(() => (content.theory ?? []).map(resolveTheory), [content]);
++  const theory = useMemo(() => theorySteps(content.theory ?? []), [content]);
+   // Convertiti una volta sola: le opzioni della scelta multipla restano nello stesso ordine per tutta la lezione
+   const exercises = useMemo(() => content.exercises.map(toRuntimeExercise), [content]);
+ 
+   const [step, setStep] = useState<'theory' | 'practice' | 'complete'>(theory.length > 0 ? 'theory' : 'practice');
+   const [theoryIndex, setTheoryIndex] = useState(0);
++  /** Schermate interattive (paradigma) già completate */
++  const [doneSteps, setDoneSteps] = useState<Set<number>>(() => new Set());
++  const continueRef = useRef<HTMLButtonElement>(null);
+   const [lessonStats, setLessonStats] = useState({ xp: 15, accuracy: 100, bestCombo: 0 });
+ 
+   const handleFinishPractice = (stats?: PracticeStats) => {
+@@ -122,6 +126,12 @@ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenPr
+     const card = theory[theoryIndex];
+     const total = theory.length;
+     const isLast = theoryIndex === total - 1;
++    const canContinue = card.kind === 'info' || doneSteps.has(theoryIndex);
++    const markDone = () => {
++      const i = theoryIndex;
++      setDoneSteps((prev) => new Set(prev).add(i));
++      requestAnimationFrame(() => continueRef.current?.focus());
++    };
+ 
+     return (
+       <LessonShell
+@@ -137,8 +147,10 @@ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenPr
+                 </button>
+               )}
+               <button
++                ref={continueRef}
+                 type="button"
+-                autoFocus
++                autoFocus={card.kind === 'info'}
++                disabled={!canContinue}
+                 onClick={() => {
+                   soundFX.playClick();
+                   if (isLast) setStep('practice');
+@@ -152,31 +164,34 @@ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenPr
+           </div>
+         }
+       >
+-        <div key={theoryIndex} className="space-y-6 animate-fade-in">
+-          {theoryIndex === 0 && <Mascot mood="happy" size={72} say="Primeiro, um pouco de teoria!" />}
+-
+-          <div className="flex items-start justify-between gap-3">
+-            <h2 className="text-3xl font-extrabold text-ink leading-tight">{card.title}</h2>
+-            <SpeakButton text={card.title} label="Ouvir o título" />
+-          </div>
+-          <p className="text-lg text-ink/80 font-semibold leading-relaxed">{renderFormattedText(card.text)}</p>
+-
+-          {card.conjugation && (
+-            <div className="rounded-3xl border-2 border-azulejo/25 bg-azulejo-light p-3">
+-              <div className="grid grid-cols-2 gap-2">
+-                {card.conjugation.map((item) => (
+-                  <button
+-                    key={item.pronoun}
+-                    type="button"
+-                    onClick={() => speakPt(`${item.pronoun} ${item.verb}`)}
+-                    className="btn-3d !justify-between bg-white border-2 border-azulejo/20 !border-b-4 px-3.5 py-3 text-left"
+-                  >
+-                    <span className="text-brand-muted font-bold">{item.pronoun}</span>
+-                    <span className="text-azulejo-dark font-extrabold text-lg">{item.verb}</span>
+-                  </button>
+-                ))}
+-              </div>
++        {card.kind === 'paradigm' ? (
++          <ParadigmStep key={theoryIndex} step={card} initiallyDone={doneSteps.has(theoryIndex)} onDone={markDone} />
++        ) : (
++          <div key={theoryIndex} className="space-y-6 animate-fade-in">
++            {theoryIndex === 0 && <Mascot mood="happy" size={72} say="Primeiro, um pouco de teoria!" />}
++
++            <div className="flex items-start justify-between gap-3">
++              <h2 className="text-3xl font-extrabold text-ink leading-tight">{card.title}</h2>
++              <SpeakButton text={card.title} label="Ouvir o título" />
+             </div>
++            <p className="text-lg text-ink/80 font-semibold leading-relaxed">{renderFormattedText(card.text)}</p>
++
++            {card.conjugation && (
++              <div className="rounded-3xl border-2 border-azulejo/25 bg-azulejo-light p-3">
++                <div className="grid grid-cols-2 gap-2">
++                  {card.conjugation.map((item) => (
++                    <button
++                      key={item.pronoun}
++                      type="button"
++                      onClick={() => speakPt(`${item.pronoun} ${item.verb}`)}
++                      className="btn-3d !justify-between bg-white border-2 border-azulejo/20 !border-b-4 px-3.5 py-3 text-left"
++                    >
++                      <span className="text-brand-muted font-bold">{item.pronoun}</span>
++                      <span className="text-azulejo-dark font-extrabold text-lg">{item.verb}</span>
++                    </button>
++                  ))}
++                </div>
++              </div>
+           )}
+ 
+           {card.examples && (
+@@ -197,6 +212,7 @@ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenPr
+             </div>
+           )}
+         </div>
++        )}
+       </LessonShell>
+     );
+   }
+diff --git a/src/components/theory/ParadigmStep.tsx b/src/components/theory/ParadigmStep.tsx
+new file mode 100644
+index 0000000..cc10844
+--- /dev/null
++++ b/src/components/theory/ParadigmStep.tsx
+@@ -0,0 +1,264 @@
++'use client';
++
++import React, { useEffect, useRef, useState } from 'react';
++import { Check, Volume2, HelpCircle } from 'lucide-react';
++import type { ParadigmStep as Step } from '@/content';
++import { tenseLabel } from '@/content';
++import { matchAnswer } from '@/utils/answerCheck';
++import { speakPortuguese } from '@/utils/textToSpeech';
++import { soundFX } from '@/utils/sound';
++import { applyTrace, baseLetter as base, chars } from '@/utils/traceInput';
++
++type RowStatus = 'open' | 'done' | 'revealed';
++
++interface ParadigmStepProps {
++  step: Step;
++  /** La schermata era già stata completata (si è tornati indietro): mostra tutto compilato */
++  initiallyDone: boolean;
++  onDone: () => void;
++}
++
++
++/**
++ * Studio del paradigma.
++ * - trace: la forma è scritta in trasparenza e si ricopia; le lettere sbagliate non entrano,
++ *   e se manca solo l'accento si illumina il tasto giusto.
++ * - recall: si scrive a memoria; gli errori non contano, c'è "Não sei" per ogni riga.
++ */
++export default function ParadigmStep({ step, initiallyDone, onDone }: ParadigmStepProps) {
++  const trace = step.mode === 'trace';
++  const [typed, setTyped] = useState<string[]>(() => step.rows.map((r) => (initiallyDone ? r.form : '')));
++  const [status, setStatus] = useState<RowStatus[]>(() => step.rows.map(() => (initiallyDone ? 'done' : 'open')));
++  const [active, setActive] = useState(0);
++  /** Accento mancante (trace) → tasto da evidenziare */
++  const [accentKey, setAccentKey] = useState<string | null>(null);
++  /** Messaggio sotto una riga (recall) */
++  const [rowHint, setRowHint] = useState<{ row: number; text: string } | null>(null);
++  const inputs = useRef<(HTMLInputElement | null)[]>([]);
++  const rowsRef = useRef<(HTMLLIElement | null)[]>([]);
++
++  useEffect(() => {
++    if (!initiallyDone) inputs.current[0]?.focus();
++  }, [initiallyDone]);
++
++  // Tasti con gli accenti presenti in questa schermata (es. é, ã): solo quelli utili
++  const accentChars = [...new Set(step.rows.flatMap((r) => chars(r.form)).filter((c) => base(c) !== c.toLowerCase()))];
++
++  /** Scossone della riga: animazione diretta sull'elemento, così il campo non perde il focus */
++  const bump = (row: number) => {
++    const el = rowsRef.current[row];
++    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
++    el.animate(
++      [{ transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(-4px)' }, { transform: 'translateX(0)' }],
++      { duration: 300, easing: 'ease-in-out' }
++    );
++  };
++
++  const finishRow = (i: number, how: 'done' | 'revealed', nextTyped: string[]) => {
++    const nextStatus = status.map((s, j) => (j === i ? how : s));
++    setStatus(nextStatus);
++    setTyped(nextTyped);
++    setAccentKey(null);
++    setRowHint(null);
++    const row = step.rows[i];
++    speakPortuguese(`${row.spoken} ${row.form}`);
++
++    const nextOpen = nextStatus.findIndex((s, j) => j > i && s === 'open');
++    const anyOpen = nextStatus.findIndex((s) => s === 'open');
++    const target = nextOpen !== -1 ? nextOpen : anyOpen;
++    if (target !== -1) {
++      setActive(target);
++      requestAnimationFrame(() => inputs.current[target]?.focus());
++    } else {
++      onDone();
++    }
++  };
++
++  // ---------- Ricopiatura guidata ----------
++  const traceInput = (i: number, raw: string) => {
++    const r = applyTrace(typed[i], raw, step.rows[i].form);
++    if (r.rejected) bump(i);
++    setAccentKey(r.missingAccent);
++    const next = typed.map((t, j) => (j === i ? r.accepted : t));
++    if (r.complete) finishRow(i, 'done', next);
++    else setTyped(next);
++  };
++
++  // ---------- A memoria ----------
++  const recallInput = (i: number, raw: string) => {
++    const next = typed.map((t, j) => (j === i ? raw : t));
++    setRowHint(null);
++    if (matchAnswer(raw, step.rows[i].form) === 'exact') finishRow(i, 'done', next.map((t, j) => (j === i ? step.rows[i].form : t)));
++    else setTyped(next);
++  };
++
++  const recallCheck = (i: number) => {
++    const value = typed[i];
++    if (!value.trim()) return;
++    const result = matchAnswer(value, step.rows[i].form);
++    if (result === 'accents') setRowHint({ row: i, text: 'Quase! Confere os acentos.' });
++    else if (result === 'wrong') {
++      setRowHint({ row: i, text: 'Ainda não. Tenta outra vez ou carrega em “Não sei”.' });
++      bump(i);
++    }
++  };
++
++  const reveal = (i: number) => {
++    soundFX.playClick();
++    finishRow(i, 'revealed', typed.map((t, j) => (j === i ? step.rows[i].form : t)));
++  };
++
++  const insertAccent = (ch: string) => {
++    soundFX.playClick();
++    const i = active;
++    if (status[i] !== 'open') return;
++    if (trace) traceInput(i, typed[i] + ch);
++    else recallInput(i, typed[i] + ch);
++    requestAnimationFrame(() => inputs.current[i]?.focus());
++  };
++
++  const allDone = status.every((s) => s !== 'open');
++  const wordClass = 'font-display text-[28px] leading-none font-extrabold tracking-wide';
++
++  return (
++    <div className="space-y-5 animate-fade-in">
++      <header className="space-y-1">
++        <p className="font-bold text-azulejo">{tenseLabel(step.tense)}</p>
++        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
++          <h2 className="text-3xl font-extrabold text-ink leading-tight">Verbo {step.infinitive}</h2>
++          <span className="rounded-full bg-azulejo-light text-azulejo-dark font-extrabold px-3 py-0.5">{step.label}</span>
++        </div>
++        <p className="text-brand-muted font-semibold">
++          {trace ? 'Escreve cada forma por cima do modelo.' : 'Escreve as formas sem modelo. Os erros aqui não contam.'}
++        </p>
++      </header>
++
++      <ol className="space-y-3">
++        {step.rows.map((row, i) => {
++          const st = status[i];
++          const isActive = active === i && st === 'open';
++          const typedChars = chars(typed[i]);
++          const formChars = chars(row.form);
++          const box =
++            st === 'done'
++              ? 'border-ok bg-ok-light'
++              : st === 'revealed'
++              ? 'border-azulejo bg-azulejo-light'
++              : isActive
++              ? 'border-azulejo bg-white'
++              : 'border-brand-border bg-white';
++
++          return (
++            <li
++              key={row.person}
++              ref={(el) => {
++                rowsRef.current[i] = el;
++              }}
++              className={`rounded-2xl border-2 border-b-[5px] px-4 pt-2.5 pb-3 transition-colors ${box}`}
++              onClick={() => st === 'open' && inputs.current[i]?.focus()}
++            >
++              <div className="flex items-center justify-between gap-2">
++                <label htmlFor={`form-${step.label}-${row.person}`} className="font-bold text-brand-muted">
++                  {row.pronoun}
++                </label>
++                {st !== 'open' ? (
++                  <button
++                    type="button"
++                    onClick={() => speakPortuguese(`${row.spoken} ${row.form}`)}
++                    aria-label={`Ouvir ${row.spoken} ${row.form}`}
++                    className={`p-1 rounded-lg cursor-pointer ${st === 'done' ? 'text-ok-dark' : 'text-azulejo-dark'}`}
++                  >
++                    <Volume2 size={20} strokeWidth={2.5} />
++                  </button>
++                ) : (
++                  !trace && (
++                    <button
++                      type="button"
++                      onClick={() => reveal(i)}
++                      className="inline-flex items-center gap-1 text-sm font-bold text-brand-muted hover:text-azulejo-dark cursor-pointer"
++                    >
++                      <HelpCircle size={16} strokeWidth={2.5} /> Não sei
++                    </button>
++                  )
++                )}
++              </div>
++
++              <div className="relative mt-1.5 flex items-center gap-2">
++                {/* Livello visivo: lettere scritte piene, modello in trasparenza */}
++                <div aria-hidden="true" className={`${wordClass} py-1 whitespace-pre`}>
++                  {st !== 'open' ? (
++                    <span className={st === 'done' ? 'text-ok-dark' : 'text-azulejo-dark'}>{row.form}</span>
++                  ) : trace ? (
++                    formChars.map((c, k) => (
++                      <span key={k} className={k < typedChars.length ? 'text-ink' : 'text-ink/20'}>
++                        {c}
++                      </span>
++                    ))
++                  ) : (
++                    <span className="text-ink">{typed[i] || '\u00a0'}</span>
++                  )}
++                </div>
++                {st === 'done' && <Check size={26} strokeWidth={3} className="text-ok shrink-0" />}
++
++                {/* Campo reale: testo invisibile, cursore visibile, allineato al livello visivo */}
++                {st === 'open' && (
++                  <input
++                    ref={(el) => {
++                      inputs.current[i] = el;
++                    }}
++                    id={`form-${step.label}-${row.person}`}
++                    value={typed[i]}
++                    onChange={(e) => (trace ? traceInput(i, e.target.value) : recallInput(i, e.target.value))}
++                    onFocus={() => setActive(i)}
++                    onKeyDown={(e) => {
++                      if (e.key === 'Enter' && !trace) {
++                        e.preventDefault();
++                        recallCheck(i);
++                      }
++                    }}
++                    autoComplete="off"
++                    autoCorrect="off"
++                    autoCapitalize="off"
++                    spellCheck={false}
++                    enterKeyHint={trace ? 'next' : 'done'}
++                    aria-label={`${row.pronoun}: ${trace ? `escreve ${row.form}` : 'escreve a forma'}`}
++                    className={`${wordClass} absolute inset-0 w-full bg-transparent py-1 outline-none text-transparent caret-azulejo`}
++                  />
++                )}
++              </div>
++
++              {rowHint?.row === i && (
++                <p role="status" className="mt-2 text-sm font-bold text-brand-accentDark animate-fade-in">
++                  {rowHint.text}
++                </p>
++              )}
++            </li>
++          );
++        })}
++      </ol>
++
++      {accentChars.length > 0 && !allDone && (
++        <div className="flex flex-wrap items-center gap-2" aria-label="Letras com acento">
++          {accentChars.map((c) => (
++            <button
++              key={c}
++              type="button"
++              onMouseDown={(e) => e.preventDefault()}
++              onClick={() => insertAccent(c)}
++              className={`btn-3d btn-ghost w-12 h-12 text-xl !border-b-[4px] ${
++                accentKey === c ? '!bg-brand-accentLight !border-brand-accentHover ring-4 ring-brand-accent/60 animate-pop' : ''
++              }`}
++            >
++              {c}
++            </button>
++          ))}
++          {accentKey && (
++            <span role="status" className="font-bold text-brand-accentDark animate-fade-in">
++              Falta o acento: {accentKey}
++            </span>
++          )}
++        </div>
++      )}
++    </div>
++  );
++}
+diff --git a/src/content/index.ts b/src/content/index.ts
+index 1a0add4..669684f 100644
+--- a/src/content/index.ts
++++ b/src/content/index.ts
+@@ -4,7 +4,8 @@
+  * arriveranno da un database, cambia solo questo file.
+  */
+ import courseJson from './course.json';
+-import type { Course, CourseNode, Chapter, Exercise as ContentExercise, NodeContent, Person, TheoryCard, Verb, VocabItem } from './schema';
++import { SINGULAR, PLURAL } from './schema';
++import type { Course, CourseNode, Chapter, Exercise as ContentExercise, NodeContent, Person, TheoryCard, TheoryItem, Verb, VocabItem } from './schema';
+ import { verbList, vocabSetList, nodeLoaders } from './registry.generated';
+ import type { Exercise as RuntimeExercise } from '@/types/exercise';
+ 
+@@ -139,6 +140,7 @@ export function verbExercises(verbId: string, tense?: string): RuntimeExercise[]
+ // ---------- Teoria pronta da mostrare ----------
+ 
+ export interface ResolvedTheoryCard {
++  kind: 'info';
+   title: string;
+   text: string;
+   conjugation?: { pronoun: string; verb: string }[];
+@@ -153,9 +155,59 @@ export function resolveTheory(card: TheoryCard): ResolvedTheoryCard {
+   const examples = [...vocabExamples, ...(card.examples ?? [])];
+ 
+   return {
++    kind: 'info',
+     title: card.title,
+     text: card.text,
+     conjugation: card.verb ? conjugationRows(card.verb.verb, card.verb.tense) : undefined,
+     examples: examples.length ? examples : undefined,
+   };
+ }
++
++// ---------- Studio guidato del paradigma ----------
++
++export interface ParadigmRow {
++  person: Person;
++  /** Etichetta mostrata, es. "Ele / Ela / Você" */
++  pronoun: string;
++  /** Pronome letto ad alta voce insieme alla forma, es. "ele" */
++  spoken: string;
++  form: string;
++}
++
++export interface ParadigmStep {
++  kind: 'paradigm';
++  /** trace = si ricopia sopra la forma in trasparenza; recall = si scrive a memoria */
++  mode: 'trace' | 'recall';
++  verbId: string;
++  infinitive: string;
++  tense: string;
++  /** Sottotitolo della schermata */
++  label: string;
++  rows: ParadigmRow[];
++}
++
++export type TheoryStep = ResolvedTheoryCard | ParadigmStep;
++
++const SPOKEN: Record<Person, string> = { eu: 'eu', tu: 'tu', ele_ela_voce: 'ele', nos: 'nós', eles_elas_voces: 'eles' };
++
++function paradigmSteps(verbId: string, tense: string): ParadigmStep[] {
++  const verb = getVerb(verbId);
++  const forms = verb?.conjugations[tense];
++  if (!verb || !forms) return [];
++  const rows = (persons: Person[]): ParadigmRow[] =>
++    persons.map((p) => ({ person: p, pronoun: PERSON_LABELS[p], spoken: SPOKEN[p], form: forms[p] }));
++  const base = { kind: 'paradigm' as const, verbId, infinitive: verb.infinitive, tense };
++  return [
++    { ...base, mode: 'trace', label: 'Singular', rows: rows(SINGULAR) },
++    { ...base, mode: 'trace', label: 'Plural', rows: rows(PLURAL) },
++    { ...base, mode: 'trace', label: 'Todas as formas', rows: rows([...SINGULAR, ...PLURAL]) },
++    { ...base, mode: 'recall', label: 'Agora de memória', rows: rows([...SINGULAR, ...PLURAL]) },
++  ];
++}
++
++/** Trasforma la teoria del contenuto nelle schermate da mostrare */
++export function theorySteps(items: TheoryItem[]): TheoryStep[] {
++  return items.flatMap((item): TheoryStep[] =>
++    'paradigm' in item ? paradigmSteps(item.paradigm.verb, item.paradigm.tense) : [resolveTheory(item)]
++  );
++}
+diff --git a/src/content/nodes/node_1_1.json b/src/content/nodes/node_1_1.json
+index 7525efa..cdfd509 100644
+--- a/src/content/nodes/node_1_1.json
++++ b/src/content/nodes/node_1_1.json
+@@ -4,10 +4,6 @@
+     {
+       "title": "Identità e Origine",
+       "text": "Il verbo **Ser** si usa per caratteristiche permanenti, nazionalità, origini e professioni.",
+-      "verb": {
+-        "verb": "ser",
+-        "tense": "presente"
+-      },
+       "examples": [
+         {
+           "pt": "Eu sou italiano.",
+@@ -18,6 +14,12 @@
+           "it": "Lei è medica."
+         }
+       ]
++    },
++    {
++      "paradigm": {
++        "verb": "ser",
++        "tense": "presente"
++      }
+     }
+   ],
+   "exercises": [
+diff --git a/src/content/schema.ts b/src/content/schema.ts
+index 28f56aa..47227a7 100644
+--- a/src/content/schema.ts
++++ b/src/content/schema.ts
+@@ -85,11 +85,23 @@ export const TheoryCard = z.strictObject({
+ });
+ export type TheoryCard = z.infer<typeof TheoryCard>;
+ 
++/** Studio guidato di un paradigma: diventa 4 schermate (singolare, plurale, tutto con traccia, tutto a memoria) */
++export const ParadigmCard = z.strictObject({
++  paradigm: z.strictObject({ verb: Slug, tense: Tense }),
++});
++export type ParadigmCard = z.infer<typeof ParadigmCard>;
++
++export const TheoryItem = z.union([TheoryCard, ParadigmCard]);
++export type TheoryItem = z.infer<typeof TheoryItem>;
++
++export const SINGULAR: Person[] = ['eu', 'tu', 'ele_ela_voce'];
++export const PLURAL: Person[] = ['nos', 'eles_elas_voces'];
++
+ // ---------- File: una lezione (src/content/nodes/<id>.json) ----------
+ 
+ export const NodeContent = z.strictObject({
+   id: Slug,
+-  theory: z.array(TheoryCard).optional(),
++  theory: z.array(TheoryItem).optional(),
+   exercises: z.array(Exercise).min(1),
+ });
+ export type NodeContent = z.infer<typeof NodeContent>;
+diff --git a/src/utils/traceInput.ts b/src/utils/traceInput.ts
+new file mode 100644
+index 0000000..f883cf7
+--- /dev/null
++++ b/src/utils/traceInput.ts
+@@ -0,0 +1,46 @@
++/** Tasti "morti" delle tastiere fisiche (arrivano prima della lettera accentata): si ignorano */
++const DEAD_KEYS = new Set(['´', '`', '^', '~', '¨', '˜', 'ˆ']);
++
++export const baseLetter = (c: string) => c.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
++export const chars = (s: string) => [...s.normalize('NFC')];
++
++export interface TraceResult {
++  /** Testo accettato (sempre un prefisso corretto della forma) */
++  accepted: string;
++  /** L'utente ha scritto una lettera sbagliata */
++  rejected: boolean;
++  /** La lettera era giusta ma senza/con l'accento sbagliato: quale serviva */
++  missingAccent: string | null;
++  complete: boolean;
++}
++
++/**
++ * Ricopiatura guidata: dato il testo già accettato e il nuovo valore del campo,
++ * accetta solo le lettere che corrispondono alla forma da ricopiare.
++ */
++export function applyTrace(accepted: string, incoming: string, form: string): TraceResult {
++  const expected = chars(form);
++  let acc = accepted;
++  const value = incoming.normalize('NFC');
++  let rejected = false;
++  let missingAccent: string | null = null;
++
++  // Cancellazioni o sostituzioni dell'intero testo: si ignorano (quello accettato è già giusto)
++  if (value.toLowerCase().startsWith(acc.toLowerCase())) {
++    for (const ch of chars(value).slice(chars(acc).length)) {
++      if (DEAD_KEYS.has(ch)) continue;
++      const exp = expected[chars(acc).length];
++      if (exp === undefined) break;
++      if (ch.toLowerCase() === exp.toLowerCase()) {
++        acc += exp;
++        missingAccent = null;
++        continue;
++      }
++      rejected = true;
++      if (baseLetter(ch) === baseLetter(exp)) missingAccent = exp;
++      break;
++    }
++  }
++
++  return { accepted: acc, rejected, missingAccent, complete: chars(acc).length === expected.length };
++}

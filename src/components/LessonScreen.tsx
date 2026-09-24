@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import confetti from 'canvas-confetti';
 import { soundFX } from '@/utils/sound';
 import { useUser } from '@/context/UserContext';
@@ -12,7 +12,8 @@ import Mascot from '@/components/common/Mascot';
 import { Volume2 } from 'lucide-react';
 import { speakPortuguese } from '@/utils/textToSpeech';
 import LessonCompleteCard from '@/components/common/LessonCompleteCard';
-import { getCourseNode, loadNode, resolveTheory, toRuntimeExercise, type NodeContent } from '@/content';
+import { getCourseNode, loadNode, theorySteps, toRuntimeExercise, type NodeContent } from '@/content';
+import ParadigmStep from '@/components/theory/ParadigmStep';
 
 interface LessonScreenProps {
   nodeId: string;
@@ -90,12 +91,15 @@ export default function LessonScreen(props: LessonScreenProps) {
 function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenProps & { content: NodeContent }) {
   const { addXp } = useUser();
   const title = getCourseNode(nodeId)?.title ?? '';
-  const theory = useMemo(() => (content.theory ?? []).map(resolveTheory), [content]);
+  const theory = useMemo(() => theorySteps(content.theory ?? []), [content]);
   // Convertiti una volta sola: le opzioni della scelta multipla restano nello stesso ordine per tutta la lezione
   const exercises = useMemo(() => content.exercises.map(toRuntimeExercise), [content]);
 
   const [step, setStep] = useState<'theory' | 'practice' | 'complete'>(theory.length > 0 ? 'theory' : 'practice');
   const [theoryIndex, setTheoryIndex] = useState(0);
+  /** Schermate interattive (paradigma) già completate */
+  const [doneSteps, setDoneSteps] = useState<Set<number>>(() => new Set());
+  const continueRef = useRef<HTMLButtonElement>(null);
   const [lessonStats, setLessonStats] = useState({ xp: 15, accuracy: 100, bestCombo: 0 });
 
   const handleFinishPractice = (stats?: PracticeStats) => {
@@ -122,6 +126,12 @@ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenPr
     const card = theory[theoryIndex];
     const total = theory.length;
     const isLast = theoryIndex === total - 1;
+    const canContinue = card.kind === 'info' || doneSteps.has(theoryIndex);
+    const markDone = () => {
+      const i = theoryIndex;
+      setDoneSteps((prev) => new Set(prev).add(i));
+      requestAnimationFrame(() => continueRef.current?.focus());
+    };
 
     return (
       <LessonShell
@@ -137,8 +147,10 @@ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenPr
                 </button>
               )}
               <button
+                ref={continueRef}
                 type="button"
-                autoFocus
+                autoFocus={card.kind === 'info'}
+                disabled={!canContinue}
                 onClick={() => {
                   soundFX.playClick();
                   if (isLast) setStep('practice');
@@ -152,31 +164,34 @@ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenPr
           </div>
         }
       >
-        <div key={theoryIndex} className="space-y-6 animate-fade-in">
-          {theoryIndex === 0 && <Mascot mood="happy" size={72} say="Primeiro, um pouco de teoria!" />}
+        {card.kind === 'paradigm' ? (
+          <ParadigmStep key={theoryIndex} step={card} initiallyDone={doneSteps.has(theoryIndex)} onDone={markDone} />
+        ) : (
+          <div key={theoryIndex} className="space-y-6 animate-fade-in">
+            {theoryIndex === 0 && <Mascot mood="happy" size={72} say="Primeiro, um pouco de teoria!" />}
 
-          <div className="flex items-start justify-between gap-3">
-            <h2 className="text-3xl font-extrabold text-ink leading-tight">{card.title}</h2>
-            <SpeakButton text={card.title} label="Ouvir o título" />
-          </div>
-          <p className="text-lg text-ink/80 font-semibold leading-relaxed">{renderFormattedText(card.text)}</p>
-
-          {card.conjugation && (
-            <div className="rounded-3xl border-2 border-azulejo/25 bg-azulejo-light p-3">
-              <div className="grid grid-cols-2 gap-2">
-                {card.conjugation.map((item) => (
-                  <button
-                    key={item.pronoun}
-                    type="button"
-                    onClick={() => speakPt(`${item.pronoun} ${item.verb}`)}
-                    className="btn-3d !justify-between bg-white border-2 border-azulejo/20 !border-b-4 px-3.5 py-3 text-left"
-                  >
-                    <span className="text-brand-muted font-bold">{item.pronoun}</span>
-                    <span className="text-azulejo-dark font-extrabold text-lg">{item.verb}</span>
-                  </button>
-                ))}
-              </div>
+            <div className="flex items-start justify-between gap-3">
+              <h2 className="text-3xl font-extrabold text-ink leading-tight">{card.title}</h2>
+              <SpeakButton text={card.title} label="Ouvir o título" />
             </div>
+            <p className="text-lg text-ink/80 font-semibold leading-relaxed">{renderFormattedText(card.text)}</p>
+
+            {card.conjugation && (
+              <div className="rounded-3xl border-2 border-azulejo/25 bg-azulejo-light p-3">
+                <div className="grid grid-cols-2 gap-2">
+                  {card.conjugation.map((item) => (
+                    <button
+                      key={item.pronoun}
+                      type="button"
+                      onClick={() => speakPt(`${item.pronoun} ${item.verb}`)}
+                      className="btn-3d !justify-between bg-white border-2 border-azulejo/20 !border-b-4 px-3.5 py-3 text-left"
+                    >
+                      <span className="text-brand-muted font-bold">{item.pronoun}</span>
+                      <span className="text-azulejo-dark font-extrabold text-lg">{item.verb}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
           )}
 
           {card.examples && (
@@ -197,6 +212,7 @@ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenPr
             </div>
           )}
         </div>
+        )}
       </LessonShell>
     );
   }

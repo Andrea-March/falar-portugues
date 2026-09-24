@@ -4,7 +4,8 @@
  * arriveranno da un database, cambia solo questo file.
  */
 import courseJson from './course.json';
-import type { Course, CourseNode, Chapter, Exercise as ContentExercise, NodeContent, Person, TheoryCard, Verb, VocabItem } from './schema';
+import { SINGULAR, PLURAL } from './schema';
+import type { Course, CourseNode, Chapter, Exercise as ContentExercise, NodeContent, Person, TheoryCard, TheoryItem, Verb, VocabItem } from './schema';
 import { verbList, vocabSetList, nodeLoaders } from './registry.generated';
 import type { Exercise as RuntimeExercise } from '@/types/exercise';
 
@@ -139,6 +140,7 @@ export function verbExercises(verbId: string, tense?: string): RuntimeExercise[]
 // ---------- Teoria pronta da mostrare ----------
 
 export interface ResolvedTheoryCard {
+  kind: 'info';
   title: string;
   text: string;
   conjugation?: { pronoun: string; verb: string }[];
@@ -153,9 +155,59 @@ export function resolveTheory(card: TheoryCard): ResolvedTheoryCard {
   const examples = [...vocabExamples, ...(card.examples ?? [])];
 
   return {
+    kind: 'info',
     title: card.title,
     text: card.text,
     conjugation: card.verb ? conjugationRows(card.verb.verb, card.verb.tense) : undefined,
     examples: examples.length ? examples : undefined,
   };
+}
+
+// ---------- Studio guidato del paradigma ----------
+
+export interface ParadigmRow {
+  person: Person;
+  /** Etichetta mostrata, es. "Ele / Ela / Você" */
+  pronoun: string;
+  /** Pronome letto ad alta voce insieme alla forma, es. "ele" */
+  spoken: string;
+  form: string;
+}
+
+export interface ParadigmStep {
+  kind: 'paradigm';
+  /** trace = si ricopia sopra la forma in trasparenza; recall = si scrive a memoria */
+  mode: 'trace' | 'recall';
+  verbId: string;
+  infinitive: string;
+  tense: string;
+  /** Sottotitolo della schermata */
+  label: string;
+  rows: ParadigmRow[];
+}
+
+export type TheoryStep = ResolvedTheoryCard | ParadigmStep;
+
+const SPOKEN: Record<Person, string> = { eu: 'eu', tu: 'tu', ele_ela_voce: 'ele', nos: 'nós', eles_elas_voces: 'eles' };
+
+function paradigmSteps(verbId: string, tense: string): ParadigmStep[] {
+  const verb = getVerb(verbId);
+  const forms = verb?.conjugations[tense];
+  if (!verb || !forms) return [];
+  const rows = (persons: Person[]): ParadigmRow[] =>
+    persons.map((p) => ({ person: p, pronoun: PERSON_LABELS[p], spoken: SPOKEN[p], form: forms[p] }));
+  const base = { kind: 'paradigm' as const, verbId, infinitive: verb.infinitive, tense };
+  return [
+    { ...base, mode: 'trace', label: 'Singular', rows: rows(SINGULAR) },
+    { ...base, mode: 'trace', label: 'Plural', rows: rows(PLURAL) },
+    { ...base, mode: 'trace', label: 'Todas as formas', rows: rows([...SINGULAR, ...PLURAL]) },
+    { ...base, mode: 'recall', label: 'Agora de memória', rows: rows([...SINGULAR, ...PLURAL]) },
+  ];
+}
+
+/** Trasforma la teoria del contenuto nelle schermate da mostrare */
+export function theorySteps(items: TheoryItem[]): TheoryStep[] {
+  return items.flatMap((item): TheoryStep[] =>
+    'paradigm' in item ? paradigmSteps(item.paradigm.verb, item.paradigm.tense) : [resolveTheory(item)]
+  );
 }

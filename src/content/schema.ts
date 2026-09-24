@@ -85,11 +85,23 @@ export const TheoryCard = z.strictObject({
 });
 export type TheoryCard = z.infer<typeof TheoryCard>;
 
+/** Studio guidato di un paradigma: diventa 4 schermate (singolare, plurale, tutto con traccia, tutto a memoria) */
+export const ParadigmCard = z.strictObject({
+  paradigm: z.strictObject({ verb: Slug, tense: Tense }),
+});
+export type ParadigmCard = z.infer<typeof ParadigmCard>;
+
+export const TheoryItem = z.union([TheoryCard, ParadigmCard]);
+export type TheoryItem = z.infer<typeof TheoryItem>;
+
+export const SINGULAR: Person[] = ['eu', 'tu', 'ele_ela_voce'];
+export const PLURAL: Person[] = ['nos', 'eles_elas_voces'];
+
 // ---------- File: una lezione (src/content/nodes/<id>.json) ----------
 
 export const NodeContent = z.strictObject({
   id: Slug,
-  theory: z.array(TheoryCard).optional(),
+  theory: z.array(TheoryItem).optional(),
   exercises: z.array(Exercise).min(1),
 });
 export type NodeContent = z.infer<typeof NodeContent>;
