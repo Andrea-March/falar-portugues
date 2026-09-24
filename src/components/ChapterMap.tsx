@@ -18,7 +18,7 @@ interface ChapterMapProps {
 
 // Pattern di scostamento orizzontale in percentuale (%)
 const X_OFFSETS = [50, 28, 50, 72];
-const ROW_HEIGHT = 130; // Spazio verticale tra i centri dei nodi (px): lascia posto all'etichetta sotto il nodo
+const ROW_HEIGHT = 138; // Spazio verticale tra i centri dei nodi (px): lascia posto all'etichetta sotto il nodo
 const NODE_SIZE = 76;   // Dimensione bottone nodo (px)
 
 export default function ChapterMap({
@@ -198,8 +198,14 @@ export default function ChapterMap({
                     {/* Etichetta sempre visibile: l'argomento del nodo, senza dover toccare */}
                     <p
                       aria-hidden="true"
-                      className={`pointer-events-none absolute top-full mt-1.5 left-1/2 -translate-x-1/2 w-24 text-center text-[11px] font-extrabold leading-tight line-clamp-2 ${
-                        isLocked ? 'text-[#9aa4bd]' : isCurrent ? 'text-brand-primary' : 'text-brand-muted'
+                      className={`pointer-events-none absolute top-full mt-2.5 left-1/2 -translate-x-1/2 max-w-[108px] text-center text-[11px] font-extrabold leading-tight line-clamp-2 px-2.5 py-1 rounded-full border-2 ${
+                        isLocked
+                          ? 'bg-white/80 border-[#dde3f0] text-[#9aa4bd]'
+                          : isCompleted
+                          ? 'bg-brand-accentLight border-brand-accent text-brand-accentDark'
+                          : isCurrent
+                          ? 'bg-brand-primary border-brand-dark text-white shadow-sm'
+                          : 'bg-white border-brand-border text-ink shadow-sm'
                       }`}
                     >
                       {node.draft ? 'Em breve' : node.title}
@@ -216,7 +222,7 @@ export default function ChapterMap({
                 const isDraft = Boolean(node.draft);
                 const isLocked = !checkIsUnlocked(node, index, chapterIndex, chapters) || isDraft;
                 const posX = X_OFFSETS[index % X_OFFSETS.length];
-                const top = index * ROW_HEIGHT + ROW_HEIGHT / 2 + NODE_SIZE / 2 + 12;
+                const top = index * ROW_HEIGHT + ROW_HEIGHT / 2 + NODE_SIZE / 2 + 34; // sotto l'etichetta del nodo
                 const tone = isLocked
                   ? 'bg-[#e6eaf3] border-[#c7cfdf] text-brand-muted'
                   : isCompleted

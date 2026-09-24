@@ -26,8 +26,13 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   });
 }
 
-export function speakPortuguese(text: string) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window) || !isAudioEnabled()) return;
+export function speakPortuguese(text: string, onEnd?: () => void) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window) || !isAudioEnabled()) {
+    // Áudio desligado: mesmo assim dá um pequeno intervalo antes de continuar,
+    // para o ritmo da conversa não ficar instantâneo.
+    if (onEnd) setTimeout(onEnd, 450);
+    return;
+  }
 
   window.speechSynthesis.cancel();
 
@@ -36,13 +41,20 @@ export function speakPortuguese(text: string) {
     .replace(/_{3,}/g, '')
     .replace(/\s+/g, ' ')
     .trim();
-  if (!clean) return;
+  if (!clean) {
+    onEnd?.();
+    return;
+  }
 
   const utterance = new SpeechSynthesisUtterance(clean);
   utterance.lang = 'pt-PT';
   utterance.rate = 0.9;
   const voice = europeanVoice();
   if (voice) utterance.voice = voice;
+  if (onEnd) {
+    utterance.onend = onEnd;
+    utterance.onerror = onEnd;
+  }
 
   window.speechSynthesis.speak(utterance);
 }

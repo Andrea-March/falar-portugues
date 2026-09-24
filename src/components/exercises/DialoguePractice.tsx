@@ -47,14 +47,14 @@ function SpeakIcon({ text }: { text: string }) {
 /** Bolha da outra pessoa (esquerda) */
 function NpcBubble({ text }: { text: string }) {
   return (
-    <div className="flex items-end gap-2 max-w-[88%] animate-fade-in">
+    <div className="flex items-end gap-2 max-w-[88%] animate-bubble-in-left">
       <span
         className="w-9 h-9 rounded-full bg-azulejo-light border-2 border-azulejo/25 flex items-center justify-center text-base shrink-0"
         aria-hidden="true"
       >
         🧑🏽‍🍳
       </span>
-      <div className="bg-white border-2 border-brand-border rounded-2xl rounded-bl-sm px-4 py-2.5 flex items-start gap-2">
+      <div className="bg-white border-2 border-brand-border rounded-2xl rounded-bl-sm px-4 py-2.5 flex items-start gap-2 shadow-sm">
         <p className="font-bold text-ink leading-snug">{text}</p>
         <SpeakIcon text={text} />
       </div>
@@ -65,8 +65,8 @@ function NpcBubble({ text }: { text: string }) {
 /** Bolha do utilizador, já enviada (direita) */
 function UserBubble({ children, translation }: { children: React.ReactNode; translation?: string }) {
   return (
-    <div className="flex justify-end animate-pop">
-      <div className="max-w-[88%] bg-brand-light border-2 border-brand-primary/20 rounded-2xl rounded-br-sm px-4 py-2.5 text-right">
+    <div className="flex justify-end animate-bubble-in-right">
+      <div className="max-w-[88%] bg-brand-light border-2 border-brand-primary/20 rounded-2xl rounded-br-sm px-4 py-2.5 text-right shadow-sm">
         <p className="font-bold text-ink leading-snug">{children}</p>
         {translation && <p className="text-[13px] text-brand-muted font-semibold mt-0.5">{translation}</p>}
       </div>
@@ -118,6 +118,12 @@ export default function DialoguePractice({ exercises, onFinish, onClose }: Dialo
 
   const exercise = exercises[index];
 
+  // Legge ad alta voce la battuta dell'altra persona non appena compare
+  useEffect(() => {
+    if (exercise?.context) speakPortuguese(exercise.context);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exercise?.id]);
+
   if (!exercise) {
     return (
       <LessonShell progress={100} onClose={onClose}>
@@ -156,6 +162,20 @@ export default function DialoguePractice({ exercises, onFinish, onClose }: Dialo
     speakTimer.current = setTimeout(() => speakPortuguese(fullSentence), SPEAK_DELAY_MS);
   };
 
+  /** Passa alla battuta successiva (o chiude la conversazione se era l'ultima) */
+  const advance = () => {
+    setTurns((prev) => [...prev, { id: exercise.id, context: exercise.context, reply: fullSentence, translation: exercise.translationIt }]);
+    if (index + 1 < exercises.length) {
+      setIndex((i) => i + 1);
+      setAnswer('');
+      setFeedback('idle');
+      setAccentHint(false);
+      setFailedCurrent(false);
+    } else {
+      onFinish({ total: exercises.length, errors: errorCount, bestCombo });
+    }
+  };
+
   const markCorrect = () => {
     const newCombo = failedCurrent ? 0 : combo + 1;
     setCombo(newCombo);
@@ -163,7 +183,10 @@ export default function DialoguePractice({ exercises, onFinish, onClose }: Dialo
     setAccentHint(false);
     setFeedback('correct');
     soundFX.playSuccess(newCombo);
-    speakLater();
+    // Conversazione fluida: niente popup da chiudere a mano. Si legge la frase
+    // e, appena finita (o subito se l'audio è disattivato), si passa da soli.
+    if (speakTimer.current) clearTimeout(speakTimer.current);
+    speakTimer.current = setTimeout(() => speakPortuguese(fullSentence, advance), SPEAK_DELAY_MS);
   };
 
   const markWrong = () => {
@@ -205,20 +228,12 @@ export default function DialoguePractice({ exercises, onFinish, onClose }: Dialo
     }
   };
 
-  const next = () => {
+  /** Solo per "Ver a solução" dopo un errore: qui il tocco resta, serve a dare il tempo di leggere */
+  const continueAfterReveal = () => {
     soundFX.playClick();
     if (speakTimer.current) clearTimeout(speakTimer.current);
     stopSpeaking();
-    setTurns((prev) => [...prev, { id: exercise.id, context: exercise.context, reply: fullSentence, translation: exercise.translationIt }]);
-    if (index + 1 < exercises.length) {
-      setIndex((i) => i + 1);
-      setAnswer('');
-      setFeedback('idle');
-      setAccentHint(false);
-      setFailedCurrent(false);
-    } else {
-      onFinish({ total: exercises.length, errors: errorCount, bestCombo });
-    }
+    advance();
   };
 
   const retry = () => {
@@ -237,20 +252,22 @@ export default function DialoguePractice({ exercises, onFinish, onClose }: Dialo
       hearts={progress.hearts}
       onClose={onClose}
       footer={
-        <FeedbackSheet
-          key={`${exercise.id}-${feedback}`}
-          mode={isChoice ? 'choice' : 'typing'}
-          feedback={feedback}
-          combo={combo}
-          canCheck={answer.trim().length > 0}
-          correctAnswer={exercise.correctAnswer}
-          sentence={fullSentence}
-          onCheck={() => evaluate(answer, true)}
-          onDontKnow={reveal}
-          onReveal={reveal}
-          onContinue={next}
-          onRetry={retry}
-        />
+        feedback === 'correct' ? undefined : (
+          <FeedbackSheet
+            key={`${exercise.id}-${feedback}`}
+            mode={isChoice ? 'choice' : 'typing'}
+            feedback={feedback}
+            combo={combo}
+            canCheck={answer.trim().length > 0}
+            correctAnswer={exercise.correctAnswer}
+            sentence={fullSentence}
+            onCheck={() => evaluate(answer, true)}
+            onDontKnow={reveal}
+            onReveal={reveal}
+            onContinue={continueAfterReveal}
+            onRetry={retry}
+          />
+        )
       }
     >
       <div className="space-y-4 pb-2">
@@ -263,29 +280,31 @@ export default function DialoguePractice({ exercises, onFinish, onClose }: Dialo
         ))}
 
         {/* Turno corrente */}
-        {exercise.context && <NpcBubble text={exercise.context} />}
+        <div key={exercise.id} className="space-y-4 animate-fade-in">
+          {exercise.context && <NpcBubble text={exercise.context} />}
 
-        {exercise.prompt && (
-          <p className="text-center text-sm font-bold text-brand-muted px-4">{exercise.prompt}</p>
-        )}
+          {exercise.prompt && (
+            <p className="text-center text-sm font-bold text-brand-muted px-4">{exercise.prompt}</p>
+          )}
 
-        <LiveUserBubble before={gapBefore} after={gapAfter} value={answer} feedback={feedback} />
+          <LiveUserBubble before={gapBefore} after={gapAfter} value={answer} feedback={feedback} />
 
-        {isChoice ? (
-          <ChoiceReplies exercise={exercise} value={answer} feedback={feedback} onChange={handleChange} />
-        ) : (
-          <WriteReply
-            exerciseId={exercise.id}
-            value={answer}
-            locked={locked}
-            accentHint={accentHint}
-            wrongLetters={wrongLetters}
-            onChange={handleChange}
-            onSubmit={() => {
-              if (!locked && answer.trim()) evaluate(answer, true);
-            }}
-          />
-        )}
+          {isChoice ? (
+            <ChoiceReplies exercise={exercise} value={answer} feedback={feedback} onChange={handleChange} />
+          ) : (
+            <WriteReply
+              exerciseId={exercise.id}
+              value={answer}
+              locked={locked}
+              accentHint={accentHint}
+              wrongLetters={wrongLetters}
+              onChange={handleChange}
+              onSubmit={() => {
+                if (!locked && answer.trim()) evaluate(answer, true);
+              }}
+            />
+          )}
+        </div>
 
         <div ref={bottomRef} />
       </div>
