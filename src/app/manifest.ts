@@ -20,6 +20,13 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: '512x512',
         type: 'image/png',
       },
+      {
+        // Per i launcher Android che ritagliano l'icona (cerchio, squircle…): sfondo pieno e margine di sicurezza
+        src: '/icon-maskable-512x512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
+      },
     ],
   };
 }

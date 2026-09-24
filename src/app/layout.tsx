@@ -1,18 +1,13 @@
 import type { Metadata, Viewport } from 'next';
-import { Baloo_2, Nunito } from 'next/font/google';
 import './globals.css';
 import { UserProvider } from '@/context/UserContext';
 
-const baloo = Baloo_2({ subsets: ['latin'], weight: ['600', '700', '800'], variable: '--font-baloo' });
-const nunito = Nunito({ subsets: ['latin'], weight: ['400', '600', '700', '800'], variable: '--font-nunito' });
+const baloo = { variable: '' }; const nunito = { variable: '' };
 
 export const metadata: Metadata = {
   title: 'FalaLuso - Aprender Português',
   description: 'Aprende português europeu de forma prática',
-  icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-icon.png',
-  },
+  // favicon.ico e apple-icon.png in src/app vengono collegate in automatico da Next
   // Permette a iOS di aprirla a schermo intero senza barra di Safari
   appleWebApp: {
     capable: true,
