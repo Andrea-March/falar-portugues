@@ -62,7 +62,7 @@
     {
       "id": "ex_1_1_5",
       "type": "write",
-      "text": "Vocês {sois} muito bem-vindos.",
+      "text": "Vocês {são} muito bem-vindos.",
       "it": "Voi siete molto benvenuti.",
       "trains": [
         "verb:ser:presente:eles_elas_voces"
