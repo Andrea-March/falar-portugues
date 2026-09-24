@@ -2,15 +2,30 @@
   "id": "node_1_2",
   "theory": [
     {
-      "title": "Saluti di base",
-      "text": "Ecco i saluti principali usati ogni giorno in Portogallo:",
-      "vocab": [
-        "ola",
-        "bom-dia",
-        "boa-tarde",
-        "boa-noite",
-        "como-estas"
-      ]
+      "title": "Salutare in Portogallo",
+      "text": "In Portogallo si saluta sempre, anche entrando in un negozio o al bar, e il saluto cambia con l'ora del giorno. Vediamo le espressioni **una alla volta**: ascoltale e ricopiale, poi le ripasserai a memoria."
+    },
+    {
+      "vocabStudy": {
+        "groups": [
+          {
+            "label": "Saluti del giorno",
+            "items": [
+              "bom-dia",
+              "boa-tarde",
+              "boa-noite"
+            ]
+          },
+          {
+            "label": "Tra amici",
+            "items": [
+              "ola",
+              "como-estas",
+              "tudo-bem"
+            ]
+          }
+        ]
+      }
     }
   ],
   "exercises": [

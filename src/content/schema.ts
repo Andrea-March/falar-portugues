@@ -95,7 +95,29 @@ export const ParadigmCard = z.strictObject({
 });
 export type ParadigmCard = z.infer<typeof ParadigmCard>;
 
-export const TheoryItem = z.union([TheoryCard, ParadigmCard]);
+/**
+ * Studio guidato del vocabolario: ogni gruppo diventa una schermata per espressione
+ * (ascolto + significato + ricopiatura), poi una schermata finale a memoria in cui
+ * si risponde alle situazioni ("situation" delle voci).
+ */
+export const VocabStudyCard = z.strictObject({
+  vocabStudy: z.strictObject({
+    groups: z
+      .array(
+        z.strictObject({
+          /** Nome del gruppo, es. "Saluti del giorno" */
+          label: NonEmpty,
+          items: z.array(Slug).min(1),
+        })
+      )
+      .min(1),
+    /** Schermata finale a memoria (predefinito: sì) */
+    recall: z.boolean().optional(),
+  }),
+});
+export type VocabStudyCard = z.infer<typeof VocabStudyCard>;
+
+export const TheoryItem = z.union([TheoryCard, ParadigmCard, VocabStudyCard]);
 export type TheoryItem = z.infer<typeof TheoryItem>;
 
 export const SINGULAR: Person[] = ['eu', 'tu', 'ele_ela_voce'];
@@ -143,6 +165,12 @@ export const VocabItem = z.strictObject({
   it: NonEmpty,
   /** Nota d'uso, es. "informale", "detto da un uomo" */
   note: NonEmpty.optional(),
+  /** Un'emoji che accompagna la voce nello studio guidato, es. "☀️" */
+  icon: NonEmpty.optional(),
+  /** Quando si usa, mostrato nello studio guidato, es. "Dal mattino fino all'ora di pranzo" */
+  usage: NonEmpty.optional(),
+  /** Situazione per il ripasso a memoria: deve portare a questa espressione e non a un'altra */
+  situation: NonEmpty.optional(),
 });
 export type VocabItem = z.infer<typeof VocabItem>;
 

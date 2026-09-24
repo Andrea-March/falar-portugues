@@ -148,6 +148,26 @@ for (const { file, data } of nodes.values()) {
       else if (!v.conjugations[card.paradigm.tense]) fail(file, `${where}: il verbo "${card.paradigm.verb}" non ha il tempo "${card.paradigm.tense}"`);
       return;
     }
+    if ('vocabStudy' in card) {
+      const where = `teoria[${i}] (vocabStudy)`;
+      const withRecall = card.vocabStudy.recall !== false;
+      const seenItems = new Set<string>();
+      for (const g of card.vocabStudy.groups) {
+        for (const id of g.items) {
+          if (seenItems.has(id)) fail(file, `${where}: la voce "${id}" compare due volte`);
+          seenItems.add(id);
+          const ref = vocab.get(id);
+          if (!ref) {
+            fail(file, `${where}: la voce "${id}" non esiste in vocab/`);
+            continue;
+          }
+          const item = vocabSets.find((s) => s.data.id === ref.set)!.data.items.find((it) => it.id === id)!;
+          if (!/^[\p{L}]/u.test(item.pt)) fail(ref.file, `voce "${id}": nello studio guidato deve iniziare con una lettera (la punteggiatura iniziale non si digita)`);
+          if (withRecall && !item.situation) fail(ref.file, `voce "${id}": serve "situation" per il ripasso a memoria di ${relative(ROOT, file)}`);
+        }
+      }
+      return;
+    }
     const where = `teoria[${i}] "${card.title}"`;
     if (card.verb) {
       const v = verbs.get(card.verb.verb)?.data;

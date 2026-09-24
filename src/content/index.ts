@@ -5,7 +5,7 @@
  */
 import courseJson from './course.json';
 import { SINGULAR, PLURAL } from './schema';
-import type { Course, CourseNode, Chapter, Exercise as ContentExercise, NodeContent, Person, TheoryCard, TheoryItem, Verb, VocabItem } from './schema';
+import type { Course, CourseNode, Chapter, Exercise as ContentExercise, NodeContent, Person, TheoryCard, TheoryItem, Verb, VocabItem, VocabStudyCard } from './schema';
 import { verbList, vocabSetList, nodeLoaders } from './registry.generated';
 import type { Exercise as RuntimeExercise } from '@/types/exercise';
 
@@ -198,7 +198,51 @@ export interface ParadigmStep {
   rows: ParadigmRow[];
 }
 
-export type TheoryStep = ResolvedTheoryCard | ParadigmStep;
+// ---------- Studio guidato del vocabolario ----------
+
+/** Separa la punteggiatura finale, che si mostra ma non si digita: "Tudo bem?" → "Tudo bem" + "?" */
+export function splitTrailingPunctuation(pt: string) {
+  const m = pt.trim().match(/^(.*?[\p{L}\p{N}])([^\p{L}\p{N}]*)$/u);
+  return m ? { form: m[1], after: m[2] } : { form: pt.trim(), after: '' };
+}
+
+export interface VocabPresentStep {
+  kind: 'vocab-present';
+  groupLabel: string;
+  /** Posizione nel gruppo (da 1) e dimensione del gruppo */
+  position: number;
+  groupSize: number;
+  item: VocabItem;
+  form: string;
+  after: string;
+}
+
+export interface VocabRecallStep {
+  kind: 'vocab-recall';
+  rows: { id: string; situation: string; form: string; after: string; pt: string }[];
+}
+
+function vocabStudySteps(card: VocabStudyCard['vocabStudy']): (VocabPresentStep | VocabRecallStep)[] {
+  const present: VocabPresentStep[] = card.groups.flatMap((g) => {
+    const items = g.items.map(getVocab).filter((v): v is VocabItem => Boolean(v));
+    return items.map((item, i) => ({
+      kind: 'vocab-present' as const,
+      groupLabel: g.label,
+      position: i + 1,
+      groupSize: items.length,
+      item,
+      ...splitTrailingPunctuation(item.pt),
+    }));
+  });
+  if (card.recall === false) return present;
+  const recall: VocabRecallStep = {
+    kind: 'vocab-recall',
+    rows: present.map(({ item, form, after }) => ({ id: item.id, situation: item.situation ?? item.it, form, after, pt: item.pt })),
+  };
+  return [...present, recall];
+}
+
+export type TheoryStep = ResolvedTheoryCard | ParadigmStep | VocabPresentStep | VocabRecallStep;
 
 const SPOKEN: Record<Person, string> = { eu: 'eu', tu: 'tu', ele_ela_voce: 'ele', nos: 'nós', eles_elas_voces: 'eles' };
 
@@ -219,7 +263,9 @@ function paradigmSteps(verbId: string, tense: string): ParadigmStep[] {
 
 /** Trasforma la teoria del contenuto nelle schermate da mostrare */
 export function theorySteps(items: TheoryItem[]): TheoryStep[] {
-  return items.flatMap((item): TheoryStep[] =>
-    'paradigm' in item ? paradigmSteps(item.paradigm.verb, item.paradigm.tense) : [resolveTheory(item)]
-  );
+  return items.flatMap((item): TheoryStep[] => {
+    if ('paradigm' in item) return paradigmSteps(item.paradigm.verb, item.paradigm.tense);
+    if ('vocabStudy' in item) return vocabStudySteps(item.vocabStudy);
+    return [resolveTheory(item)];
+  });
 }

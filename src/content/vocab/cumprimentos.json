@@ -6,33 +6,51 @@
       "id": "ola",
       "pt": "Olá!",
       "it": "Ciao!",
-      "note": "informale"
+      "note": "informale",
+      "icon": "👋",
+      "usage": "Il saluto informale, va bene a qualsiasi ora.",
+      "situation": "👋 Incontri un amico: il saluto informale che va bene a ogni ora."
     },
     {
       "id": "bom-dia",
       "pt": "Bom dia!",
-      "it": "Buongiorno!"
+      "it": "Buongiorno!",
+      "icon": "☀️",
+      "usage": "Dal mattino fino all'ora di pranzo, non a mezzogiorno in punto.",
+      "situation": "☀️ Sono le 9 del mattino ed entri al bar: saluti il barista."
     },
     {
       "id": "boa-tarde",
       "pt": "Boa tarde!",
-      "it": "Buon pomeriggio!"
+      "it": "Buon pomeriggio!",
+      "icon": "🌤️",
+      "usage": "Dopo pranzo, finché non fa buio.",
+      "situation": "🌤️ Sono le 16: entri in un negozio e saluti."
     },
     {
       "id": "boa-noite",
       "pt": "Boa noite!",
-      "it": "Buona sera / Buona notte!"
+      "it": "Buona sera / Buona notte!",
+      "icon": "🌙",
+      "usage": "Quando è buio: sia per salutare arrivando, sia per congedarsi o andare a dormire.",
+      "situation": "🌙 Sono le 23: dai la buonanotte prima di andare a dormire."
     },
     {
       "id": "como-estas",
       "pt": "Como estás?",
       "it": "Come stai?",
-      "note": "informale, con \"tu\""
+      "note": "informale",
+      "icon": "🙂",
+      "usage": "Per chiedere come sta a qualcuno a cui dai del tu.",
+      "situation": "🙂 Chiedi a un'amica come sta, dandole del tu."
     },
     {
       "id": "tudo-bem",
       "pt": "Tudo bem?",
-      "it": "Tutto bene? / Come va?"
+      "it": "Tutto bene? / Come va?",
+      "icon": "🤝",
+      "usage": "Domanda veloce che fa anche da risposta: «Tudo bem?» – «Tudo bem!»",
+      "situation": "🤝 Incroci un collega e chiedi al volo se è tutto a posto."
     }
   ]
 }

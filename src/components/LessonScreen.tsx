@@ -15,6 +15,7 @@ import { speakPortuguese } from '@/utils/textToSpeech';
 import LessonCompleteCard from '@/components/common/LessonCompleteCard';
 import { fullNodeTitle, getCourseNode, loadNode, theorySteps, toRuntimeExercise, type NodeContent } from '@/content';
 import ParadigmStep from '@/components/theory/ParadigmStep';
+import { VocabPresentStep, VocabRecallStep } from '@/components/theory/VocabStudy';
 
 interface LessonScreenProps {
   nodeId: string;
@@ -100,7 +101,7 @@ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenPr
 
   const [step, setStep] = useState<'theory' | 'practice' | 'complete'>(theory.length > 0 ? 'theory' : 'practice');
   const [theoryIndex, setTheoryIndex] = useState(0);
-  /** Schermate interattive (paradigma) già completate */
+  /** Schermate interattive (paradigma, studio del vocabolario) già completate */
   const [doneSteps, setDoneSteps] = useState<Set<number>>(() => new Set());
   const continueRef = useRef<HTMLButtonElement>(null);
   const [lessonStats, setLessonStats] = useState({ xp: 15, accuracy: 100, bestCombo: 0 });
@@ -169,6 +170,10 @@ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenPr
       >
         {card.kind === 'paradigm' ? (
           <ParadigmStep key={theoryIndex} step={card} initiallyDone={doneSteps.has(theoryIndex)} onDone={markDone} />
+        ) : card.kind === 'vocab-present' ? (
+          <VocabPresentStep key={theoryIndex} step={card} initiallyDone={doneSteps.has(theoryIndex)} onDone={markDone} />
+        ) : card.kind === 'vocab-recall' ? (
+          <VocabRecallStep key={theoryIndex} step={card} initiallyDone={doneSteps.has(theoryIndex)} onDone={markDone} />
         ) : (
           <div key={theoryIndex} className="space-y-6 animate-fade-in">
             {theoryIndex === 0 && <Mascot mood="happy" size={72} say="Primeiro, um pouco de teoria!" />}

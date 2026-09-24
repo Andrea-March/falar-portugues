@@ -60,3 +60,26 @@ deve essere proprio quella forma (`"Ela {és}"` con `ele_ela_voce` viene segnala
 
 `verb` mostra la tabella presa da `verbs/`, `vocab` mostra le voci prese da `vocab/`:
 niente va ricopiato a mano.
+
+## Studio guidato del vocabolario
+
+```json
+{ "vocabStudy": { "groups": [
+    { "label": "Saluti del giorno", "items": ["bom-dia", "boa-tarde", "boa-noite"] },
+    { "label": "Tra amici", "items": ["ola", "como-estas", "tudo-bem"] }
+] } }
+```
+
+Ogni voce diventa una schermata: l'audio parte da solo, si vedono traduzione, `usage`
+(quando si usa), `note` e `icon`, e si ricopia l'espressione sopra il modello.
+La punteggiatura finale ("?", "!") si vede ma non si digita.
+Alla fine c'è una schermata a memoria: per ogni voce si mostra la sua `situation`,
+che quindi è obbligatoria (a meno di `"recall": false`). Scrivi situazioni che portino
+a una sola espressione del gruppo: se l'utente scrive quella di un'altra riga, l'app
+gli dice che esiste ma che ce n'è una più adatta.
+
+```json
+{ "id": "bom-dia", "pt": "Bom dia!", "it": "Buongiorno!", "icon": "☀️",
+  "usage": "Dal mattino fino all'ora di pranzo.",
+  "situation": "☀️ Sono le 9 del mattino ed entri al bar: saluti il barista." }
+```
