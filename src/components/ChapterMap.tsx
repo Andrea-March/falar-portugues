@@ -2,7 +2,9 @@
 
 import React, { useState } from 'react';
 import chaptersData from '@/data/chapters.json';
-import { soundFX } from '@/utils/sound'; // Assicurati che l'import sia corretto
+import { Check, Lock } from 'lucide-react';
+import { soundFX } from '@/utils/sound';
+import Mascot from '@/components/common/Mascot';
 
 export interface Node {
   id: string;
@@ -31,9 +33,9 @@ interface ChapterMapProps {
 }
 
 // Pattern di scostamento orizzontale in percentuale (%)
-const X_OFFSETS = [50, 24, 50, 76];
-const ROW_HEIGHT = 104; // Spazio verticale tra i centri dei nodi (px)
-const NODE_SIZE = 64;   // Dimensione bottone nodo (px)
+const X_OFFSETS = [50, 28, 50, 72];
+const ROW_HEIGHT = 112; // Spazio verticale tra i centri dei nodi (px)
+const NODE_SIZE = 76;   // Dimensione bottone nodo (px)
 
 export default function ChapterMap({
   completedNodeIds = ['node_1_1'],
@@ -76,188 +78,129 @@ export default function ChapterMap({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto pb-28 pt-4 px-4 space-y-12">
+    <div className="w-full max-w-md mx-auto pb-32 pt-2 space-y-10">
       {chapters.map((chapter, chapterIndex) => {
         const totalRows = chapter.nodes.length;
         const svgHeight = totalRows * ROW_HEIGHT;
+        const doneInChapter = chapter.nodes.filter((n) => completedNodeIds.includes(n.id)).length;
 
         return (
-          <div key={chapter.id} className="space-y-4">
-            {/* Header del Capitolo */}
-            <div className="bg-brand-surface p-4 rounded-2xl border border-stone-200/80 shadow-xs flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-brand-light border border-brand-primary/20 flex items-center justify-center text-2xl shrink-0">
+          <section key={chapter.id} aria-labelledby={`${chapter.id}-title`} className="space-y-6">
+            {/* Intestazione capitolo: piastrella azulejo */}
+            <div className="azulejo-pattern rounded-3xl border-b-[6px] border-azulejo-dark text-white px-5 py-4 flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-white/95 flex items-center justify-center text-3xl shrink-0">
                 {chapter.icon}
               </div>
-              <div>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-brand-primary">
-                  Capítulo {chapter.number}
-                </span>
-                <h2 className="text-base font-black text-stone-800 leading-tight">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-sm font-bold text-white/80">Capítulo {chapter.number}</p>
+                  <span className="text-xs font-extrabold bg-white/20 rounded-full px-2 py-0.5" aria-label={`${doneInChapter} de ${totalRows} lições feitas`}>
+                    {doneInChapter}/{totalRows}
+                  </span>
+                </div>
+                <h2 id={`${chapter.id}-title`} className="text-2xl font-extrabold leading-tight">
                   {chapter.title}
                 </h2>
-                <p className="text-xs text-stone-500 font-medium line-clamp-1 mt-0.5">
-                  {chapter.description}
-                </p>
+                <p className="text-sm text-white/85 font-semibold line-clamp-1">{chapter.description}</p>
               </div>
             </div>
 
-            {/* Contenitore Mappa a Nodi */}
-            <div
-              className="relative w-full"
-              style={{ height: `${svgHeight}px` }}
-            >
-              {/* Tracciato SVG Curvo */}
+            <div className="relative w-full" style={{ height: `${svgHeight}px` }}>
+              {/* Percorso */}
               <svg
                 className="absolute inset-0 w-full h-full pointer-events-none"
                 viewBox={`0 0 100 ${svgHeight}`}
                 preserveAspectRatio="none"
+                aria-hidden="true"
               >
                 {chapter.nodes.map((node, index) => {
                   if (index === chapter.nodes.length - 1) return null;
-
                   const nextNode = chapter.nodes[index + 1];
                   const startX = X_OFFSETS[index % X_OFFSETS.length];
                   const startY = index * ROW_HEIGHT + ROW_HEIGHT / 2;
-
                   const endX = X_OFFSETS[(index + 1) % X_OFFSETS.length];
                   const endY = (index + 1) * ROW_HEIGHT + ROW_HEIGHT / 2;
-
-                  const controlY1 = startY + ROW_HEIGHT * 0.5;
-                  const controlY2 = endY - ROW_HEIGHT * 0.5;
-
-                  const pathData = `M ${startX} ${startY} C ${startX} ${controlY1}, ${endX} ${controlY2}, ${endX} ${endY}`;
-                  const isSegmentDone =
-                    completedNodeIds.includes(node.id) &&
-                    completedNodeIds.includes(nextNode.id);
-
+                  const pathData = `M ${startX} ${startY} C ${startX} ${startY + ROW_HEIGHT * 0.5}, ${endX} ${endY - ROW_HEIGHT * 0.5}, ${endX} ${endY}`;
+                  const isSegmentDone = completedNodeIds.includes(node.id) && completedNodeIds.includes(nextNode.id);
                   return (
                     <path
                       key={`path-${node.id}`}
                       d={pathData}
                       fill="none"
-                      stroke={isSegmentDone ? '#10b981' : '#e7e5e4'}
-                      strokeWidth="6"
+                      stroke={isSegmentDone ? '#ffc21a' : '#dde3f0'}
+                      strokeWidth="10"
                       strokeLinecap="round"
+                      strokeDasharray={isSegmentDone ? undefined : '2 16'}
                       vectorEffect="non-scaling-stroke"
                     />
                   );
                 })}
               </svg>
 
-              {/* Bottoni Nodi */}
               {chapter.nodes.map((node, index) => {
                 const isCompleted = completedNodeIds.includes(node.id);
-                const isCurrent = node.id === currentNodeId;
-                const isUnlocked = checkIsUnlocked(node, index, chapterIndex, chapters);
-                const isLocked = !isUnlocked;
-
+                const isCurrent = node.id === currentNodeId && !isCompleted;
+                const isLocked = !checkIsUnlocked(node, index, chapterIndex, chapters);
                 const posX = X_OFFSETS[index % X_OFFSETS.length];
                 const posY = index * ROW_HEIGHT + ROW_HEIGHT / 2;
-                const alignRight = posX < 50;
+                const mascotOnRight = posX <= 50;
+
+                const tone = isLocked
+                  ? 'bg-[#e6eaf3] border-[#c7cfdf] text-[#9aa4bd] cursor-not-allowed'
+                  : isCompleted
+                  ? 'bg-brand-accent border-brand-accentHover text-brand-accentDark'
+                  : isCurrent
+                  ? 'bg-brand-primary border-brand-dark text-white ring-[6px] ring-brand-accent/60'
+                  : 'bg-white border-brand-border text-ink border-2';
 
                 return (
                   <div
                     key={node.id}
-                    className="absolute -translate-x-1/2 -translate-y-1/2 flex items-center"
-                    style={{
-                      left: `${posX}%`,
-                      top: `${posY}px`,
-                    }}
+                    className="absolute -translate-x-1/2 -translate-y-1/2"
+                    style={{ left: `${posX}%`, top: `${posY}px` }}
                   >
-                    {/* Tooltip desktop a sinistra se il nodo è spostato a destra */}
-                    {!alignRight && (
-                      <div
-                        className={`mr-3 pointer-events-none transition-all duration-300 hidden sm:block ${
-                          isCurrent ? 'opacity-100 translate-x-0' : 'opacity-70 translate-x-1'
-                        }`}
-                      >
-                        <div className="px-3 py-1.5 rounded-xl text-xs font-black border shadow-xs bg-brand-surface text-stone-800 border-stone-200/80 text-right">
-                          {node.title}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Wrapper del nodo con indicatori di stato */}
-                    <div className="relative flex items-center justify-center">
-                      {/* Badge fluttuante "COMEÇAR" sul nodo corrente */}
-                      {isCurrent && (
-                        <div className="absolute -top-7 left-1/2 -translate-x-1/2 z-20 pointer-events-none animate-bounce">
-                          <span className="bg-brand-dark text-brand-accentLight border border-brand-accent/50 text-[10px] font-black tracking-wider uppercase px-2.5 py-0.5 rounded-md shadow-md">
-                            Começar
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Alone pulsante solare sul nodo attivo */}
-                      {isCurrent && (
-                        <span className="absolute -inset-2.5 rounded-full bg-brand-primary/20 animate-ping pointer-events-none" />
-                      )}
-
-                      {/* Bottone Tattile 3D calibrato sulla palette */}
-                      <button
-                        type="button"
-                        disabled={isLocked}
-                        onMouseEnter={() => setActiveTooltipId(node.id)}
-                        onMouseLeave={() => setActiveTooltipId(null)}
-                        onClick={() => {
-                          soundFX.playClick();
-                          onSelectNode?.(node);
-                        }}
-                        style={{ width: `${NODE_SIZE}px`, height: `${NODE_SIZE}px` }}
-                        className={`relative rounded-full flex items-center justify-center text-2xl transition-all duration-150 select-none cursor-pointer ${
-                          isLocked
-                            ? 'cursor-not-allowed bg-stone-200 border-b-[5px] border-stone-300 text-stone-400 opacity-75'
-                            : 'active:translate-y-1'
-                        } ${
-                          isCompleted
-                            ? 'bg-emerald-500 border-b-[6px] border-emerald-700 text-white shadow-lg shadow-emerald-500/25 active:border-b-2 hover:brightness-105'
-                            : isCurrent
-                            ? 'bg-brand-primary border-b-[6px] border-brand-dark text-white shadow-xl shadow-brand-primary/30 active:border-b-2 ring-4 ring-brand-accent/40 scale-105 hover:brightness-105'
-                            : !isLocked
-                            ? 'bg-brand-surface border-2 border-stone-200 border-b-[6px] border-b-stone-300 text-stone-700 shadow-md active:border-b-2 hover:border-brand-primary/50'
-                            : ''
-                        }`}
-                      >
-                        {/* Riflesso glossy vetrato sulla calotta superiore */}
-                        <div className="absolute top-1 left-2.5 right-2.5 h-[42%] rounded-t-full bg-gradient-to-b from-white/40 to-transparent pointer-events-none" />
-
-                        {/* Icona Principale del nodo */}
-                        <span className="relative z-10 filter drop-shadow-xs">
-                          {node.icon}
+                    {isCurrent && (
+                      <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-20 pointer-events-none animate-bob">
+                        <span className="block whitespace-nowrap bg-white text-brand-primary border-2 border-brand-border font-extrabold text-sm px-3 py-1 rounded-xl">
+                          Começar
                         </span>
-
-                        {/* Badge di stato completato */}
-                        {isCompleted && (
-                          <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-600 border-2 border-brand-surface flex items-center justify-center text-white text-[11px] font-black shadow-xs z-10">
-                            ✓
-                          </span>
-                        )}
-
-                        {/* Badge di stato bloccato */}
-                        {isLocked && (
-                          <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-stone-300 border-2 border-brand-surface flex items-center justify-center text-stone-600 text-[10px] shadow-xs z-10">
-                            🔒
-                          </span>
-                        )}
-                      </button>
-                    </div>
-
-                    {/* Tooltip desktop a destra */}
-                    {alignRight && (
-                      <div
-                        className={`ml-3 pointer-events-none transition-all duration-300 hidden sm:block ${
-                          isCurrent ? 'opacity-100 translate-x-0' : 'opacity-70 -translate-x-1'
-                        }`}
-                      >
-                        <div className="px-3 py-1.5 rounded-xl text-xs font-black border shadow-xs bg-brand-surface text-stone-800 border-stone-200/80 text-left">
-                          {node.title}
-                        </div>
                       </div>
                     )}
 
-                    {/* Tooltip mobile al tap */}
+                    {isCurrent && (
+                      <div
+                        className={`absolute top-1/2 -translate-y-1/2 pointer-events-none ${
+                          mascotOnRight ? 'left-full ml-5' : 'right-full mr-5'
+                        }`}
+                      >
+                        <Mascot mood="idle" size={72} />
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      disabled={isLocked}
+                      aria-label={`${node.title}${isCompleted ? ' (concluída)' : isLocked ? ' (bloqueada)' : ''}`}
+                      onMouseEnter={() => setActiveTooltipId(node.id)}
+                      onMouseLeave={() => setActiveTooltipId(null)}
+                      onFocus={() => setActiveTooltipId(node.id)}
+                      onBlur={() => setActiveTooltipId(null)}
+                      onClick={() => {
+                        soundFX.playClick();
+                        onSelectNode?.(node);
+                      }}
+                      style={{ width: `${NODE_SIZE}px`, height: `${NODE_SIZE - 6}px` }}
+                      className={`relative rounded-[50%] border-b-[8px] flex items-center justify-center text-3xl select-none transition-[transform,border-width] duration-100 ${
+                        isLocked ? '' : 'cursor-pointer active:translate-y-[5px] active:border-b-[3px]'
+                      } ${tone}`}
+                    >
+                      <span className={isLocked ? 'grayscale opacity-60' : ''}>
+                        {isLocked ? <Lock size={26} strokeWidth={2.6} /> : isCompleted ? <Check size={32} strokeWidth={3.5} /> : node.icon}
+                      </span>
+                    </button>
+
                     {activeTooltipId === node.id && (
-                      <div className="sm:hidden absolute bottom-full mb-3 left-1/2 -translate-x-1/2 whitespace-nowrap z-30 px-3.5 py-1.5 bg-brand-dark text-brand-light rounded-xl text-xs font-extrabold shadow-xl border border-brand-primary/40 animate-in fade-in">
+                      <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 whitespace-nowrap z-30 px-3 py-1.5 bg-ink text-white rounded-xl text-sm font-bold animate-fade-in">
                         {node.title}
                       </div>
                     )}
@@ -265,7 +208,7 @@ export default function ChapterMap({
                 );
               })}
             </div>
-          </div>
+          </section>
         );
       })}
     </div>

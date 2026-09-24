@@ -1,42 +1,49 @@
 'use client';
 
+import { Flame, Heart, Zap } from 'lucide-react';
+
 interface HeaderProps {
   streak: number;
   xp: number;
-  hearts?: number; 
+  hearts?: number;
 }
 
-export default function Header({ streak, xp, hearts }: HeaderProps) {
+function Stat({ icon, value, label, tone }: { icon: React.ReactNode; value: number; label: string; tone: string }) {
   return (
-    <header className="sticky top-0 z-50 bg-brand-surface/90 backdrop-blur-md border-b border-amber-100 px-4 py-3 shadow-sm">
-      <div className="max-w-md mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-primary to-amber-500 flex items-center justify-center text-white font-black text-base shadow-md shadow-brand-primary/20 tracking-tighter">
-            PT
-          </div>
-          <div className="flex flex-col">
-            <span className="font-extrabold text-sm tracking-tight text-slate-900 leading-none">
-              Fala<span className="text-brand-primary">Luso</span>
-            </span>
-            <span className="text-[10px] text-stone-500 font-medium leading-tight">
-              Portoghese Europeo
-            </span>
-          </div>
-        </div>
+    <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-extrabold ${tone}`} aria-label={`${label}: ${value}`}>
+      {icon}
+      <span className="tabular-nums">{value}</span>
+    </div>
+  );
+}
 
-        <div className="flex items-center gap-2 text-xs font-bold">
-          <div className="flex items-center gap-1 bg-amber-500/10 text-amber-700 px-2.5 py-1 rounded-full border border-amber-500/20">
-            <span>🔥</span>
-            <span>{streak}</span>
-          </div>
-          <div className="flex items-center gap-1 bg-brand-primary/10 text-brand-primary px-2.5 py-1 rounded-full border border-brand-primary/20">
-            <span>⭐</span>
-            <span>{xp}</span>
-          </div>
-          <div className="flex items-center gap-1 bg-brand-primary/10 text-brand-primary px-2.5 py-1 rounded-full border border-brand-primary/20">
-            <span>⭐</span>
-            <span>{hearts}</span>
-          </div>
+export default function Header({ streak, xp, hearts = 0 }: HeaderProps) {
+  return (
+    <header className="sticky top-0 z-40 bg-brand-background/85 backdrop-blur-md pt-[env(safe-area-inset-top)]">
+      <div className="max-w-md mx-auto flex items-center justify-between px-4 py-3">
+        <span className="font-display text-2xl font-extrabold tracking-tight text-ink leading-none">
+          fala<span className="text-brand-primary">luso</span>
+        </span>
+
+        <div className="flex items-center gap-1.5">
+          <Stat
+            icon={<Flame size={18} strokeWidth={2.5} className="fill-brand-accent text-brand-accentHover" />}
+            value={streak}
+            label="Dias seguidos"
+            tone="bg-brand-accentLight text-brand-accentDark"
+          />
+          <Stat
+            icon={<Zap size={17} strokeWidth={2.5} className="fill-azulejo text-azulejo" />}
+            value={xp}
+            label="XP"
+            tone="bg-azulejo-light text-azulejo-dark"
+          />
+          <Stat
+            icon={<Heart size={17} strokeWidth={2.5} className="fill-brand-primary text-brand-primary" />}
+            value={hearts}
+            label="Vidas"
+            tone="bg-brand-light text-brand-dark"
+          />
         </div>
       </div>
     </header>

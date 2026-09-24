@@ -5,108 +5,86 @@ import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import ChapterMap, { Node } from '@/components/ChapterMap';
 import { useUser } from '@/context/UserContext';
-import VerbPractice from '@/components/exercises/VerbPractice';
+import Mascot from '@/components/common/Mascot';
 import chaptersData from '@/data/chapters.json';
 import { Chapter } from '@/components/ChapterMap';
 import GrammarHub from '@/components/GrammarHub';
 import LessonScreen from '@/components/LessonScreen';
 
 export default function Home() {
-  const { progress, completeNode, loseHeart, isLoaded } = useUser();
+  const { progress, completeNode, isLoaded } = useUser();
   const [activeNode, setActiveNode] = useState<Node | null>(null);
   const [activeTab, setActiveTab] = useState<'home' | 'grammar' | 'vocab' | 'chat'>('home');
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-stone-50 text-stone-500 font-bold text-sm">
-        Carregando...
+      <div className="min-h-screen flex items-center justify-center" aria-busy="true">
+        <Mascot mood="idle" size={96} />
       </div>
     );
   }
 
-  // Calcola la percentuale di completamento giornaliera basata ad es. su XP o lezioni
-  const dailyProgressPercentage = Math.min(100, Math.round((progress.xp / 100) * 100));
+  // Lezione aperta: occupa tutto lo schermo, niente header né barra in basso
+  if (activeNode) {
+    return (
+      <LessonScreen
+        nodeId={activeNode.id}
+        onClose={() => setActiveNode(null)}
+        onCompleteNode={() => {
+          // Gli XP sono già stati assegnati a fine esercizi (LessonScreen): qui 0 per non contarli due volte
+          completeNode(activeNode.id, getNextNodeId(activeNode.id), 0);
+          setActiveNode(null);
+        }}
+      />
+    );
+  }
 
   return (
-    <div className="min-h-screen pb-24 font-sans text-stone-900 bg-stone-50">
-      {/* Header Globale con statistiche utente */}
-      <Header
-        streak={progress.streak}
-        xp={progress.xp}
-        hearts={progress.hearts}
-      />
+    <div className="min-h-screen pb-28">
+      <Header streak={progress.streak} xp={progress.xp} hearts={progress.hearts} />
 
-      <main className="max-w-md mx-auto px-4 pt-5">
-        {/* TAB 1: HOME (Mappa dei Capitoli) */}
+      <main className="max-w-md mx-auto px-4 pt-3">
         {activeTab === 'home' && (
-          <div className="animate-fadeIn">
-            {activeNode ? (
-              /* SCHERMATA LEZIONE (Gestisce Teoria + Esercizi) */
-              <LessonScreen
-                nodeId={activeNode.id}
-                onClose={() => setActiveNode(null)}
-                onCompleteNode={() => {
-                  const nextId = getNextNodeId(activeNode.id);
-                  completeNode(activeNode.id, nextId);
-                  setActiveNode(null);
-                }}
-              />
-            ) : (
-              /* MAPPA A NODI */
-              <ChapterMap
-                completedNodeIds={progress.completedNodeIds}
-                currentNodeId={progress.currentNodeId}
-                onSelectNode={(node) => setActiveNode(node)}
-              />
-            )}
+          <div className="animate-fade-in">
+            <ChapterMap
+              completedNodeIds={progress.completedNodeIds}
+              currentNodeId={progress.currentNodeId}
+              onSelectNode={(node) => setActiveNode(node)}
+            />
           </div>
         )}
 
-        {/* TAB 2: GRAMMATICA / RIPASSO */}
         {activeTab === 'grammar' && (
-          <div className="animate-fadeIn">
+          <div className="animate-fade-in">
             <GrammarHub />
           </div>
         )}
 
-        {/* TAB 3: VIDEO / VOCABOLARIO */}
         {activeTab === 'vocab' && (
-          <div className="text-center py-12 bg-brand-surface rounded-2xl border border-orange-200/80 shadow-sm px-4 animate-fadeIn">
-            <span className="text-4xl">🎬</span>
-            <h3 className="font-bold text-base mt-3 text-stone-800">Módulo de Vídeo</h3>
-            <p className="text-xs text-stone-500 mt-1">Em breve com micro-clips em loop.</p>
-            <button
-              type="button"
-              onClick={() => setActiveTab('home')}
-              className="mt-4 text-xs font-bold text-brand-primary hover:underline"
-            >
-              Voltar ao Mapa
-            </button>
-          </div>
+          <ComingSoon title="Vídeos" text="Pequenos clipes do dia a dia em Lisboa, em breve." onBack={() => setActiveTab('home')} />
         )}
 
-        {/* TAB 4: CHAT CONVERSAZIONE */}
         {activeTab === 'chat' && (
-          <div className="text-center py-12 bg-brand-surface rounded-2xl border border-orange-200/80 shadow-sm px-4 animate-fadeIn">
-            <span className="text-4xl">💬</span>
-            <h3 className="font-bold text-base mt-3 text-stone-800">Conversação AI</h3>
-            <p className="text-xs text-stone-500 mt-1">Em breve com cenários reais em Lisboa.</p>
-            <button
-              type="button"
-              onClick={() => setActiveTab('home')}
-              className="mt-4 text-xs font-bold text-brand-primary hover:underline"
-            >
-              Voltar ao Mapa
-            </button>
-          </div>
+          <ComingSoon title="Conversa" text="Pratica diálogos reais comigo, em breve." onBack={() => setActiveTab('home')} />
         )}
       </main>
 
       <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
   );
+}
 
-  
+function ComingSoon({ title, text, onBack }: { title: string; text: string; onBack: () => void }) {
+  return (
+    <div className="flex flex-col items-center text-center pt-16 gap-3 animate-fade-in">
+      <Mascot mood="think" size={120} />
+      <h2 className="text-3xl font-extrabold text-ink mt-2">{title}</h2>
+      <p className="text-lg text-brand-muted font-semibold max-w-xs">{text}</p>
+      <button type="button" onClick={onBack} className="btn-3d btn-ghost px-6 py-3 mt-3">
+        Voltar ao percurso
+      </button>
+    </div>
+  );
 }
 
 /**

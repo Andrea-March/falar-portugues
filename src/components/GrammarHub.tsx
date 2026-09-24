@@ -38,28 +38,11 @@ export default function GrammarHub() {
 
   // Vista 3: Pratica specifica per un singolo verbo selezionato
   if (practiceVerbId) {
-    return (
-      <div className="space-y-4 animate-fadeIn">
-        <button
-          onClick={() => {
-            setPracticeVerbId(null);
-            setPracticeTense(undefined);
-          }}
-          className="text-xs font-bold text-stone-600 hover:text-stone-800 flex items-center gap-1 bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded-xl transition-all w-fit"
-        >
-          ← Voltar à Tabela do Verbo
-        </button>
-
-        <VerbPractice
-          filterVerbId={practiceVerbId}
-          filterTense={practiceTense}
-          onFinish={() => {
-            setPracticeVerbId(null);
-            setPracticeTense(undefined);
-          }}
-        />
-      </div>
-    );
+    const back = () => {
+      setPracticeVerbId(null);
+      setPracticeTense(undefined);
+    };
+    return <VerbPractice filterVerbId={practiceVerbId} filterTense={practiceTense} onFinish={back} onClose={back} />;
   }
 
   // Vista 2: Consultazione Verbo (VerbStudy)

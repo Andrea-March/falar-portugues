@@ -1,100 +1,100 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import AudioButton from '@/components/common/AudioButton';
-import { soundFX } from '@/utils/sound';
+import React, { useState } from 'react';
+import { Volume2 } from 'lucide-react';
+import { speakPortuguese } from '@/utils/textToSpeech';
+import Mascot from '@/components/common/Mascot';
+import type { Feedback } from './PracticeSession';
 
 interface FeedbackSheetProps {
-  feedback: 'idle' | 'correct' | 'wrong';
+  feedback: Feedback;
+  canCheck: boolean;
   correctAnswer: string;
   sentenceToSpeak?: string;
+  onCheck: () => void;
   onContinue: () => void;
   onRetry: () => void;
 }
 
+const PRAISE = ['Muito bem!', 'Excelente!', 'Perfeito!', 'Boa!', 'Isso mesmo!'];
+
+/**
+ * Barra d'azione in fondo allo schermo: "Verificar" finché non si risponde,
+ * poi diventa il pannello verde o rosso con la reazione della mascotte.
+ * I suoni sono gestiti in PracticeSession (prima venivano riprodotti due volte).
+ */
 export default function FeedbackSheet({
   feedback,
+  canCheck,
   correctAnswer,
   sentenceToSpeak,
+  onCheck,
   onContinue,
   onRetry,
 }: FeedbackSheetProps) {
   const [showSolution, setShowSolution] = useState(false);
+  const [praise] = useState(() => PRAISE[Math.floor(Math.random() * PRAISE.length)]);
 
-  // Resetta lo stato della soluzione ogni volta che cambia il feedback e riproduce il suono appropriato
-  useEffect(() => {
-    if (feedback === 'correct') {
-      soundFX.playSuccess();
-    } else if (feedback === 'wrong') {
-      soundFX.playError();
-      setShowSolution(false);
-    }
-  }, [feedback]);
+  if (feedback === 'idle') {
+    return (
+      <div className="border-t-2 border-brand-border">
+        <div className="max-w-2xl mx-auto px-5 sm:px-6 py-5">
+          <button type="button" onClick={onCheck} disabled={!canCheck} className="btn-3d btn-primary w-full py-4 text-lg">
+            Verificar
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-  if (feedback === 'idle') return null;
-
-  const isCorrect = feedback === 'correct';
+  const ok = feedback === 'correct';
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 p-4 pb-6 border-t-2 shadow-2xl z-50 transition-all duration-300 transform translate-y-0 ${
-        isCorrect
-          ? 'bg-emerald-50/95 border-emerald-400 text-emerald-950 backdrop-blur-md'
-          : 'bg-rose-50/95 border-rose-400 text-rose-950 backdrop-blur-md'
-      }`}
+      role="status"
+      aria-live="polite"
+      className={`animate-slide-up ${ok ? 'bg-ok-light' : 'bg-ko-light'}`}
     >
-      <div className="max-w-md mx-auto flex items-center justify-between gap-3">
-        {/* Info Feedback */}
-        <div className="flex items-center gap-3 overflow-hidden">
-          <div
-            className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-black shrink-0 ${
-              isCorrect ? 'bg-emerald-200 text-emerald-800' : 'bg-rose-200 text-rose-800'
-            }`}
-          >
-            {isCorrect ? '✓' : '✕'}
-          </div>
-
-          <div className="space-y-0.5 min-w-0">
-            <div className="flex items-center gap-2">
-              <p className="text-sm font-extrabold leading-tight">
-                {isCorrect ? 'Muito bem! +10 XP' : 'Resposta incorreta'}
-              </p>
-              {isCorrect && sentenceToSpeak && (
-                <AudioButton textToSpeak={sentenceToSpeak} />
-              )}
-            </div>
-
-            {!isCorrect && (
-              <div className="text-xs text-rose-700">
-                {showSolution ? (
-                  <p className="animate-fadeIn">
-                    Resposta correta: <span className="font-extrabold underline">{correctAnswer}</span>
-                  </p>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setShowSolution(true)}
-                    className="text-[11px] font-bold text-rose-800 hover:text-rose-950 underline pt-0.5 block"
-                  >
-                    💡 Ver solução
-                  </button>
-                )}
-              </div>
+      <div className="max-w-2xl mx-auto px-5 sm:px-6 py-5 space-y-4">
+        <div className="flex items-center gap-3">
+          <Mascot mood={ok ? 'cheer' : 'sad'} size={64} />
+          <div className="flex-1 min-w-0">
+            <p className={`font-display text-2xl font-extrabold leading-tight ${ok ? 'text-ok-dark' : 'text-ko-dark'}`}>
+              {ok ? praise : 'Quase!'}
+            </p>
+            {ok && sentenceToSpeak && (
+              <button
+                type="button"
+                onClick={() => speakPortuguese(sentenceToSpeak)}
+                className="mt-1 inline-flex items-center gap-1.5 text-ok-dark font-bold text-[15px] hover:underline cursor-pointer"
+              >
+                <Volume2 size={18} strokeWidth={2.5} /> {sentenceToSpeak}
+              </button>
             )}
+            {!ok &&
+              (showSolution ? (
+                <p className="mt-1 text-ko-dark font-semibold text-[15px] animate-fade-in">
+                  Resposta certa: <span className="font-extrabold">{correctAnswer}</span>
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowSolution(true)}
+                  className="mt-1 text-ko-dark font-bold text-[15px] underline underline-offset-2 cursor-pointer"
+                >
+                  Ver a solução
+                </button>
+              ))}
           </div>
         </div>
 
-        {/* Azione Principale */}
         <button
           type="button"
-          onClick={isCorrect ? onContinue : onRetry}
-          className={`px-5 py-3 rounded-xl font-bold text-sm text-white shadow-md transition-transform active:scale-95 shrink-0 ${
-            isCorrect
-              ? 'bg-emerald-600 hover:bg-emerald-700'
-              : 'bg-rose-600 hover:bg-rose-700'
-          }`}
+          autoFocus
+          onClick={ok ? onContinue : onRetry}
+          className={`btn-3d w-full py-4 text-lg ${ok ? 'btn-ok' : 'btn-ko'}`}
         >
-          {isCorrect ? 'Continuar →' : 'Tentar de novo'}
+          {ok ? 'Continuar' : 'Tentar de novo'}
         </button>
       </div>
     </div>

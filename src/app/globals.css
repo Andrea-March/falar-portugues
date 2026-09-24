@@ -1,20 +1,90 @@
 @import "tailwindcss";
 
 @theme {
-  /* Primario: Blu Azulejo */
-  --color-brand-primary: #1d4ed8;
-  --color-brand-hover: #1e40af;
-  --color-brand-light: #eff6ff;
-  --color-brand-dark: #172554;
+  --font-sans: var(--font-nunito), ui-rounded, "Segoe UI", system-ui, sans-serif;
+  --font-display: var(--font-baloo), var(--font-nunito), ui-rounded, system-ui, sans-serif;
 
-  /* Accento: Oro Solare / Pastéis */
-  --color-brand-accent: #f59e0b;
-  --color-brand-accentHover: #d97706;
-  --color-brand-accentLight: #fef3c7;
+  /* Rosso galo: mascotte e azioni principali */
+  --color-brand-primary: #e5392b;
+  --color-brand-hover: #cf2c1f;
+  --color-brand-light: #fdecea;
+  --color-brand-dark: #a61f15;
 
-  /* Superfici e Bordi */
+  /* Giallo elétrico: XP, streak, nodo attivo */
+  --color-brand-accent: #ffc21a;
+  --color-brand-accentHover: #e6a800;
+  --color-brand-accentLight: #fff6d6;
+  --color-brand-accentDark: #8a5a00;
+
+  /* Blu azulejo: teoria e informazioni */
+  --color-azulejo: #1d5bd8;
+  --color-azulejo-dark: #133f9c;
+  --color-azulejo-light: #e8effd;
+
+  /* Verde: risposta corretta, nodi completati */
+  --color-ok: #26a558;
+  --color-ok-dark: #177a3e;
+  --color-ok-light: #e3f6ea;
+
+  /* Rosso errore (distinto dal primario per tono) */
+  --color-ko: #d8324a;
+  --color-ko-dark: #9e1f33;
+  --color-ko-light: #fdebee;
+
+  /* Superfici e testo */
+  --color-ink: #18213f;
   --color-brand-surface: #ffffff;
-  --color-brand-background: #f8fafc;
-  --color-brand-border: #e2e8f0;
-  --color-brand-muted: #64748b;
+  --color-brand-background: #f3f6fc;
+  --color-brand-border: #dde3f0;
+  --color-brand-muted: #5f6a86;
+}
+
+@layer base {
+  html { -webkit-tap-highlight-color: transparent; }
+  body { font-family: var(--font-sans); color: var(--color-ink); }
+  h1, h2, h3 { font-family: var(--font-display); }
+  :focus-visible { outline: 3px solid var(--color-azulejo); outline-offset: 2px; }
+}
+
+@layer components {
+  /* Bottone "3D": bordo inferiore spesso che si schiaccia al tocco */
+  .btn-3d {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl font-extrabold select-none cursor-pointer
+      border-b-[5px] transition-[transform,border-width,filter] duration-100
+      active:translate-y-[3px] active:border-b-2
+      disabled:cursor-not-allowed disabled:opacity-50 disabled:active:translate-y-0 disabled:active:border-b-[5px];
+  }
+  .btn-primary { @apply bg-brand-primary border-brand-dark text-white hover:brightness-105; }
+  .btn-ok { @apply bg-ok border-ok-dark text-white hover:brightness-105; }
+  .btn-ko { @apply bg-ko border-ko-dark text-white hover:brightness-105; }
+  .btn-ghost { @apply bg-white border-2 border-brand-border border-b-[5px] text-ink hover:bg-brand-background; }
+
+  /* Motivo azulejo leggero per le intestazioni dei capitoli */
+  .azulejo-pattern {
+    background-color: var(--color-azulejo);
+    background-image:
+      radial-gradient(circle at 50% 50%, transparent 38%, rgba(255,255,255,.16) 39%, rgba(255,255,255,.16) 46%, transparent 47%),
+      linear-gradient(45deg, rgba(255,255,255,.08) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.08) 75%);
+    background-size: 36px 36px, 36px 36px;
+  }
+}
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes pop { 0% { transform: scale(.85); opacity: 0; } 60% { transform: scale(1.04); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-6px); } 40%,80% { transform: translateX(6px); } }
+@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes hop { 0%,100% { transform: translateY(0) rotate(0); } 30% { transform: translateY(-14px) rotate(-6deg); } 60% { transform: translateY(0) rotate(4deg); } }
+
+@utility animate-fade-in { animation: fade-in .2s ease-out both; }
+@utility animate-slide-up { animation: slide-up .25s cubic-bezier(.2,.8,.2,1) both; }
+@utility animate-pop { animation: pop .35s cubic-bezier(.2,.8,.2,1) both; }
+@utility animate-shake { animation: shake .35s ease-in-out; }
+@utility animate-bob { animation: bob 2.4s ease-in-out infinite; }
+@utility animate-hop { animation: hop .7s ease-in-out 2; }
+/* alias per classi già usate nel codice esistente */
+@utility animate-fadeIn { animation: fade-in .2s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }

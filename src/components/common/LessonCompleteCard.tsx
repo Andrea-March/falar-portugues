@@ -1,84 +1,84 @@
 'use client';
 
 import React from 'react';
+import { Zap, Target, Flame } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
+import FullscreenPortal from './FullscreenPortal';
+import Mascot from './Mascot';
 
 interface LessonCompleteCardProps {
   title: string;
   xpEarned?: number;
-  accuracy?: number; // Es. 100 per 100%
-  streakDays?: number; // Facoltativo, se gestisci la serie di giorni
+  accuracy?: number;
+  streakDays?: number;
   onContinue: () => void;
 }
 
-export default function LessonCompleteCard({
-  title,
-  xpEarned = 15,
-  accuracy = 100,
-  streakDays,
-  onContinue,
-}: LessonCompleteCardProps) {
-  const handleContinue = () => {
-    soundFX.playClick();
-    onContinue();
-  };
+function StatTile({ icon, value, label, tone }: { icon: React.ReactNode; value: string; label: string; tone: string }) {
+  return (
+    <div className={`flex-1 rounded-2xl border-2 overflow-hidden animate-pop ${tone}`}>
+      <p className="text-sm font-extrabold py-1 text-white">{label}</p>
+      <div className="bg-white py-3 flex items-center justify-center gap-1.5 font-display text-2xl font-extrabold">
+        {icon}
+        {value}
+      </div>
+    </div>
+  );
+}
+
+export default function LessonCompleteCard({ title, xpEarned = 15, accuracy = 100, streakDays, onContinue }: LessonCompleteCardProps) {
+  const headline = accuracy === 100 ? 'Sem erros!' : accuracy >= 80 ? 'Lição concluída!' : 'Concluída, continua assim!';
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white rounded-3xl p-8 border-2 border-stone-200 shadow-2xl text-center space-y-6 animate-in zoom-in-95 duration-300">
-      {/* Icona Trionfale con Bagliore */}
-      <div className="relative inline-block">
-        <div className="w-24 h-24 bg-emerald-100 border-4 border-emerald-300 text-emerald-600 rounded-full flex items-center justify-center text-5xl mx-auto shadow-inner">
-          🏆
-        </div>
-        <span className="absolute -bottom-1 -right-1 text-2xl animate-bounce">
-          ✨
-        </span>
-      </div>
+    <FullscreenPortal>
+    <div className="fixed inset-0 z-50 bg-white flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] animate-fade-in">
+      <main className="flex-1 overflow-y-auto">
+        <div className="max-w-md mx-auto px-6 pt-12 pb-6 flex flex-col items-center text-center">
+          <Mascot mood="cheer" size={160} />
+          <h1 className="mt-6 text-4xl font-extrabold text-brand-accentDark">{headline}</h1>
+          <p className="mt-2 text-lg text-brand-muted font-semibold">Terminaste “{title}”.</p>
 
-      {/* Titoli e Feedback */}
-      <div className="space-y-1.5">
-        <h2 className="text-2xl font-black text-stone-900 tracking-tight">
-          Excelente trabalho!
-        </h2>
-        <p className="text-xs font-bold text-stone-500 max-w-xs mx-auto">
-          Completaste com sucesso <span className="text-stone-800">{title}</span>.
-        </p>
-      </div>
-
-      {/* Griglia Statistiche */}
-      <div className={`grid gap-3 ${streakDays ? 'grid-cols-3' : 'grid-cols-2'}`}>
-        <div className="bg-amber-50 border-2 border-amber-200/80 rounded-2xl p-3.5 flex flex-col justify-center">
-          <span className="text-2xl font-black text-amber-600">+{xpEarned}</span>
-          <p className="text-[10px] font-black text-amber-800 uppercase tracking-wider mt-0.5">
-            Pontos XP
-          </p>
-        </div>
-
-        <div className="bg-emerald-50 border-2 border-emerald-200/80 rounded-2xl p-3.5 flex flex-col justify-center">
-          <span className="text-2xl font-black text-emerald-600">{accuracy}%</span>
-          <p className="text-[10px] font-black text-emerald-800 uppercase tracking-wider mt-0.5">
-            Precisão
-          </p>
-        </div>
-
-        {streakDays !== undefined && (
-          <div className="bg-orange-50 border-2 border-orange-200/80 rounded-2xl p-3.5 flex flex-col justify-center">
-            <span className="text-2xl font-black text-orange-600">🔥 {streakDays}</span>
-            <p className="text-[10px] font-black text-orange-800 uppercase tracking-wider mt-0.5">
-              Dias
-            </p>
+          <div className="mt-8 w-full flex gap-3">
+            <StatTile
+              label="XP"
+              value={`+${xpEarned}`}
+              icon={<Zap size={22} strokeWidth={2.5} className="fill-brand-accent text-brand-accentHover" />}
+              tone="bg-brand-accent border-brand-accent text-brand-accentDark"
+            />
+            <StatTile
+              label="Precisão"
+              value={`${accuracy}%`}
+              icon={<Target size={22} strokeWidth={2.5} />}
+              tone="bg-ok border-ok text-ok-dark"
+            />
+            {streakDays !== undefined && (
+              <StatTile
+                label="Dias"
+                value={`${streakDays}`}
+                icon={<Flame size={22} strokeWidth={2.5} />}
+                tone="bg-brand-primary border-brand-primary text-brand-dark"
+              />
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      </main>
 
-      {/* Bottone 3D Tattile */}
-      <button
-        type="button"
-        onClick={handleContinue}
-        className="w-full bg-emerald-500 hover:bg-emerald-400 border-b-4 border-emerald-700 text-white font-black py-4 rounded-2xl active:border-b-0 active:translate-y-1 transition-all text-sm uppercase tracking-wide shadow-md cursor-pointer"
-      >
-        Continuar no Mapa →
-      </button>
+      <div className="border-t-2 border-brand-border">
+        <div className="max-w-md mx-auto px-6 py-5">
+          <button
+            type="button"
+            autoFocus
+            onClick={() => {
+              soundFX.playClick();
+              onContinue();
+            }}
+            className="btn-3d btn-primary w-full py-4 text-lg"
+          >
+            Continuar
+          </button>
+        </div>
+      </div>
     </div>
+    </FullscreenPortal>
   );
 }
