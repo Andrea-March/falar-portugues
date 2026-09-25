@@ -154,6 +154,16 @@ export const NodeContent = z.strictObject({
   id: Slug,
   speaker: Speaker.optional(),
   theory: z.array(TheoryItem).optional(),
+  /**
+   * Assaggio di conversazione alla fine della prima Descoberta: poche battute facili
+   * con un personaggio, per arrivare subito a "parlare". Usa solo le espressioni appena viste.
+   */
+  warmup: z
+    .strictObject({
+      speaker: Speaker,
+      exercises: z.array(Exercise).min(1).max(3),
+    })
+    .optional(),
   exercises: z.array(Exercise).min(1),
 });
 export type NodeContent = z.infer<typeof NodeContent>;

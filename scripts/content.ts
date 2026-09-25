@@ -151,6 +151,19 @@ for (const { file, data } of nodes.values()) {
     }
   }
   data.exercises.forEach((e) => checkExercise(file, e));
+  if (data.warmup) {
+    data.warmup.exercises.forEach((e) => checkExercise(file, e));
+    const wv = data.warmup.speaker.voice;
+    for (const [name, provider] of Object.entries(audioConfig.providers)) {
+      if (wv && !(wv in provider.voices)) fail(file, `warmup.speaker.voice "${wv}" non esiste in audio.config.json per "${name}"`);
+    }
+  }
+  // I nodi di frasi dividono la Descoberta in due sessioni: servono almeno due gruppi da studiare
+  const kindInCourse = course?.chapters.flatMap((c) => c.nodes).find((n) => n.id === data.id)?.kind;
+  if (kindInCourse === 'vocab') {
+    const groups = data.theory?.flatMap((c) => ('vocabStudy' in c ? c.vocabStudy.groups : [])) ?? [];
+    if (groups.length < 2) fail(file, `un nodo "vocab" deve avere uno studio del vocabolario con almeno 2 gruppi (Descoberta 1 e 2)`);
+  }
   data.theory?.forEach((card, i) => {
     if ('paradigm' in card) {
       const where = `teoria[${i}] (paradigma)`;
@@ -242,6 +255,17 @@ ${vocabIds.map((id) => `import vocab_${ident(id)} from './vocab/${id}.json';`).j
 /** Verbi e vocabolario: piccoli e usati ovunque, caricati subito */
 export const verbList = [${verbIds.map((id) => `verb_${ident(id)}`).join(', ')}] as unknown as Verb[];
 export const vocabSetList = [${vocabIds.map((id) => `vocab_${ident(id)}`).join(', ')}] as unknown as VocabSet[];
+
+/** Nomi dei gruppi dello studio del vocabolario per nodo: la mappa li mostra nelle sessioni senza caricare la lezione */
+export const vocabGroupLabels: Record<string, string[]> = ${JSON.stringify(
+  Object.fromEntries(
+    [...nodes.entries()]
+      .map(([id, n]) => [id, (n.data.theory ?? []).flatMap((c) => ('vocabStudy' in c ? c.vocabStudy.groups.map((g) => g.label) : []))] as const)
+      .filter(([, labels]) => labels.length > 0)
+  ),
+  null,
+  2
+)};
 
 /** Lezioni: ognuna è un file separato, scaricato solo quando la si apre */
 export const nodeLoaders: Record<string, () => Promise<NodeContent>> = {

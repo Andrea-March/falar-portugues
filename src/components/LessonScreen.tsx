@@ -20,21 +20,29 @@ import {
   fullNodeTitle,
   getCourseNode,
   loadNode,
+  loadCheckpointSources,
   SESSION_INFO,
   sessionExercises,
   sessionsFor,
+  sessionKey,
+  sessionName,
+  sameSession,
   TEST_PASS_ACCURACY,
+  theoryForSession,
   theorySteps,
+  toRuntimeExercise,
   type NodeContent,
-  type SessionKind,
+  type Session,
 } from '@/content';
 import ParadigmStep from '@/components/theory/ParadigmStep';
 import { VocabPresentStep, VocabRecallStep } from '@/components/theory/VocabStudy';
 
+type ChapterContents = Awaited<ReturnType<typeof loadCheckpointSources>>;
+
 interface LessonScreenProps {
   nodeId: string;
   /** Quale sessione del nodo si fa */
-  session: SessionKind;
+  session: Session;
   onClose: () => void;
   /** Sessione conclusa (e, per il test, superata) */
   onCompleteSession: () => void;
@@ -78,14 +86,23 @@ function SpeakButton({ text, label }: { text: string; label: string }) {
 
 /** Carica la lezione (file separato) e poi mostra teoria, pratica e fine */
 export default function LessonScreen(props: LessonScreenProps) {
-  const [loaded, setLoaded] = useState<{ id: string; content: NodeContent | null } | null>(null);
+  const [loaded, setLoaded] = useState<{
+    id: string;
+    content: NodeContent | null;
+    /** Solo per il checkpoint: i nodi del capitolo da cui pesca */
+    chapterContents?: ChapterContents;
+  } | null>(null);
   /** Nuovo tentativo del test: rimonta la sessione (nuovo ordine degli esercizi) */
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let alive = true;
-    loadNode(props.nodeId).then((content) => {
-      if (alive) setLoaded({ id: props.nodeId, content });
+    const node = getCourseNode(props.nodeId);
+    Promise.all([
+      loadNode(props.nodeId),
+      node?.kind === 'checkpoint' ? loadCheckpointSources(node) : Promise.resolve(undefined),
+    ]).then(([content, chapterContents]) => {
+      if (alive) setLoaded({ id: props.nodeId, content, chapterContents });
     });
     return () => {
       alive = false;
@@ -118,9 +135,10 @@ export default function LessonScreen(props: LessonScreenProps) {
 
   return (
     <LessonFlow
-      key={`${props.nodeId}-${props.session}-${attempt}`}
+      key={`${props.nodeId}-${sessionKey(props.session)}-${attempt}`}
       {...props}
       content={loaded.content}
+      chapterContents={loaded.chapterContents}
       onRetry={() => setAttempt((a) => a + 1)}
     />
   );
@@ -133,15 +151,23 @@ function LessonFlow({
   onCompleteSession,
   onRetry,
   content,
-}: LessonScreenProps & { content: NodeContent; onRetry: () => void }) {
-  const { addXp } = useUser();
+  chapterContents,
+}: LessonScreenProps & { content: NodeContent; chapterContents?: ChapterContents; onRetry: () => void }) {
+  const { addXp, markSeen, progress } = useUser();
+  // Esercizi già visti all'apertura della sessione: fissati qui, così la sessione non cambia mentre si gioca
+  const [seen] = useState(() => new Set(progress.seenExerciseIds));
   const node = getCourseNode(nodeId);
   const title = node ? fullNodeTitle(node) : '';
   const isDialogue = node?.kind === 'dialogue';
-  const isDiscovery = session === 'discovery';
-  const theory = useMemo(() => (isDiscovery ? theorySteps(content.theory ?? []) : []), [content, isDiscovery]);
+  const isDiscovery = session.kind === 'discovery';
+  /** Assaggio di conversazione: solo alla fine della prima Descoberta del nodo */
+  const warmup = isDiscovery && (session.part ?? 0) === 0 ? content.warmup : undefined;
+  const theory = useMemo(() => (isDiscovery ? theorySteps(theoryForSession(content.theory ?? [], session)) : []), [content, isDiscovery, session]);
   // Calcolati una volta sola: ordine e opzioni restano gli stessi per tutta la sessione
-  const exercises = useMemo(() => (node ? sessionExercises(session, node, content) : []), [session, node, content]);
+  const exercises = useMemo(
+    () => (node ? sessionExercises(session.kind, node, content, { seen, chapterContents, part: session.part }) : []),
+    [session, node, content, seen, chapterContents]
+  );
 
   // Gli audio della sessione si scaricano subito, in sottofondo: così partono senza attesa
   useEffect(() => {
@@ -152,12 +178,15 @@ function LessonFlow({
   const nextSessionNote = (() => {
     if (!node) return undefined;
     const list = sessionsFor(node);
-    const next = list[list.indexOf(session) + 1];
-    if (next) return `A seguir: ${SESSION_INFO[next].icon} ${SESSION_INFO[next].name}`;
-    return session === 'test' ? 'Lição concluída! A próxima já está desbloqueada.' : undefined;
+    const next = list[list.findIndex((s) => sameSession(s, session)) + 1];
+    if (next) {
+      const unlocked = session.kind === 'guided' && node.kind !== 'culture' ? ' · A próxima lição já está desbloqueada!' : '';
+      return `A seguir: ${SESSION_INFO[next.kind].icon} ${sessionName(next)}${unlocked}`;
+    }
+    return session.kind === 'test' ? 'Lição concluída! A próxima já está desbloqueada.' : undefined;
   })();
 
-  const [step, setStep] = useState<'theory' | 'practice' | 'complete' | 'failed'>(isDiscovery ? 'theory' : 'practice');
+  const [step, setStep] = useState<'theory' | 'warmup' | 'practice' | 'complete' | 'failed'>(isDiscovery ? 'theory' : 'practice');
   const [theoryIndex, setTheoryIndex] = useState(0);
   /** Schermate interattive (paradigma, studio del vocabolario) già completate */
   const [doneSteps, setDoneSteps] = useState<Set<number>>(() => new Set());
@@ -189,8 +218,10 @@ function LessonFlow({
       earnedXp = accuracy === 100 ? 20 : accuracy >= 80 ? 15 : 10;
     }
     setLessonStats({ xp: earnedXp, accuracy, bestCombo: stats?.bestCombo ?? 0 });
+    // Anche un test non superato conta: le frasi sono state viste
+    markSeen(exercises.map((e) => e.id));
     // Test finale non superato: niente XP, si propone di riprovare
-    if (session === 'test' && accuracy < TEST_PASS_ACCURACY) {
+    if (session.kind === 'test' && accuracy < TEST_PASS_ACCURACY) {
       soundFX.playError();
       setStep('failed');
       return;
@@ -231,7 +262,10 @@ function LessonFlow({
                 disabled={!canContinue}
                 onClick={() => {
                   soundFX.playClick();
-                  if (isLast) handleFinishDiscovery();
+                  if (isLast) {
+                    if (warmup) setStep('warmup');
+                    else handleFinishDiscovery();
+                  }
                   else setTheoryIndex((i) => i + 1);
                 }}
                 className="btn-3d flex-1 py-4 text-lg bg-azulejo border-azulejo-dark text-white hover:brightness-110"
@@ -298,13 +332,26 @@ function LessonFlow({
     );
   }
 
+  // ---------- ASSAGGIO DI CONVERSAZIONE ----------
+  if (step === 'warmup' && warmup) {
+    return (
+      <DialoguePractice
+        exercises={warmup.exercises.map((e) => toRuntimeExercise(e))}
+        speaker={warmup.speaker}
+        showTranslations
+        onFinish={() => handleFinishDiscovery()}
+        onClose={onClose}
+      />
+    );
+  }
+
   // ---------- PRATICA ----------
   if (step === 'practice') {
     return isDialogue ? (
       <DialoguePractice
         exercises={exercises}
         speaker={content.speaker}
-        showTranslations={session !== 'test'}
+        showTranslations={session.kind !== 'test'}
         onFinish={handleFinishPractice}
         onClose={onClose}
       />
@@ -321,7 +368,7 @@ function LessonFlow({
   // ---------- COMPLETATA ----------
   return (
     <LessonCompleteCard
-      title={`${title} · ${SESSION_INFO[session].name}`}
+      title={`${title} · ${sessionName(session)}`}
       xpEarned={lessonStats.xp}
       accuracy={lessonStats.accuracy}
       bestCombo={lessonStats.bestCombo}

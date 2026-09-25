@@ -6,7 +6,7 @@
 import courseJson from './course.json';
 import { SINGULAR, PLURAL } from './schema';
 import type { Course, CourseNode, Chapter, Exercise as ContentExercise, NodeContent, Person, TheoryCard, TheoryItem, Verb, VocabItem, VocabStudyCard } from './schema';
-import { verbList, vocabSetList, nodeLoaders } from './registry.generated';
+import { verbList, vocabSetList, nodeLoaders, vocabGroupLabels } from './registry.generated';
 import type { Exercise as RuntimeExercise } from '@/types/exercise';
 
 export type { Chapter, CourseNode, NodeContent, Verb, VocabItem, Person };
@@ -335,10 +335,92 @@ export const SESSION_INFO: Record<SessionKind, { name: string; description: stri
 /** Precisione minima per superare il test finale (%) */
 export const TEST_PASS_ACCURACY = 80;
 
-export function sessionsFor(node: CourseNode): SessionKind[] {
-  if (node.kind === 'checkpoint') return ['test'];
-  if (node.kind === 'culture') return ['discovery', 'guided'];
-  return ['discovery', 'guided', 'production', 'test'];
+/**
+ * Una sessione di un nodo. "part" divide in più sessioni brevi la Descoberta dei nodi
+ * di frasi: la prima presenta solo il primo gruppo di espressioni, la seconda gli altri.
+ */
+export interface Session {
+  kind: SessionKind;
+  part?: number;
+}
+
+export function sessionsFor(node: CourseNode): Session[] {
+  if (node.kind === 'checkpoint') return [{ kind: 'test' }];
+  if (node.kind === 'culture') return [{ kind: 'discovery' }, { kind: 'guided' }];
+  // Nodi di frasi: poche espressioni alla volta, ognuna subito praticata
+  const learn: Session[] =
+    node.kind === 'vocab'
+      ? [{ kind: 'discovery', part: 0 }, { kind: 'guided', part: 0 }, { kind: 'discovery', part: 1 }, { kind: 'guided', part: 1 }]
+      : [{ kind: 'discovery' }, { kind: 'guided' }];
+  return [...learn, { kind: 'production' }, { kind: 'test' }];
+}
+
+/** Identificativo stabile di una sessione, es. "discovery-1", "guided" */
+export const sessionKey = (s: Session) => (s.part === undefined ? s.kind : `${s.kind}-${s.part + 1}`);
+export const sameSession = (a: Session, b: Session) => sessionKey(a) === sessionKey(b);
+
+export function sessionName(s: Session) {
+  const name = SESSION_INFO[s.kind].name;
+  return s.part === undefined ? name : `${name} ${s.part + 1}`;
+}
+
+/** Nome del gruppo (o dei gruppi) di espressioni di una parte, es. "Saluti del giorno" */
+function partLabel(node: CourseNode, part: number) {
+  const labels = vocabGroupLabels[node.id] ?? [];
+  const mine = part === 0 ? labels.slice(0, 1) : labels.slice(1);
+  return mine.join(' · ');
+}
+
+/** Descrizione mostrata sotto il nome della sessione nel fumetto della mappa */
+export function sessionDescription(s: Session, node: CourseNode) {
+  if (s.part !== undefined) {
+    const label = partLabel(node, s.part);
+    const what = label ? label.toLowerCase() : 'nuove espressioni';
+    if (s.kind === 'discovery') return `Impara: ${what}`;
+    if (s.kind === 'guided') return s.part === 0 ? `Esercitati: ${what}` : `Esercitati: ${what}, più un ripasso`;
+  }
+  if (s.kind === 'discovery') {
+    if (node.kind === 'verb') return 'La regola e le sue forme, da ascoltare e ricopiare';
+    if (node.kind === 'dialogue') return 'Le frasi che ti servono nella conversazione';
+    if (node.kind === 'culture') return 'Una curiosità da leggere';
+  }
+  if (s.kind === 'guided' && node.kind === 'culture') return 'Tre domande veloci';
+  if (node.kind === 'dialogue') {
+    if (s.kind === 'guided') return 'La conversazione, con opzioni e aiuti';
+    if (s.kind === 'production') return 'La conversazione, tutta da scrivere';
+    if (s.kind === 'test') return 'La conversazione senza aiuti: serve l’80%';
+  }
+  if (node.kind === 'checkpoint') return 'Frasi da tutto il capitolo: serve l’80%';
+  return SESSION_INFO[s.kind].description;
+}
+
+/**
+ * Teoria di una sessione di Descoberta. Senza "part": tutta.
+ * Parte 0: le schede introduttive e il primo gruppo dello studio del vocabolario.
+ * Parte 1: gli altri gruppi.
+ */
+export function theoryForSession(theory: TheoryItem[], session: Session): TheoryItem[] {
+  if (session.part === undefined) return theory;
+  return theory.flatMap((item): TheoryItem[] => {
+    if (!('vocabStudy' in item)) return session.part === 0 ? [item] : [];
+    const groups = session.part === 0 ? item.vocabStudy.groups.slice(0, 1) : item.vocabStudy.groups.slice(1);
+    return groups.length ? [{ vocabStudy: { ...item.vocabStudy, groups } }] : [];
+  });
+}
+
+/**
+ * Il nodo successivo si sblocca già dopo Prática: Produção e Teste final consolidano
+ * e si possono fare anche più avanti. Il checkpoint invece chiede tutti i test del capitolo.
+ */
+export function sessionsToOpenNext(node: CourseNode) {
+  const list = sessionsFor(node);
+  const i = list.map((s) => s.kind).lastIndexOf('guided');
+  return i === -1 ? list.length : i + 1;
+}
+
+/** Il nodo ha fatto abbastanza sessioni da sbloccare il successivo */
+export function opensNext(node: CourseNode, completedNodeIds: string[], sessionProgress: Record<string, number>) {
+  return completedNodeIds.includes(node.id) || (sessionProgress[node.id] ?? 0) >= sessionsToOpenNext(node);
 }
 
 /** Sessioni completate di un nodo, a partire dai progressi salvati */
@@ -393,19 +475,110 @@ function generatedExercises(theory: TheoryItem[]): RuntimeExercise[] {
   });
 }
 
+/** Quanti esercizi propone una sessione (il modello di capitolo prevede 8–12, il checkpoint 12–15) */
+export const SESSION_SIZE: Record<SessionKind, number> = { discovery: 0, guided: 10, listening: 10, production: 10, test: 12 };
+/** Checkpoint: frasi proprie + frasi pescate da ogni nodo obbligatorio del capitolo */
+export const CHECKPOINT_OWN = 4;
+/** Prática divisa in parti: esercizi sulle espressioni nuove + ripasso delle precedenti */
+export const GUIDED_PART_SIZE = 6;
+export const GUIDED_REVIEW = 2;
+export const CHECKPOINT_PER_NODE = 3;
+
 /**
- * Esercizi di una sessione. Si scrivono le frasi una volta sola nel JSON;
- * le sessioni ne ricavano le varie modalità.
+ * Tutti gli esercizi che una sessione può proporre, prima del campionamento.
+ * Serve anche a chi deve conoscere ogni frase possibile (es. la generazione degli audio).
  * - guided: gli esercizi così come sono scritti (opzioni, frase con spazio);
- * - production: tutto da scrivere, più gli esercizi ricavati dalla teoria, mescolati;
- * - test: come production, ma serve l'80% (lo controlla la schermata della lezione).
+ * - production / test: tutto da scrivere, più gli esercizi ricavati dalla teoria.
  * Nelle conversazioni l'ordine resta quello del dialogo.
  */
-export function sessionExercises(kind: SessionKind, node: CourseNode, content: NodeContent): RuntimeExercise[] {
-  const isDialogue = node.kind === 'dialogue';
+export function sessionPool(kind: SessionKind, node: CourseNode, content: NodeContent): RuntimeExercise[] {
   if (kind === 'discovery') return [];
   if (kind === 'guided') return content.exercises.map((ex) => toRuntimeExercise(ex));
   const typed = content.exercises.map((ex) => toRuntimeExercise(ex, { typed: true }));
-  if (isDialogue) return typed;
-  return shuffle([...typed, ...generatedExercises(content.theory ?? [])]);
+  if (node.kind === 'dialogue') return typed;
+  return [...typed, ...generatedExercises(content.theory ?? [])];
+}
+
+/**
+ * Pesca `n` esercizi, prima tra quelli mai visti e poi tra gli altri, in ordine casuale.
+ * Così ogni sessione propone frasi nuove finché ce ne sono, e il test finale
+ * contiene il più possibile frasi mai incontrate prima.
+ */
+export function pickExercises<T extends { id: string }>(list: T[], n: number, seen: ReadonlySet<string>): T[] {
+  const fresh = shuffle(list.filter((e) => !seen.has(e.id)));
+  const old = shuffle(list.filter((e) => seen.has(e.id)));
+  return [...fresh, ...old].slice(0, n);
+}
+
+export interface SessionOptions {
+  /** Esercizi già visti dall'utente */
+  seen?: ReadonlySet<string>;
+  /** Parte della sessione (nodi di frasi): Prática 1 usa il primo gruppo, Prática 2 gli altri */
+  part?: number;
+  /** Solo per il checkpoint: i contenuti dei nodi del capitolo da cui pescare */
+  chapterContents?: { node: CourseNode; content: NodeContent }[];
+}
+
+/**
+ * Esercizi di una sessione. Si scrivono le frasi una volta sola nel JSON;
+ * le sessioni ne ricavano le varie modalità e ne pescano solo una parte.
+ * - conversazioni: tutto il dialogo, nell'ordine;
+ * - checkpoint: alcune frasi sue + alcune da ogni nodo obbligatorio del capitolo;
+ * - altri nodi: un campione, con precedenza alle frasi mai viste.
+ */
+export function sessionExercises(kind: SessionKind, node: CourseNode, content: NodeContent, opts: SessionOptions = {}): RuntimeExercise[] {
+  const seen = opts.seen ?? new Set<string>();
+  const pool = sessionPool(kind, node, content);
+  if (node.kind === 'dialogue') return pool;
+
+  if (node.kind === 'checkpoint') {
+    const own = pickExercises(pool, CHECKPOINT_OWN, seen);
+    const fromNodes = (opts.chapterContents ?? []).flatMap(({ node: n, content: c }) =>
+      pickExercises(sessionPool('test', n, c), CHECKPOINT_PER_NODE, seen)
+    );
+    return shuffle([...own, ...fromNodes]);
+  }
+
+  // Prática divisa in parti: solo le espressioni della parte, più un piccolo ripasso delle precedenti
+  if (kind === 'guided' && opts.part !== undefined) {
+    const groups = (content.theory ?? []).flatMap((c) => ('vocabStudy' in c ? c.vocabStudy.groups : []));
+    const idsOf = (gs: typeof groups) => new Set(gs.flatMap((g) => g.items.map((id) => `vocab:${id}`)));
+    const current = idsOf(opts.part === 0 ? groups.slice(0, 1) : groups.slice(1));
+    const previous = idsOf(opts.part === 0 ? [] : groups.slice(0, 1));
+    const reserved = new Set(content.exercises.filter((_, i) => i % 3 === 2).map((e) => e.id));
+    const trainsAny = (e: RuntimeExercise, ids: Set<string>) => (e.trains ?? []).some((t) => ids.has(t));
+    const usable = pool.filter((e) => !reserved.has(e.id));
+    const main = pickExercises(usable.filter((e) => trainsAny(e, current)), GUIDED_PART_SIZE, seen);
+    const review = pickExercises(usable.filter((e) => trainsAny(e, previous) && !main.includes(e)), GUIDED_REVIEW, seen);
+    return shuffle([...main, ...review]);
+  }
+
+  // Circa un terzo delle frasi scritte resta da parte per il test finale, così il test
+  // ne propone sempre di mai viste. Nei nodi piccoli (es. cultura) si usano tutte.
+  const size = SESSION_SIZE[kind];
+  if (kind !== 'test') {
+    const reserved = new Set(content.exercises.filter((_, i) => i % 3 === 2).map((e) => e.id));
+    const available = pool.filter((e) => !reserved.has(e.id));
+    if (available.length >= Math.min(size, 8)) return pickExercises(available, size, seen);
+  }
+  return pickExercises(pool, size, seen);
+}
+
+/**
+ * Nodi da cui pesca un checkpoint: quelli indicati in "requires" oppure,
+ * se mancano, tutti i nodi obbligatori che lo precedono nel capitolo.
+ */
+export function checkpointSources(node: CourseNode): CourseNode[] {
+  const chapter = chapters.find((c) => c.nodes.some((n) => n.id === node.id));
+  if (!chapter) return [];
+  const before = chapter.nodes.slice(0, chapter.nodes.findIndex((n) => n.id === node.id));
+  const ids = node.requires ?? before.filter((n) => !isOptionalNode(n) && !n.draft).map((n) => n.id);
+  return ids.map(getCourseNode).filter((n): n is CourseNode => Boolean(n));
+}
+
+/** Carica i contenuti dei nodi da cui pesca un checkpoint */
+export async function loadCheckpointSources(node: CourseNode) {
+  const sources = checkpointSources(node);
+  const contents = await Promise.all(sources.map((n) => loadNode(n.id)));
+  return sources.flatMap((n, i) => (contents[i] ? [{ node: n, content: contents[i]! }] : []));
 }

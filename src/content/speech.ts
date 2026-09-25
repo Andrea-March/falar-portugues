@@ -9,7 +9,7 @@ import {
   exerciseSentence,
   loadNode,
   PERSON_LABELS,
-  sessionExercises,
+  sessionPool,
   sessionsFor,
   theorySteps,
   verbExercises,
@@ -17,7 +17,9 @@ import {
   type CourseNode,
   type NodeContent,
   type Person,
-  type SessionKind,
+  type Session,
+  theoryForSession,
+  toRuntimeExercise,
 } from './index';
 
 export interface SpeechItem {
@@ -27,12 +29,15 @@ export interface SpeechItem {
 }
 
 /** Testi letti in una sessione di un nodo */
-export function sessionSpeech(kind: SessionKind, node: CourseNode, content: NodeContent): SpeechItem[] {
+export function sessionSpeech(session: Session, node: CourseNode, content: NodeContent): SpeechItem[] {
+  const kind = session.kind;
   const out: SpeechItem[] = [];
 
   if (kind === 'discovery') {
-    for (const step of theorySteps(content.theory ?? [])) {
+    for (const step of theorySteps(theoryForSession(content.theory ?? [], session))) {
       if (step.kind === 'info') {
+        // Le parole in grassetto del testo si ascoltano toccandole
+        for (const m of step.text.matchAll(/\*\*(.*?)\*\*/g)) out.push({ text: m[1].replace(/…/g, '') });
         step.examples?.forEach((e) => out.push({ text: e.pt }));
         step.conjugation?.forEach((c) => out.push({ text: c.spoken }));
       } else if (step.kind === 'paradigm') {
@@ -43,10 +48,17 @@ export function sessionSpeech(kind: SessionKind, node: CourseNode, content: Node
         step.rows.forEach((r) => out.push({ text: r.pt }));
       }
     }
+    // Assaggio di conversazione alla fine della prima Descoberta
+    if (content.warmup && (session.part ?? 0) === 0) {
+      for (const ex of content.warmup.exercises.map((e) => toRuntimeExercise(e))) {
+        if (ex.context) out.push({ text: ex.context, voice: content.warmup.speaker.voice });
+        out.push({ text: exerciseSentence(ex) });
+      }
+    }
     return out;
   }
 
-  for (const ex of sessionExercises(kind, node, content)) {
+  for (const ex of sessionPool(kind, node, content)) {
     if (ex.context) out.push({ text: ex.context, voice: content.speaker?.voice });
     out.push({ text: exerciseSentence(ex) });
     ex.alternatives?.forEach((a) => out.push({ text: exerciseSentence(ex, a) }));
@@ -71,7 +83,7 @@ export async function allSpeech(): Promise<SpeechItem[]> {
   for (const node of chapters.flatMap((c) => c.nodes)) {
     const content = await loadNode(node.id);
     if (!content) continue;
-    for (const kind of sessionsFor(node)) out.push(...sessionSpeech(kind, node, content));
+    for (const session of sessionsFor(node)) out.push(...sessionSpeech(session, node, content));
   }
   out.push(...grammarSpeech());
   return out;

@@ -9,11 +9,15 @@ import {
   isOptionalNode,
   KIND_LABELS,
   SESSION_INFO,
+  opensNext,
+  sessionDescription,
+  sessionKey,
+  sessionName,
   sessionsDone as countSessionsDone,
   sessionsFor,
   type Chapter,
   type CourseNode,
-  type SessionKind,
+  type Session,
 } from '@/content';
 
 /** Compatibilità con il codice esistente */
@@ -25,7 +29,7 @@ interface ChapterMapProps {
   /** Sessioni completate per nodo */
   sessionProgress?: Record<string, number>;
   currentNodeId?: string;
-  onSelectSession?: (node: Node, session: SessionKind) => void;
+  onSelectSession?: (node: Node, session: Session) => void;
 }
 
 // Pattern di scostamento orizzontale in percentuale (%)
@@ -160,6 +164,9 @@ export default function ChapterMap({
     };
   }, [openNodeId]);
 
+  /** Il nodo ha fatto abbastanza sessioni (fino a Prática) da sbloccare il successivo */
+  const opened = (node: Node) => opensNext(node, completedNodeIds, sessionProgress);
+
   /** Ultimo nodo obbligatorio prima della posizione indicata (i nodi facoltativi non contano) */
   const lastRequiredBefore = (nodes: Node[], index: number): Node | undefined =>
     nodes.slice(0, index).reverse().find((n) => !isOptionalNode(n));
@@ -186,28 +193,28 @@ export default function ChapterMap({
       // Capitoli successivi: controlla se l'ultimo nodo del capitolo precedente è completato
       const prevNodes = chaptersList[chapterIndex - 1].nodes;
       const lastNodeOfPrev = lastRequiredBefore(prevNodes, prevNodes.length);
-      return !lastNodeOfPrev || completedNodeIds.includes(lastNodeOfPrev.id);
+      return !lastNodeOfPrev || opened(lastNodeOfPrev);
     }
 
-    // 4. Nodi standard: basta che il nodo obbligatorio precedente sia completato
+    // 4. Nodi standard: il nodo obbligatorio precedente deve aver fatto almeno Prática
     //    (un nodo facoltativo, come la cultura, non blocca quelli dopo)
     const previousNode = lastRequiredBefore(chaptersList[chapterIndex].nodes, nodeIndex);
-    return !previousNode || completedNodeIds.includes(previousNode.id);
+    return !previousNode || opened(previousNode);
   };
 
   /**
-   * Nodo corrente = il primo nodo obbligatorio sbloccato e non ancora completato.
+   * Nodo corrente = il primo nodo obbligatorio sbloccato che non ha ancora sbloccato il successivo
+   * (se tutti l'hanno fatto: il primo non ancora completato).
    * Si ricava dai progressi invece di fidarsi del valore salvato, che può restare
    * indietro (per esempio dopo un riordino dei nodi di un capitolo).
    */
   const currentNodeId = (() => {
-    for (const [ci, chapter] of chapters.entries()) {
-      for (const [ni, node] of chapter.nodes.entries()) {
-        if (node.draft || isOptionalNode(node) || completedNodeIds.includes(node.id)) continue;
-        if (checkIsUnlocked(node, ni, ci, chapters)) return node.id;
-      }
-    }
-    return savedCurrentNodeId;
+    const candidates = chapters.flatMap((chapter, ci) =>
+      chapter.nodes
+        .map((node, ni) => ({ node, ni, ci }))
+        .filter(({ node, ni, ci }) => !node.draft && !isOptionalNode(node) && !completedNodeIds.includes(node.id) && checkIsUnlocked(node, ni, ci, chapters))
+    );
+    return (candidates.find(({ node }) => !opened(node)) ?? candidates[0])?.node.id ?? savedCurrentNodeId;
   })();
 
   return (
@@ -437,7 +444,7 @@ function SessionList({
   node: Node;
   done: number;
   completed: boolean;
-  onStart: (session: SessionKind) => void;
+  onStart: (session: Session) => void;
 }) {
   const list = sessionsFor(node);
   const next = list[done];
@@ -445,16 +452,16 @@ function SessionList({
   return (
     <div className="mt-3 space-y-3">
       <ol className="space-y-1.5" aria-label="Sessões">
-        {list.map((kind, i) => {
-          const info = SESSION_INFO[kind];
+        {list.map((session, i) => {
+          const info = SESSION_INFO[session.kind];
           const state = i < done ? 'done' : i === done ? 'next' : 'later';
           return (
-            <li key={kind}>
+            <li key={sessionKey(session)}>
               <button
                 type="button"
                 disabled={state === 'later'}
-                onClick={() => onStart(kind)}
-                aria-label={`${info.name}${state === 'done' ? ' (feita, toca para repetir)' : state === 'later' ? ' (bloqueada)' : ''}`}
+                onClick={() => onStart(session)}
+                aria-label={`${sessionName(session)}${state === 'done' ? ' (feita, toca para repetir)' : state === 'later' ? ' (bloqueada)' : ''}`}
                 className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2 text-left transition-colors ${
                   state === 'next'
                     ? 'bg-white/25 ring-2 ring-white/70'
@@ -472,8 +479,8 @@ function SessionList({
                   {state === 'done' ? <Check size={20} strokeWidth={3.5} /> : state === 'later' ? <Lock size={16} strokeWidth={2.8} className="text-brand-muted" /> : info.icon}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-extrabold leading-tight">{info.name}</span>
-                  <span className="block text-sm font-semibold opacity-85 leading-snug">{info.description}</span>
+                  <span className="block font-extrabold leading-tight">{sessionName(session)}</span>
+                  <span className="block text-sm font-semibold opacity-85 leading-snug">{sessionDescription(session, node)}</span>
                 </span>
                 {state === 'done' && <span className="text-xs font-extrabold opacity-80 shrink-0">Repetir</span>}
               </button>
@@ -489,7 +496,7 @@ function SessionList({
           onClick={() => onStart(next)}
           className="btn-3d w-full py-3.5 text-lg bg-white border-brand-border text-brand-primary"
         >
-          {done === 0 ? 'Começar' : 'Continuar'}: {SESSION_INFO[next].name}
+          {done === 0 ? 'Começar' : 'Continuar'}: {sessionName(next)}
         </button>
       )}
     </div>

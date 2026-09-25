@@ -17,16 +17,9 @@
             ]
           },
           {
-            "label": "Tra amici",
+            "label": "Presentarsi",
             "items": [
               "ola",
-              "como-estas",
-              "tudo-bem"
-            ]
-          },
-          {
-            "label": "Apresentações",
-            "items": [
               "chamo-me",
               "muito-prazer"
             ]
@@ -35,31 +28,49 @@
       }
     }
   ],
+  "warmup": {
+    "speaker": {
+      "name": "Sr. Manuel",
+      "role": "Empregado · Café no Chiado",
+      "avatar": "👨🏻",
+      "voice": "homem"
+    },
+    "exercises": [
+      {
+        "id": "warm_1_2_1",
+        "type": "choose",
+        "context": "Bom dia! Entre, entre.",
+        "contextIt": "Buongiorno! Entri pure.",
+        "prompt": "È mattina: ricambia il saluto",
+        "text": "{Bom dia}, senhor Manuel!",
+        "it": "Buongiorno, signor Manuel!",
+        "trains": [
+          "vocab:bom-dia"
+        ],
+        "wrong": [
+          "Boa tarde",
+          "Boa noite"
+        ]
+      },
+      {
+        "id": "warm_1_2_2",
+        "type": "choose",
+        "context": "Boa noite! Até amanhã.",
+        "contextIt": "Buonasera! A domani.",
+        "prompt": "È sera, stai uscendo: saluta",
+        "text": "{Boa noite}, até amanhã!",
+        "it": "Buonasera, a domani!",
+        "trains": [
+          "vocab:boa-noite"
+        ],
+        "wrong": [
+          "Bom dia",
+          "Boa tarde"
+        ]
+      }
+    ]
+  },
   "exercises": [
-    {
-      "id": "ex_1_2_1",
-      "type": "choose",
-      "text": "{Olá}! Tudo bem contigo?",
-      "it": "Ciao! Va tutto bene con te?",
-      "prompt": "Qual è il saluto informale più comune (equivalente a \"Ciao\")?",
-      "trains": [
-        "vocab:ola"
-      ],
-      "wrong": [
-        "Adeus",
-        "Obrigado",
-        "Por favor"
-      ]
-    },
-    {
-      "id": "ex_1_2_2",
-      "type": "write",
-      "text": "{Olá}, eu sou o Pedro.",
-      "it": "Ciao, io sono Pedro.",
-      "trains": [
-        "vocab:ola"
-      ]
-    },
     {
       "id": "ex_1_2_3",
       "type": "choose",
@@ -133,68 +144,65 @@
       ]
     },
     {
-      "id": "ex_1_2_9",
+      "id": "ex_1_2_17",
       "type": "choose",
-      "text": "Olá Ana, como {estás}?",
-      "it": "Ciao Ana, come stai?",
-      "prompt": "Come chiedi a un amico in modo informale \"Come stai?\"",
+      "text": "São três da tarde. Entras numa loja: {Boa tarde}!",
+      "it": "Sono le tre del pomeriggio. Entri in un negozio: buon pomeriggio!",
+      "prompt": "Saluta entrando in un negozio nel pomeriggio",
       "trains": [
-        "vocab:como-estas",
-        "verb:estar:presente:tu"
+        "vocab:boa-tarde"
       ],
       "wrong": [
-        "é",
-        "chamas",
-        "são"
+        "Bom dia",
+        "Boa noite"
       ]
     },
     {
-      "id": "ex_1_2_10",
+      "id": "ex_1_2_18",
       "type": "write",
-      "text": "Como {estás} hoje?",
-      "it": "Come stai oggi?",
+      "text": "{Boa noite}, senhora Ana.",
+      "it": "Buonasera, signora Ana.",
       "trains": [
-        "vocab:como-estas",
-        "verb:estar:presente:tu"
+        "vocab:boa-noite"
       ]
     },
     {
-      "id": "ex_1_2_11",
+      "id": "ex_1_2_1",
       "type": "choose",
-      "text": "Olá! {Tudo bem}?",
-      "it": "Ciao! Tutto bene?",
-      "prompt": "Domanda veloce che vale anche come saluto: come chiedi \"tutto ok?\"",
+      "text": "{Olá}, Rita! Chamo-me Marco.",
+      "it": "Ciao, Rita! Mi chiamo Marco.",
+      "prompt": "Qual è il saluto informale più comune (equivalente a \"Ciao\")?",
       "trains": [
-        "vocab:tudo-bem"
+        "vocab:ola"
       ],
       "wrong": [
-        "Como estás",
-        "Boa tarde",
-        "Muito obrigado"
+        "Muito prazer",
+        "Boa noite",
+        "Chamo-me"
       ]
     },
     {
-      "id": "ex_1_2_12",
+      "id": "ex_1_2_2",
       "type": "write",
-      "text": "{Tudo bem}, obrigado!",
-      "it": "Tutto bene, grazie!",
+      "text": "{Olá}, eu sou o Pedro.",
+      "it": "Ciao, io sono Pedro.",
       "trains": [
-        "vocab:tudo-bem"
+        "vocab:ola"
       ]
     },
     {
       "id": "ex_1_2_13",
       "type": "choose",
-      "text": "{Chamo-me} Sofia, prazer!",
-      "it": "Mi chiamo Sofia, piacere!",
+      "text": "{Chamo-me} Sofia, e tu?",
+      "it": "Mi chiamo Sofia, e tu?",
       "prompt": "Come dici il tuo nome quando ti presenti?",
       "trains": [
         "vocab:chamo-me"
       ],
       "wrong": [
-        "Sou de",
-        "Tudo bem",
-        "Muito prazer"
+        "Muito prazer",
+        "Boa tarde",
+        "Olá"
       ]
     },
     {
@@ -216,9 +224,9 @@
         "vocab:muito-prazer"
       ],
       "wrong": [
-        "Tudo bem",
-        "Até logo",
-        "De nada"
+        "Chamo-me",
+        "Bom dia",
+        "Boa noite"
       ]
     },
     {
@@ -228,6 +236,31 @@
       "it": "Piacere, io sono Marco.",
       "trains": [
         "vocab:muito-prazer"
+      ]
+    },
+    {
+      "id": "ex_1_2_19",
+      "type": "write",
+      "text": "Olá! {Chamo-me} Ana. Muito prazer!",
+      "it": "Ciao! Mi chiamo Ana. Piacere!",
+      "trains": [
+        "vocab:chamo-me"
+      ]
+    },
+    {
+      "id": "ex_1_2_20",
+      "type": "choose",
+      "context": "Chamo-me Pedro.",
+      "contextIt": "Mi chiamo Pedro.",
+      "text": "{Muito prazer}, Pedro!",
+      "it": "Piacere, Pedro!",
+      "prompt": "Pedro si è appena presentato: rispondi",
+      "trains": [
+        "vocab:muito-prazer"
+      ],
+      "wrong": [
+        "Chamo-me",
+        "Boa noite"
       ]
     }
   ]

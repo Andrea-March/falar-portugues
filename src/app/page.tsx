@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import ChapterMap from '@/components/ChapterMap';
-import { nextNodeId, isOptionalNode, sessionsFor, type CourseNode, type SessionKind } from '@/content';
+import { nextNodeId, isOptionalNode, sessionsFor, sameSession, type CourseNode, type Session } from '@/content';
 import { useUser } from '@/context/UserContext';
 import Mascot from '@/components/common/Mascot';
 import GrammarHub from '@/components/GrammarHub';
@@ -12,7 +12,7 @@ import LessonScreen from '@/components/LessonScreen';
 
 export default function Home() {
   const { progress, completeSession, isLoaded } = useUser();
-  const [active, setActive] = useState<{ node: CourseNode; session: SessionKind } | null>(null);
+  const [active, setActive] = useState<{ node: CourseNode; session: Session } | null>(null);
   const [activeTab, setActiveTab] = useState<'home' | 'grammar' | 'vocab' | 'chat'>('home');
 
   if (!isLoaded) {
@@ -35,7 +35,7 @@ export default function Home() {
           // Gli XP sono già stati assegnati a fine sessione (LessonScreen)
           const list = sessionsFor(node);
           // Un nodo facoltativo (cultura) non sposta il punto in cui si trova l'utente nel percorso
-          completeSession(node.id, list.indexOf(session), list.length, isOptionalNode(node) ? undefined : nextNodeId(node.id));
+          completeSession(node.id, list.findIndex((s) => sameSession(s, session)), list.length, isOptionalNode(node) ? undefined : nextNodeId(node.id));
           setActive(null);
         }}
       />
