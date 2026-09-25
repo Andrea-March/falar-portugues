@@ -75,6 +75,26 @@
         "Quanto é",
         "Por favor"
       ]
+    },
+    {
+      "id": "chk_1_7",
+      "type": "write",
+      "text": "Bom dia! Chamo-me Marco e {sou} de Itália.",
+      "it": "Buongiorno! Mi chiamo Marco e vengo dall'Italia.",
+      "prompt": "Presentati completamente",
+      "trains": [
+        "verb:ser:presente:eu"
+      ]
+    },
+    {
+      "id": "chk_1_8",
+      "type": "write",
+      "text": "Boa tarde! {Queria} uma bica, por favor.",
+      "it": "Buon pomeriggio! Vorrei un caffè, per favore.",
+      "prompt": "Saluta e ordina un caffè",
+      "trains": [
+        "vocab:queria"
+      ]
     }
   ]
 }

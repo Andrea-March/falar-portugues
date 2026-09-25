@@ -50,10 +50,22 @@
       ]
     },
     {
+      "id": "ex_1_3_6",
+      "type": "write",
+      "context": "Não é de Lisboa, pois não? É de onde?",
+      "contextIt": "Lei non è di Lisbona, vero? Da dove viene?",
+      "prompt": "Di' che vieni dall'Italia",
+      "text": "Não, {sou} de Itália.",
+      "it": "No, vengo dall'Italia.",
+      "trains": [
+        "verb:ser:presente:eu"
+      ]
+    },
+    {
       "id": "ex_1_3_3",
       "type": "choose",
-      "context": "Aqui tem: a bica e o pastel de nata.",
-      "contextIt": "Ecco a lei: la bica e il pastel de nata.",
+      "context": "Ah, Itália! Bem-vindo. Aqui tem: a bica e o pastel de nata.",
+      "contextIt": "Ah, l'Italia! Benvenuto. Ecco a lei: la bica e il pastel de nata.",
       "prompt": "Chiedi quanto devi pagare",
       "text": "Muito bem. {Quanto é}?",
       "it": "Perfetto. Quant'è?",

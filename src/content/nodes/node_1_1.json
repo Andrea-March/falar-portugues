@@ -3,15 +3,19 @@
   "theory": [
     {
       "title": "Identità e Origine",
-      "text": "Il verbo **Ser** si usa per caratteristiche permanenti, nazionalità, origini e professioni. Nel prossimo capitolo conoscerai **Estar**, per stati temporanei e posizioni.",
+      "text": "Il verbo **Ser** serve per dire chi sei: nome, nazionalità, provenienza, professione. Con i saluti che già conosci basta per presentarti. Nel prossimo capitolo conoscerai **Estar**, per stati temporanei e posizioni.",
       "examples": [
         {
-          "pt": "Eu sou italiano.",
-          "it": "Io sono italiano."
+          "pt": "Olá, chamo-me Marco. Sou de Itália.",
+          "it": "Ciao, mi chiamo Marco. Vengo dall'Italia."
         },
         {
           "pt": "Ela é médica.",
           "it": "Lei è medica."
+        },
+        {
+          "pt": "Muito prazer! Somos os novos vizinhos.",
+          "it": "Piacere! Siamo i nuovi vicini."
         }
       ]
     },
@@ -25,56 +29,156 @@
   "exercises": [
     {
       "id": "ex_1_1_1",
-      "type": "write",
-      "text": "O senhor {é} o novo vizinho?",
-      "it": "Lei (formale) è il nuovo vicino?",
+      "type": "choose",
+      "text": "Olá, chamo-me Marco. {Sou} de Itália.",
+      "it": "Ciao, mi chiamo Marco. Vengo dall'Italia.",
+      "prompt": "Presentati e di' da dove vieni",
       "trains": [
-        "verb:ser:presente:ele_ela_voce"
-      ]
+        "verb:ser:presente:eu"
+      ],
+      "wrongFrom": "verb-forms"
     },
     {
       "id": "ex_1_1_2",
       "type": "write",
-      "text": "Eles {são} de Coimbra.",
-      "it": "Loro sono di Coimbra.",
-      "trains": [
-        "verb:ser:presente:eles_elas_voces"
-      ]
-    },
-    {
-      "id": "ex_1_1_3",
-      "type": "write",
-      "text": "Tu {és} estudante de línguas?",
-      "it": "Tu sei studente di lingue?",
-      "trains": [
-        "verb:ser:presente:tu"
-      ]
-    },
-    {
-      "id": "ex_1_1_4",
-      "type": "write",
-      "text": "Eu {sou} arquiteto em Lisboa.",
-      "it": "Io sono architetto a Lisbona.",
+      "text": "Muito prazer! Eu {sou} a Sofia.",
+      "it": "Piacere! Io sono Sofia.",
       "trains": [
         "verb:ser:presente:eu"
       ]
     },
     {
+      "id": "ex_1_1_3",
+      "type": "write",
+      "text": "Eu {sou} arquiteto em Lisboa.",
+      "it": "Faccio l'architetto a Lisbona.",
+      "trains": [
+        "verb:ser:presente:eu"
+      ]
+    },
+    {
+      "id": "ex_1_1_4",
+      "type": "choose",
+      "text": "Olá, Ana! Tu {és} de Coimbra?",
+      "it": "Ciao Ana! Sei di Coimbra?",
+      "prompt": "Chiedi a un'amica se è di Coimbra",
+      "trains": [
+        "verb:ser:presente:tu"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
       "id": "ex_1_1_5",
       "type": "write",
-      "text": "Vocês {são} muito bem-vindos.",
-      "it": "Voi siete molto benvenuti.",
+      "text": "Muito prazer! Tu {és} o irmão da Rita?",
+      "it": "Piacere! Sei il fratello di Rita?",
       "trains": [
-        "verb:ser:presente:eles_elas_voces"
+        "verb:ser:presente:tu"
       ]
     },
     {
       "id": "ex_1_1_6",
       "type": "write",
-      "text": "Nós {somos} portugueses.",
-      "it": "Noi siamo portoghesi.",
+      "text": "Tu {és} estudante de línguas?",
+      "it": "Studi lingue?",
+      "trains": [
+        "verb:ser:presente:tu"
+      ]
+    },
+    {
+      "id": "ex_1_1_7",
+      "type": "choose",
+      "text": "Boa tarde! O senhor {é} o novo vizinho?",
+      "it": "Buon pomeriggio! Lei è il nuovo vicino?",
+      "prompt": "Chiedi con cortesia a un signore se è il nuovo vicino",
+      "trains": [
+        "verb:ser:presente:ele_ela_voce"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "ex_1_1_8",
+      "type": "write",
+      "text": "A Inês {é} médica em Coimbra.",
+      "it": "Inês fa il medico a Coimbra.",
+      "trains": [
+        "verb:ser:presente:ele_ela_voce"
+      ]
+    },
+    {
+      "id": "ex_1_1_9",
+      "type": "write",
+      "text": "O Sr. Manuel {é} muito simpático.",
+      "it": "Il signor Manuel è molto simpatico.",
+      "trains": [
+        "verb:ser:presente:ele_ela_voce"
+      ]
+    },
+    {
+      "id": "ex_1_1_10",
+      "type": "choose",
+      "text": "Olá! Nós {somos} de Itália.",
+      "it": "Ciao! Veniamo dall'Italia.",
+      "prompt": "Di' che tu e i tuoi amici venite dall'Italia",
       "trains": [
         "verb:ser:presente:nos"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "ex_1_1_11",
+      "type": "write",
+      "text": "Muito prazer, nós {somos} os novos vizinhos.",
+      "it": "Piacere, siamo i nuovi vicini.",
+      "trains": [
+        "verb:ser:presente:nos"
+      ]
+    },
+    {
+      "id": "ex_1_1_12",
+      "type": "write",
+      "text": "Eu e o Marco {somos} colegas.",
+      "it": "Io e Marco siamo colleghi.",
+      "trains": [
+        "verb:ser:presente:nos"
+      ]
+    },
+    {
+      "id": "ex_1_1_13",
+      "type": "choose",
+      "text": "Boa noite! Eles {são} de Coimbra?",
+      "it": "Buonasera! Loro sono di Coimbra?",
+      "prompt": "Chiedi se quelle persone sono di Coimbra",
+      "trains": [
+        "verb:ser:presente:eles_elas_voces"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "ex_1_1_14",
+      "type": "write",
+      "text": "Olá! Vocês {são} italianos?",
+      "it": "Ciao! Siete italiani?",
+      "trains": [
+        "verb:ser:presente:eles_elas_voces"
+      ]
+    },
+    {
+      "id": "ex_1_1_15",
+      "type": "write",
+      "text": "Bom dia! Vocês {são} muito bem-vindos.",
+      "it": "Buongiorno! Siete i benvenuti.",
+      "trains": [
+        "verb:ser:presente:eles_elas_voces"
+      ]
+    },
+    {
+      "id": "ex_1_1_16",
+      "type": "write",
+      "text": "A Ana e a Rita {são} professoras.",
+      "it": "Ana e Rita sono insegnanti.",
+      "trains": [
+        "verb:ser:presente:eles_elas_voces"
       ]
     }
   ]
