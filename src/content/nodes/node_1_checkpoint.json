@@ -37,6 +37,44 @@
         "Boa tarde",
         "Olá"
       ]
+    },
+    {
+      "id": "chk_1_4",
+      "type": "choose",
+      "text": "Eu {sou} de Itália.",
+      "prompt": "Presentati dicendo da dove vieni",
+      "trains": [
+        "verb:ser:presente:eu"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "chk_1_5",
+      "type": "choose",
+      "text": "São 9 da manhã, entras no café e dizes: {Bom dia}!",
+      "prompt": "Saluta di mattina presto",
+      "trains": [
+        "vocab:bom-dia"
+      ],
+      "wrong": [
+        "Boa tarde",
+        "Boa noite",
+        "Tudo bem"
+      ]
+    },
+    {
+      "id": "chk_1_6",
+      "type": "choose",
+      "text": "No café, pedes com simpatia: {Queria} um café, por favor.",
+      "prompt": "Ordina con cortesia",
+      "trains": [
+        "vocab:queria"
+      ],
+      "wrong": [
+        "Obrigado",
+        "Quanto é",
+        "Por favor"
+      ]
     }
   ]
 }

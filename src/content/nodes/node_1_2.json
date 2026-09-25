@@ -23,6 +23,13 @@
               "como-estas",
               "tudo-bem"
             ]
+          },
+          {
+            "label": "Apresentações",
+            "items": [
+              "chamo-me",
+              "muito-prazer"
+            ]
           }
         ]
       }
@@ -149,6 +156,78 @@
       "trains": [
         "vocab:como-estas",
         "verb:estar:presente:tu"
+      ]
+    },
+    {
+      "id": "ex_1_2_11",
+      "type": "choose",
+      "text": "Olá! {Tudo bem}?",
+      "it": "Ciao! Tutto bene?",
+      "prompt": "Domanda veloce che vale anche come saluto: come chiedi \"tutto ok?\"",
+      "trains": [
+        "vocab:tudo-bem"
+      ],
+      "wrong": [
+        "Como estás",
+        "Boa tarde",
+        "Muito obrigado"
+      ]
+    },
+    {
+      "id": "ex_1_2_12",
+      "type": "write",
+      "text": "{Tudo bem}, obrigado!",
+      "it": "Tutto bene, grazie!",
+      "trains": [
+        "vocab:tudo-bem"
+      ]
+    },
+    {
+      "id": "ex_1_2_13",
+      "type": "choose",
+      "text": "{Chamo-me} Sofia, prazer!",
+      "it": "Mi chiamo Sofia, piacere!",
+      "prompt": "Come dici il tuo nome quando ti presenti?",
+      "trains": [
+        "vocab:chamo-me"
+      ],
+      "wrong": [
+        "Sou de",
+        "Tudo bem",
+        "Muito prazer"
+      ]
+    },
+    {
+      "id": "ex_1_2_14",
+      "type": "write",
+      "text": "Olá! {Chamo-me} Marco.",
+      "it": "Ciao! Mi chiamo Marco.",
+      "trains": [
+        "vocab:chamo-me"
+      ]
+    },
+    {
+      "id": "ex_1_2_15",
+      "type": "choose",
+      "text": "Conheces alguém novo. Dizes: {Muito prazer}!",
+      "it": "Conosci qualcuno di nuovo. Dici: Piacere!",
+      "prompt": "Cosa dici appena dopo aver saputo il nome di qualcuno?",
+      "trains": [
+        "vocab:muito-prazer"
+      ],
+      "wrong": [
+        "Tudo bem",
+        "Até logo",
+        "De nada"
+      ]
+    },
+    {
+      "id": "ex_1_2_16",
+      "type": "write",
+      "text": "{Muito prazer}, eu sou o Marco.",
+      "it": "Piacere, io sono Marco.",
+      "trains": [
+        "vocab:muito-prazer"
       ]
     }
   ]

@@ -51,6 +51,23 @@
       "icon": "🤝",
       "usage": "Domanda veloce che fa anche da risposta: «Tudo bem?» – «Tudo bem!»",
       "situation": "🤝 Incroci un collega e chiedi al volo se è tutto a posto."
+    },
+    {
+      "id": "chamo-me",
+      "pt": "Chamo-me…",
+      "it": "Mi chiamo…",
+      "note": "si completa con il proprio nome: «Chamo-me Ana»",
+      "icon": "🙋",
+      "usage": "Per dire come ti chiami quando ti presenti.",
+      "situation": "🙋 Ti presenti a qualcuno per la prima volta: dici come ti chiami."
+    },
+    {
+      "id": "muito-prazer",
+      "pt": "Muito prazer!",
+      "it": "Piacere (di conoscerti)!",
+      "icon": "🤗",
+      "usage": "Si dice appena dopo esservi presentati a vicenda.",
+      "situation": "🤗 Hai appena saputo il nome di qualcuno: rispondi con piacere."
     }
   ]
 }

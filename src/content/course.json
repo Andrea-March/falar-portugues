@@ -8,18 +8,18 @@
       "icon": "👋",
       "nodes": [
         {
-          "id": "node_1_1",
-          "kind": "verb",
-          "title": "Ser",
-          "subtitle": "Chi sei e da dove vieni",
-          "icon": "📖"
-        },
-        {
           "id": "node_1_2",
           "kind": "vocab",
           "title": "Cumprimentos",
           "subtitle": "Salutare in ogni momento della giornata",
           "icon": "🗣️"
+        },
+        {
+          "id": "node_1_1",
+          "kind": "verb",
+          "title": "Ser",
+          "subtitle": "Chi sei e da dove vieni",
+          "icon": "📖"
         },
         {
           "id": "node_1_3",
@@ -35,8 +35,8 @@
           "subtitle": "Metti alla prova tutto il capitolo",
           "icon": "🏆",
           "requires": [
-            "node_1_1",
             "node_1_2",
+            "node_1_1",
             "node_1_3"
           ]
         }
