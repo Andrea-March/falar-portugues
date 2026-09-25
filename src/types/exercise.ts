@@ -13,6 +13,8 @@ export interface BaseExercise {
   alternatives?: string[];
   /** Cosa allena (es. "verb:ser:presente:eu"), per il ripasso */
   trains?: string[];
+  /** Nota per chi parla italiano, mostrata dopo un errore */
+  italianNote?: string;
 }
 
 export interface MultipleChoiceExercise extends BaseExercise {

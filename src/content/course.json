@@ -29,6 +29,13 @@
           "icon": "☕"
         },
         {
+          "id": "node_1_cultura",
+          "kind": "culture",
+          "title": "O café",
+          "subtitle": "Bica, galão e pastel de nata",
+          "icon": "🥐"
+        },
+        {
           "id": "node_1_checkpoint",
           "kind": "checkpoint",
           "title": "Teste final",

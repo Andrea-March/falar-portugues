@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import ItalianNote from '@/components/common/ItalianNote';
 import { Volume2 } from 'lucide-react';
 import type { VocabPresentStep as PresentStep, VocabRecallStep as RecallStep } from '@/content';
 import { speakPortuguese } from '@/utils/textToSpeech';
@@ -60,6 +61,7 @@ export function VocabPresentStep({ step, initiallyDone, onDone }: StepProps<Pres
           {item.note && (
             <span className="inline-block rounded-full bg-white text-azulejo-dark text-sm font-extrabold px-2.5 py-0.5">{item.note}</span>
           )}
+          {item.italianNote && <ItalianNote text={item.italianNote} />}
         </div>
       </div>
 

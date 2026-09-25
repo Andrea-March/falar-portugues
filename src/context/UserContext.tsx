@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { firstNodeId } from '@/content';
 
 const STORAGE_KEY = 'pt_app_user_progress_v1';
 
@@ -18,7 +19,7 @@ export interface UserProgress {
 const DEFAULT_PROGRESS: UserProgress = {
   completedNodeIds: [],
   sessionProgress: {},
-  currentNodeId: 'node_1_1',
+  currentNodeId: firstNodeId,
   xp: 0,
   hearts: 5,
   maxHearts: 5,

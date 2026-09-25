@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import ChapterMap from '@/components/ChapterMap';
-import { nextNodeId, sessionsFor, type CourseNode, type SessionKind } from '@/content';
+import { nextNodeId, isOptionalNode, sessionsFor, type CourseNode, type SessionKind } from '@/content';
 import { useUser } from '@/context/UserContext';
 import Mascot from '@/components/common/Mascot';
 import GrammarHub from '@/components/GrammarHub';
@@ -34,7 +34,8 @@ export default function Home() {
         onCompleteSession={() => {
           // Gli XP sono già stati assegnati a fine sessione (LessonScreen)
           const list = sessionsFor(node);
-          completeSession(node.id, list.indexOf(session), list.length, nextNodeId(node.id));
+          // Un nodo facoltativo (cultura) non sposta il punto in cui si trova l'utente nel percorso
+          completeSession(node.id, list.indexOf(session), list.length, isOptionalNode(node) ? undefined : nextNodeId(node.id));
           setActive(null);
         }}
       />

@@ -14,6 +14,13 @@
       "note": "a Porto si dice «cimbalino»"
     },
     {
+      "id": "galao",
+      "pt": "Um galão",
+      "it": "Un caffellatte (in bicchiere alto)",
+      "icon": "🥛",
+      "usage": "Tanto latte e poco caffè, servito in un bicchiere alto: tipico della colazione."
+    },
+    {
       "id": "por-favor",
       "pt": "por favor",
       "it": "per favore"
@@ -22,7 +29,8 @@
       "id": "queria",
       "pt": "Queria…",
       "it": "Vorrei…",
-      "note": "modo cortese per ordinare"
+      "note": "modo cortese per ordinare",
+      "italianNote": "Sembra un «volevo», ma in portoghese è il modo normale e cortese di chiedere, come il nostro «vorrei»."
     },
     {
       "id": "pastel-de-nata",

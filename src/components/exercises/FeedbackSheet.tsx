@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import ItalianNote from '@/components/common/ItalianNote';
 import { Sparkles, Volume2 } from 'lucide-react';
 import { COMBO_BADGE_FROM } from '@/utils/sound';
 import { speakPortuguese } from '@/utils/textToSpeech';
@@ -15,6 +16,8 @@ interface FeedbackSheetProps {
   canCheck: boolean;
   correctAnswer: string;
   sentence: string;
+  /** Nota per italiani, mostrata dopo un errore o con la soluzione */
+  italianNote?: string;
   onCheck: () => void;
   onDontKnow: () => void;
   onReveal: () => void;
@@ -43,6 +46,7 @@ export default function FeedbackSheet({
   canCheck,
   correctAnswer,
   sentence,
+  italianNote,
   onCheck,
   onDontKnow,
   onReveal,
@@ -119,6 +123,7 @@ export default function FeedbackSheet({
               <SentenceButton sentence={sentence} tone="text-azulejo-dark" />
             </div>
           </div>
+          {italianNote && <ItalianNote text={italianNote} />}
           <button
             type="button"
             autoFocus
@@ -149,6 +154,7 @@ export default function FeedbackSheet({
             </button>
           </div>
         </div>
+        {italianNote && <ItalianNote text={italianNote} />}
         <button type="button" autoFocus onClick={onRetry} className="btn-3d btn-ko w-full py-4 text-lg">
           Tentar de novo
         </button>

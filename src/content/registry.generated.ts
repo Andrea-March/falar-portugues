@@ -16,4 +16,5 @@ export const nodeLoaders: Record<string, () => Promise<NodeContent>> = {
   "node_1_2": () => import('./nodes/node_1_2.json').then((m) => m.default as unknown as NodeContent),
   "node_1_3": () => import('./nodes/node_1_3.json').then((m) => m.default as unknown as NodeContent),
   "node_1_checkpoint": () => import('./nodes/node_1_checkpoint.json').then((m) => m.default as unknown as NodeContent),
+  "node_1_cultura": () => import('./nodes/node_1_cultura.json').then((m) => m.default as unknown as NodeContent),
 };

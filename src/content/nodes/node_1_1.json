@@ -33,10 +33,11 @@
       "text": "Olá, chamo-me Marco. {Sou} de Itália.",
       "it": "Ciao, mi chiamo Marco. Vengo dall'Italia.",
       "prompt": "Presentati e di' da dove vieni",
+      "wrongFrom": "verb-forms",
+      "italianNote": "In Portogallo si dice «de Itália», senza articolo. «Da Itália» è la forma brasiliana.",
       "trains": [
         "verb:ser:presente:eu"
-      ],
-      "wrongFrom": "verb-forms"
+      ]
     },
     {
       "id": "ex_1_1_2",
@@ -91,10 +92,11 @@
       "text": "Boa tarde! O senhor {é} o novo vizinho?",
       "it": "Buon pomeriggio! Lei è il nuovo vicino?",
       "prompt": "Chiedi con cortesia a un signore se è il nuovo vicino",
+      "wrongFrom": "verb-forms",
+      "italianNote": "Con chi non conosci si usa «o senhor» / «a senhora» con il verbo alla terza persona, come il nostro «Lei».",
       "trains": [
         "verb:ser:presente:ele_ela_voce"
-      ],
-      "wrongFrom": "verb-forms"
+      ]
     },
     {
       "id": "ex_1_1_8",

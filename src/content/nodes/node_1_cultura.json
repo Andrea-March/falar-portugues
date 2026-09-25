@@ -1,0 +1,67 @@
+{
+  "id": "node_1_cultura",
+  "theory": [
+    {
+      "title": "O café em Portugal",
+      "text": "In Portogallo il caffè si beve in piedi al banco, più volte al giorno, e costa poco. Se chiedi **um café** ti arriva un espresso: a Lisbona si chiama **bica**, a Porto **cimbalino**. Per la colazione c'è il **galão**, e accanto al caffè quasi sempre un **pastel de nata**, nato nel quartiere di **Belém**, a Lisbona.",
+      "vocab": [
+        "bica",
+        "galao",
+        "pastel-de-nata"
+      ],
+      "examples": [
+        {
+          "pt": "Uma bica e um pastel de nata, por favor.",
+          "it": "Un caffè e un pastel de nata, per favore."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "ex_1_cult_1",
+      "type": "choose",
+      "text": "No Porto, uma bica chama-se {cimbalino}.",
+      "it": "A Porto, una bica si chiama cimbalino.",
+      "prompt": "Come si chiama l'espresso a Porto?",
+      "trains": [
+        "vocab:bica"
+      ],
+      "wrong": [
+        "galão",
+        "pastel",
+        "Belém"
+      ]
+    },
+    {
+      "id": "ex_1_cult_2",
+      "type": "choose",
+      "text": "Muito leite e pouco café, num copo alto: um {galão}.",
+      "it": "Tanto latte e poco caffè, in un bicchiere alto: un galão.",
+      "prompt": "Ordina il caffellatte della colazione",
+      "trains": [
+        "vocab:galao"
+      ],
+      "wrong": [
+        "cimbalino",
+        "bica",
+        "pastel de nata"
+      ]
+    },
+    {
+      "id": "ex_1_cult_3",
+      "type": "choose",
+      "text": "O pastel de nata nasceu em {Belém}, em Lisboa.",
+      "it": "Il pastel de nata è nato a Belém, a Lisbona.",
+      "prompt": "Dove è nato il pastel de nata?",
+      "trains": [
+        "vocab:pastel-de-nata"
+      ],
+      "wrong": [
+        "Coimbra",
+        "Porto",
+        "Chiado"
+      ]
+    }
+  ]
+}

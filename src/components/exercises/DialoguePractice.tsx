@@ -263,6 +263,7 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
             canCheck={answer.trim().length > 0}
             correctAnswer={exercise.correctAnswer}
             sentence={fullSentence}
+            italianNote={exercise.italianNote}
             onCheck={() => evaluate(answer, true)}
             onDontKnow={reveal}
             onReveal={reveal}

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import ItalianNote from '@/components/common/ItalianNote';
 import confetti from 'canvas-confetti';
 import { soundFX } from '@/utils/sound';
 import { useUser } from '@/context/UserContext';
@@ -274,6 +275,7 @@ function LessonFlow({
                       {ex.it}
                       {ex.note && <span className="text-brand-muted/80 font-semibold italic"> · {ex.note}</span>}
                     </p>
+                    {ex.italianNote && <ItalianNote text={ex.italianNote} compact />}
                   </div>
                   <SpeakButton text={ex.pt.replace(/\*\*/g, '')} label="Ouvir a frase" />
                 </div>

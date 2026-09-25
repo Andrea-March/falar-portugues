@@ -18,6 +18,12 @@ const Tense = z.string().regex(/^[a-z_]+$/, 'es. "presente", "preterito_perfeito
 const NonEmpty = z.string().trim().min(1);
 
 /**
+ * Nota per chi parla italiano: dove un italiano sbaglia davvero (pronuncia, falsi amici,
+ * cortesia, forme brasiliane). Al massimo 2 frasi brevi; va confermata da una madrelingua.
+ */
+const ItalianNote = NonEmpty.max(240, 'al massimo 2 frasi brevi');
+
+/**
  * Frase con la risposta tra graffe: "Eu {sou} de Roma."
  * Esattamente una coppia di graffe, non vuota.
  */
@@ -53,6 +59,8 @@ const ExerciseBase = {
    * Servono perché nelle sessioni "Produção" e "Teste" anche le scelte multiple si scrivono.
    */
   accept: z.array(NonEmpty).min(1).optional(),
+  /** Nota per italiani, mostrata dopo un errore (se manca, si usa quella della voce allenata) */
+  italianNote: ItalianNote.optional(),
   trains: z.array(TrainsRef).min(1, 'indica almeno una cosa allenata (verb:… o vocab:…)'),
 };
 
@@ -178,6 +186,8 @@ export const VocabItem = z.strictObject({
   usage: NonEmpty.optional(),
   /** Situazione per il ripasso a memoria: deve portare a questa espressione e non a un'altra */
   situation: NonEmpty.optional(),
+  /** Nota per italiani: nello studio guidato, negli esempi e dopo un errore collegato */
+  italianNote: ItalianNote.optional(),
 });
 export type VocabItem = z.infer<typeof VocabItem>;
 
@@ -190,7 +200,8 @@ export type VocabSet = z.infer<typeof VocabSet>;
 
 // ---------- File: il corso (src/content/course.json) ----------
 
-export const NodeKind = z.enum(['verb', 'vocab', 'dialogue', 'checkpoint']);
+/** "culture": scheda breve + poche domande leggere; è facoltativo e non blocca il percorso */
+export const NodeKind = z.enum(['verb', 'vocab', 'dialogue', 'culture', 'checkpoint']);
 
 export const CourseNode = z.strictObject({
   id: Slug,

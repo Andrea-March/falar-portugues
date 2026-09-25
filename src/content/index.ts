@@ -25,6 +25,7 @@ export const KIND_LABELS: Record<CourseNode['kind'], string> = {
   verb: 'Verbo',
   vocab: 'Vocabulário',
   dialogue: 'Conversa',
+  culture: 'Cultura · opcional',
   checkpoint: 'Desafio',
 };
 
@@ -32,9 +33,18 @@ export const KIND_LABELS: Record<CourseNode['kind'], string> = {
 export const fullNodeTitle = (node: CourseNode) => (node.kind === 'verb' ? `Verbo ${node.title.toLowerCase()}` : node.title);
 
 /** Nodo successivo nel percorso (o lo stesso, se è l'ultimo) */
+/** Nodi facoltativi: si possono fare, ma non servono a sbloccare i successivi */
+export const isOptionalNode = (node: CourseNode) => node.kind === 'culture';
+
+/** Primo nodo del corso: il punto di partenza di un nuovo utente */
+export const firstNodeId = allNodes[0].id;
+
+/** Nodo successivo nel percorso obbligatorio (o lo stesso, se è l'ultimo) */
 export function nextNodeId(id: string): string {
   const i = allNodes.findIndex((n) => n.id === id);
-  return i !== -1 && i < allNodes.length - 1 ? allNodes[i + 1].id : id;
+  if (i === -1) return id;
+  const next = allNodes.slice(i + 1).find((n) => !isOptionalNode(n));
+  return next ? next.id : id;
 }
 
 // ---------- Lezioni (caricate su richiesta) ----------
@@ -123,6 +133,16 @@ function defaultPrompt(ex: ContentExercise, typed: boolean) {
   return typed ? 'Completa a frase' : 'Escolhe a opção certa';
 }
 
+/** Prima nota per italiani tra le voci di vocabolario allenate dall'esercizio */
+function italianNoteFromTrains(trains: string[]): string | undefined {
+  for (const ref of trains) {
+    if (!ref.startsWith('vocab:')) continue;
+    const note = getVocab(ref.slice('vocab:'.length))?.italianNote;
+    if (note) return note;
+  }
+  return undefined;
+}
+
 /**
  * Converte un esercizio del contenuto nel formato usato dai componenti.
  * Con `typed` anche le scelte multiple diventano da scrivere (sessioni senza aiuti).
@@ -138,6 +158,7 @@ export function toRuntimeExercise(ex: ContentExercise, opts: { typed?: boolean }
     contextIt: ex.contextIt,
     alternatives: ex.accept,
     trains: ex.trains,
+    italianNote: ex.italianNote ?? italianNoteFromTrains(ex.trains),
   };
 
   if (typed) {
@@ -182,14 +203,14 @@ export interface ResolvedTheoryCard {
   title: string;
   text: string;
   conjugation?: { pronoun: string; verb: string; spoken: string }[];
-  examples?: { pt: string; it: string; note?: string }[];
+  examples?: { pt: string; it: string; note?: string; italianNote?: string }[];
 }
 
 export function resolveTheory(card: TheoryCard): ResolvedTheoryCard {
   const vocabExamples = (card.vocab ?? [])
     .map(getVocab)
     .filter((v): v is VocabItem => Boolean(v))
-    .map((v) => ({ pt: v.pt, it: v.it, note: v.note }));
+    .map((v) => ({ pt: v.pt, it: v.it, note: v.note, italianNote: v.italianNote }));
   const examples = [...vocabExamples, ...(card.examples ?? [])];
 
   return {
@@ -316,6 +337,7 @@ export const TEST_PASS_ACCURACY = 80;
 
 export function sessionsFor(node: CourseNode): SessionKind[] {
   if (node.kind === 'checkpoint') return ['test'];
+  if (node.kind === 'culture') return ['discovery', 'guided'];
   return ['discovery', 'guided', 'production', 'test'];
 }
 
@@ -348,6 +370,7 @@ function generatedExercises(theory: TheoryItem[]): RuntimeExercise[] {
             sentenceAfter: after,
             correctAnswer: form,
             trains: [`vocab:${v.id}`],
+            italianNote: v.italianNote,
           };
         });
     }

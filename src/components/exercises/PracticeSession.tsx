@@ -186,6 +186,7 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
           canCheck={answer.trim().length > 0}
           correctAnswer={exercise.correctAnswer}
           sentence={fullSentence}
+          italianNote={exercise.italianNote}
           onCheck={() => evaluate(answer, true)}
           onDontKnow={reveal}
           onReveal={reveal}

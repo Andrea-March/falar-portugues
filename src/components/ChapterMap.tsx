@@ -6,6 +6,7 @@ import { soundFX } from '@/utils/sound';
 import Mascot from '@/components/common/Mascot';
 import {
   chapters as courseChapters,
+  isOptionalNode,
   KIND_LABELS,
   SESSION_INFO,
   sessionsDone as countSessionsDone,
@@ -73,7 +74,7 @@ function SessionRing({ done, total, current }: { done: number; total: number; cu
 export default function ChapterMap({
   completedNodeIds = [],
   sessionProgress = {},
-  currentNodeId = 'node_1_1',
+  currentNodeId,
   onSelectSession,
 }: ChapterMapProps) {
   const chapters = courseChapters;
@@ -94,6 +95,10 @@ export default function ChapterMap({
       document.removeEventListener('keydown', onKey);
     };
   }, [openNodeId]);
+
+  /** Ultimo nodo obbligatorio prima della posizione indicata (i nodi facoltativi non contano) */
+  const lastRequiredBefore = (nodes: Node[], index: number): Node | undefined =>
+    nodes.slice(0, index).reverse().find((n) => !isOptionalNode(n));
 
   // Calcola lo sblocco in sequenza
   const checkIsUnlocked = (
@@ -116,15 +121,15 @@ export default function ChapterMap({
       if (chapterIndex === 0) return true; // Capitolo 1 è sempre aperto
       
       // Capitoli successivi: controlla se l'ultimo nodo del capitolo precedente è completato
-      const prevChapter = chaptersList[chapterIndex - 1];
-      const lastNodeOfPrev = prevChapter.nodes[prevChapter.nodes.length - 1];
-      return completedNodeIds.includes(lastNodeOfPrev.id);
+      const prevNodes = chaptersList[chapterIndex - 1].nodes;
+      const lastNodeOfPrev = lastRequiredBefore(prevNodes, prevNodes.length);
+      return !lastNodeOfPrev || completedNodeIds.includes(lastNodeOfPrev.id);
     }
 
-    // 4. Nodi standard: basta che il nodo precedente sia completato
-    const currentChapter = chaptersList[chapterIndex];
-    const previousNode = currentChapter.nodes[nodeIndex - 1];
-    return completedNodeIds.includes(previousNode.id);
+    // 4. Nodi standard: basta che il nodo obbligatorio precedente sia completato
+    //    (un nodo facoltativo, come la cultura, non blocca quelli dopo)
+    const previousNode = lastRequiredBefore(chaptersList[chapterIndex].nodes, nodeIndex);
+    return !previousNode || completedNodeIds.includes(previousNode.id);
   };
 
   return (
