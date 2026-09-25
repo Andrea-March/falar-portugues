@@ -91,7 +91,7 @@ export type Exercise = z.infer<typeof Exercise>;
 
 export const TheoryCard = z.strictObject({
   title: NonEmpty,
-  /** Testo; **grassetto** evidenzia una parola */
+  /** Testo; **grassetto** evidenzia una parola o frase in PORTOGHESE, che si ascolta toccandola (mai usarlo per l'italiano) */
   text: NonEmpty,
   /** Mostra la tabella di coniugazione presa dal file del verbo */
   verb: z.strictObject({ verb: Slug, tense: Tense }).optional(),

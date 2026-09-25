@@ -42,16 +42,26 @@ interface LessonScreenProps {
 
 const speakPt = speakPortuguese;
 
+/**
+ * Testo della teoria: le parti tra **…** sono sempre portoghese (vedi schema.ts)
+ * e si ascoltano toccandole.
+ */
 const renderFormattedText = (text: string) =>
-  text.split(/(\*\*.*?\*\*)/g).map((part, index) =>
-    part.startsWith('**') && part.endsWith('**') ? (
-      <strong key={index} className="font-extrabold text-azulejo-dark bg-azulejo-light px-1.5 rounded-md">
-        {part.slice(2, -2)}
-      </strong>
-    ) : (
-      part
-    )
-  );
+  text.split(/(\*\*.*?\*\*)/g).map((part, index) => {
+    if (!(part.startsWith('**') && part.endsWith('**'))) return part;
+    const pt = part.slice(2, -2);
+    return (
+      <button
+        key={index}
+        type="button"
+        onClick={() => speakPt(pt.replace(/…/g, ''))}
+        aria-label={`Ouvir «${pt}»`}
+        className="inline font-extrabold text-azulejo-dark bg-azulejo-light px-1.5 rounded-md underline decoration-dotted decoration-azulejo/60 underline-offset-4 cursor-pointer hover:brightness-95 active:scale-95 transition-transform"
+      >
+        {pt}
+      </button>
+    );
+  });
 
 function SpeakButton({ text, label }: { text: string; label: string }) {
   return (

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Check, Lock } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
 import Mascot from '@/components/common/Mascot';
@@ -30,16 +30,28 @@ interface ChapterMapProps {
 
 // Pattern di scostamento orizzontale in percentuale (%)
 const X_OFFSETS = [50, 28, 50, 72];
-const ROW_HEIGHT = 150; // Spazio verticale tra i centri dei nodi (px): lascia posto all'etichetta sotto il nodo
-const LABEL_SPACE = 64; // Altezza occupata dall'etichetta sotto il nodo (px)
-const NODE_SIZE = 76;   // Dimensione bottone nodo (px)
-const RING_SIZE = 96;   // Anello delle sessioni attorno al nodo (px)
+const ROW_HEIGHT = 128; // Spazio verticale tra i centri dei nodi (px): lascia posto all'etichetta sotto il nodo
+const LABEL_SPACE = 58; // Altezza occupata dall'etichetta sotto il nodo (px)
+const NODE_SIZE = 62;   // Dimensione bottone nodo (px)
+const RING_SIZE = 80;   // Anello delle sessioni attorno al nodo (px)
+
+/**
+ * Colore per tipo di nodo, uguale in tutti i capitoli: si riconosce a colpo d'occhio
+ * che cosa si fa in un nodo (frasi, verbo, conversazione…).
+ */
+const KIND_STYLE: Record<Node['kind'], { fill: string; edge: string; tint: string; text: string }> = {
+  vocab: { fill: '#2b7de0', edge: '#1b5aa8', tint: '#e5f0fd', text: '#1b5aa8' },
+  verb: { fill: '#8a5cf0', edge: '#6538c9', tint: '#f0eafe', text: '#6538c9' },
+  dialogue: { fill: '#1fa971', edge: '#157a51', tint: '#e2f6ec', text: '#157a51' },
+  culture: { fill: '#e8773a', edge: '#b85720', tint: '#fdeee4', text: '#b85720' },
+  checkpoint: { fill: '#f2b705', edge: '#b88a00', tint: '#fff5d6', text: '#8a6700' },
+};
 
 /**
  * Anello a segmenti attorno al nodo: un segmento per sessione, pieno quando è fatta.
  */
-function SessionRing({ done, total, current }: { done: number; total: number; current: boolean }) {
-  const stroke = 6;
+function SessionRing({ done, total, color }: { done: number; total: number; color: string }) {
+  const stroke = 5;
   const r = (RING_SIZE - stroke) / 2;
   const c = 2 * Math.PI * r;
   const gap = total > 1 ? 7 : 0;
@@ -61,13 +73,65 @@ function SessionRing({ done, total, current }: { done: number; total: number; cu
           fill="none"
           strokeWidth={stroke}
           strokeLinecap="round"
-          stroke={i < done ? '#ffc21a' : current ? '#f6c9c4' : '#dde3f0'}
+          stroke={i < done ? color : '#dde3f0'}
           strokeDasharray={`${seg} ${c - seg}`}
           strokeDashoffset={-(i * c) / total - gap / 2}
           className="transition-[stroke] duration-500"
         />
       ))}
     </svg>
+  );
+}
+
+/**
+ * Il gallo accanto al nodo corrente. Si può afferrare e trascinare in giro per la mappa:
+ * mentre lo tieni si dimena, quando lo lasci fa un saltello. Doppio tocco: torna al suo posto.
+ * Al caricamento (o quando cambia il nodo corrente) riparte sempre dal nodo.
+ */
+function DraggableMascot({ onRight }: { onRight: boolean }) {
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [state, setState] = useState<'idle' | 'grabbed' | 'dropped'>('idle');
+  const drag = useRef<{ px: number; py: number; ox: number; oy: number } | null>(null);
+
+  useEffect(() => {
+    if (state !== 'dropped') return;
+    const t = setTimeout(() => setState('idle'), 1400);
+    return () => clearTimeout(t);
+  }, [state]);
+
+  const end = () => {
+    if (!drag.current) return;
+    drag.current = null;
+    setState('dropped');
+  };
+
+  return (
+    <div
+      data-node-ui
+      role="img"
+      aria-label="O galo"
+      className={`absolute top-1/2 touch-none select-none ${onRight ? 'left-full ml-4' : 'right-full mr-4'} ${
+        state === 'grabbed' ? 'cursor-grabbing' : 'cursor-grab'
+      }`}
+      style={{ transform: `translate(${offset.x}px, calc(-50% + ${offset.y}px))` }}
+      onPointerDown={(e) => {
+        e.preventDefault();
+        e.currentTarget.setPointerCapture(e.pointerId);
+        drag.current = { px: e.clientX, py: e.clientY, ox: offset.x, oy: offset.y };
+        setState('grabbed');
+      }}
+      onPointerMove={(e) => {
+        const d = drag.current;
+        if (d) setOffset({ x: d.ox + e.clientX - d.px, y: d.oy + e.clientY - d.py });
+      }}
+      onPointerUp={end}
+      onPointerCancel={end}
+      onDoubleClick={() => setOffset({ x: 0, y: 0 })}
+    >
+      <div className={`transition-transform duration-150 ${state === 'grabbed' ? 'scale-110 animate-wiggle drop-shadow-lg' : ''}`}>
+        <Mascot mood={state === 'grabbed' ? 'happy' : state === 'dropped' ? 'cheer' : 'idle'} size={60} animate={state !== 'grabbed'} />
+      </div>
+    </div>
   );
 }
 
@@ -182,10 +246,10 @@ export default function ChapterMap({
                       key={`path-${node.id}`}
                       d={pathData}
                       fill="none"
-                      stroke={isSegmentDone ? '#ffc21a' : '#dde3f0'}
-                      strokeWidth="10"
+                      stroke={isSegmentDone ? '#b9c4da' : '#dde3f0'}
+                      strokeWidth="4"
                       strokeLinecap="round"
-                      strokeDasharray={isSegmentDone ? undefined : '2 16'}
+                      strokeDasharray={isSegmentDone ? undefined : '1 9'}
                       vectorEffect="non-scaling-stroke"
                     />
                   );
@@ -203,19 +267,21 @@ export default function ChapterMap({
                 const done = doneOf(node);
                 const showRing = !isLocked && total > 1;
 
-                const tone = isLocked
-                  ? 'bg-[#e6eaf3] border-[#c7cfdf] text-[#9aa4bd]'
-                  : isCompleted
-                  ? 'bg-brand-accent border-brand-accentHover text-brand-accentDark'
-                  : isCurrent
-                  ? `bg-brand-primary border-brand-dark text-white ${showRing ? '' : 'ring-[6px] ring-brand-accent/60'}`
-                  : 'bg-white border-brand-border text-ink border-2';
+                const kind = KIND_STYLE[node.kind];
+                // Bloccato: grigio. Completato o in corso: pieno del colore del tipo.
+                // Sbloccato ma non iniziato: tinta chiara con bordo colorato.
+                const filled = isCompleted || isCurrent;
+                const nodeStyle: React.CSSProperties = isLocked
+                  ? { background: '#e6eaf3', borderColor: '#c7cfdf', color: '#9aa4bd' }
+                  : filled
+                  ? { background: kind.fill, borderColor: kind.edge, color: '#fff' }
+                  : { background: kind.tint, borderColor: kind.fill, color: kind.text };
 
                 return (
                   <div
                     key={node.id}
                     className="absolute -translate-x-1/2 -translate-y-1/2"
-                    style={{ left: `${posX}%`, top: `${posY}px` }}
+                    style={{ left: `${posX}%`, top: `${posY}px`, zIndex: isCurrent ? 20 : undefined }}
                   >
                     {isCurrent && (
                       <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-20 pointer-events-none animate-bob">
@@ -225,17 +291,9 @@ export default function ChapterMap({
                       </div>
                     )}
 
-                    {isCurrent && (
-                      <div
-                        className={`absolute top-1/2 -translate-y-1/2 pointer-events-none ${
-                          mascotOnRight ? 'left-full ml-5' : 'right-full mr-5'
-                        }`}
-                      >
-                        <Mascot mood="idle" size={72} />
-                      </div>
-                    )}
+                    {isCurrent && <DraggableMascot key={node.id} onRight={mascotOnRight} />}
 
-                    {showRing && <SessionRing done={done} total={total} current={isCurrent} />}
+                    {showRing && <SessionRing done={done} total={total} color={kind.fill} />}
 
                     <button
                       type="button"
@@ -248,14 +306,23 @@ export default function ChapterMap({
                         soundFX.playClick();
                         setOpenNodeId((id) => (id === node.id ? null : node.id));
                       }}
-                      style={{ width: `${NODE_SIZE}px`, height: `${NODE_SIZE - 6}px` }}
-                      className={`relative rounded-[50%] border-b-[8px] flex items-center justify-center text-3xl select-none cursor-pointer transition-[transform,border-width] duration-100 active:translate-y-[5px] active:border-b-[3px] ${tone} ${
-                        openNodeId === node.id ? 'scale-105' : ''
-                      }`}
+                      style={{ width: `${NODE_SIZE}px`, height: `${NODE_SIZE - 4}px`, ...nodeStyle }}
+                      className={`relative rounded-[50%] border-2 border-b-[6px] flex items-center justify-center text-2xl select-none cursor-pointer transition-[transform,border-width] duration-100 active:translate-y-[4px] active:border-b-2 ${
+                        isCurrent && !showRing ? 'ring-4 ring-offset-2 ring-brand-accent/70' : ''
+                      } ${openNodeId === node.id ? 'scale-105' : ''}`}
                     >
                       <span className={isLocked ? 'grayscale opacity-60' : ''}>
-                        {isLocked ? <Lock size={26} strokeWidth={2.6} /> : isCompleted ? <Check size={32} strokeWidth={3.5} /> : node.icon}
+                        {isLocked ? <Lock size={22} strokeWidth={2.6} /> : node.icon}
                       </span>
+                      {isCompleted && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-sm"
+                          style={{ color: kind.fill, boxShadow: `0 0 0 2px ${kind.fill}` }}
+                        >
+                          <Check size={15} strokeWidth={4} />
+                        </span>
+                      )}
                     </button>
 
                     {/* Etichetta sempre visibile: categoria + argomento. Toccarla equivale a toccare il nodo */}
@@ -266,18 +333,17 @@ export default function ChapterMap({
                         soundFX.playClick();
                         setOpenNodeId((id) => (id === node.id ? null : node.id));
                       }}
-                      className={`absolute top-full mt-4 left-1/2 -translate-x-1/2 w-max max-w-[136px] rounded-xl px-2.5 py-1 text-center cursor-pointer select-none ${
+                      className={`absolute top-full mt-3 left-1/2 -translate-x-1/2 w-max max-w-[132px] rounded-xl px-2 py-0.5 text-center cursor-pointer select-none ${
                         isCurrent ? 'bg-white shadow-md ring-2 ring-brand-primary/25' : 'bg-white/90 shadow-sm'
                       }`}
                     >
                       <p
-                        className={`text-[10px] font-extrabold uppercase tracking-[0.09em] leading-tight ${
-                          isLocked ? 'text-[#a9b2c7]' : isCompleted ? 'text-brand-accentDark' : isCurrent ? 'text-brand-primary' : 'text-azulejo'
-                        }`}
+                        className="text-[10px] font-extrabold uppercase tracking-[0.09em] leading-tight"
+                        style={{ color: isLocked ? '#a9b2c7' : kind.text }}
                       >
                         {node.draft ? 'Em breve' : KIND_LABELS[node.kind]}
                       </p>
-                      <p className={`font-display text-[15px] font-extrabold leading-tight line-clamp-2 ${isLocked ? 'text-[#9aa4bd]' : 'text-ink'}`}>
+                      <p className={`font-display text-sm font-extrabold leading-tight line-clamp-2 ${isLocked ? 'text-[#9aa4bd]' : 'text-ink'}`}>
                         {node.title}
                       </p>
                     </div>
