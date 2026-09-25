@@ -138,7 +138,7 @@ function DraggableMascot({ onRight }: { onRight: boolean }) {
 export default function ChapterMap({
   completedNodeIds = [],
   sessionProgress = {},
-  currentNodeId,
+  currentNodeId: savedCurrentNodeId,
   onSelectSession,
 }: ChapterMapProps) {
   const chapters = courseChapters;
@@ -171,9 +171,8 @@ export default function ChapterMap({
     chapterIndex: number,
     chaptersList: Chapter[]
   ): boolean => {
-    // 1. Già completato o nodo corrente attivo
+    // 1. Già completato
     if (completedNodeIds.includes(node.id)) return true;
-    if (node.id === currentNodeId) return true;
 
     // 2. Requisiti espliciti definiti (come nei nodi checkpoint)
     if (node.requires && node.requires.length > 0) {
@@ -195,6 +194,21 @@ export default function ChapterMap({
     const previousNode = lastRequiredBefore(chaptersList[chapterIndex].nodes, nodeIndex);
     return !previousNode || completedNodeIds.includes(previousNode.id);
   };
+
+  /**
+   * Nodo corrente = il primo nodo obbligatorio sbloccato e non ancora completato.
+   * Si ricava dai progressi invece di fidarsi del valore salvato, che può restare
+   * indietro (per esempio dopo un riordino dei nodi di un capitolo).
+   */
+  const currentNodeId = (() => {
+    for (const [ci, chapter] of chapters.entries()) {
+      for (const [ni, node] of chapter.nodes.entries()) {
+        if (node.draft || isOptionalNode(node) || completedNodeIds.includes(node.id)) continue;
+        if (checkIsUnlocked(node, ni, ci, chapters)) return node.id;
+      }
+    }
+    return savedCurrentNodeId;
+  })();
 
   return (
     <div className="w-full max-w-md mx-auto pb-32 pt-2 space-y-10">
