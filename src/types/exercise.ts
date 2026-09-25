@@ -9,6 +9,8 @@ export interface BaseExercise {
   context?: string;
   /** Traduzione italiana di "context" */
   contextIt?: string;
+  /** Altre risposte giuste (es. "Obrigada" accanto a "Obrigado") */
+  alternatives?: string[];
   /** Cosa allena (es. "verb:ser:presente:eu"), per il ripasso */
   trains?: string[];
 }

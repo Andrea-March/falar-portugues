@@ -10,7 +10,10 @@
     "prebuild": "npm run content",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "audio": "tsx scripts/audio.ts",
+    "audio:check": "tsx scripts/audio.ts --check",
+    "audio:samples": "tsx scripts/audio.ts samples"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",

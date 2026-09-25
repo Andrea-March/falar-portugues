@@ -11,16 +11,32 @@ import LessonShell from '@/components/common/LessonShell';
 import type { PracticeStats } from '@/components/exercises/PracticeSession';
 import Mascot from '@/components/common/Mascot';
 import { Volume2 } from 'lucide-react';
-import { speakPortuguese } from '@/utils/textToSpeech';
+import { preloadSpeech, speakPortuguese } from '@/utils/textToSpeech';
+import { sessionSpeech } from '@/content/speech';
 import LessonCompleteCard from '@/components/common/LessonCompleteCard';
-import { fullNodeTitle, getCourseNode, loadNode, theorySteps, toRuntimeExercise, type NodeContent } from '@/content';
+import TestFailedCard from '@/components/common/TestFailedCard';
+import {
+  fullNodeTitle,
+  getCourseNode,
+  loadNode,
+  SESSION_INFO,
+  sessionExercises,
+  sessionsFor,
+  TEST_PASS_ACCURACY,
+  theorySteps,
+  type NodeContent,
+  type SessionKind,
+} from '@/content';
 import ParadigmStep from '@/components/theory/ParadigmStep';
 import { VocabPresentStep, VocabRecallStep } from '@/components/theory/VocabStudy';
 
 interface LessonScreenProps {
   nodeId: string;
+  /** Quale sessione del nodo si fa */
+  session: SessionKind;
   onClose: () => void;
-  onCompleteNode: () => void;
+  /** Sessione conclusa (e, per il test, superata) */
+  onCompleteSession: () => void;
 }
 
 const speakPt = speakPortuguese;
@@ -52,6 +68,8 @@ function SpeakButton({ text, label }: { text: string; label: string }) {
 /** Carica la lezione (file separato) e poi mostra teoria, pratica e fine */
 export default function LessonScreen(props: LessonScreenProps) {
   const [loaded, setLoaded] = useState<{ id: string; content: NodeContent | null } | null>(null);
+  /** Nuovo tentativo del test: rimonta la sessione (nuovo ordine degli esercizi) */
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let alive = true;
@@ -87,24 +105,70 @@ export default function LessonScreen(props: LessonScreenProps) {
     );
   }
 
-  return <LessonFlow key={props.nodeId} {...props} content={loaded.content} />;
+  return (
+    <LessonFlow
+      key={`${props.nodeId}-${props.session}-${attempt}`}
+      {...props}
+      content={loaded.content}
+      onRetry={() => setAttempt((a) => a + 1)}
+    />
+  );
 }
 
-function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenProps & { content: NodeContent }) {
+function LessonFlow({
+  nodeId,
+  session,
+  onClose,
+  onCompleteSession,
+  onRetry,
+  content,
+}: LessonScreenProps & { content: NodeContent; onRetry: () => void }) {
   const { addXp } = useUser();
   const node = getCourseNode(nodeId);
   const title = node ? fullNodeTitle(node) : '';
   const isDialogue = node?.kind === 'dialogue';
-  const theory = useMemo(() => theorySteps(content.theory ?? []), [content]);
-  // Convertiti una volta sola: le opzioni della scelta multipla restano nello stesso ordine per tutta la lezione
-  const exercises = useMemo(() => content.exercises.map(toRuntimeExercise), [content]);
+  const isDiscovery = session === 'discovery';
+  const theory = useMemo(() => (isDiscovery ? theorySteps(content.theory ?? []) : []), [content, isDiscovery]);
+  // Calcolati una volta sola: ordine e opzioni restano gli stessi per tutta la sessione
+  const exercises = useMemo(() => (node ? sessionExercises(session, node, content) : []), [session, node, content]);
 
-  const [step, setStep] = useState<'theory' | 'practice' | 'complete'>(theory.length > 0 ? 'theory' : 'practice');
+  // Gli audio della sessione si scaricano subito, in sottofondo: così partono senza attesa
+  useEffect(() => {
+    if (node) preloadSpeech(sessionSpeech(session, node, content));
+  }, [session, node, content]);
+
+  /** Sessione successiva, da annunciare a fine sessione */
+  const nextSessionNote = (() => {
+    if (!node) return undefined;
+    const list = sessionsFor(node);
+    const next = list[list.indexOf(session) + 1];
+    if (next) return `A seguir: ${SESSION_INFO[next].icon} ${SESSION_INFO[next].name}`;
+    return session === 'test' ? 'Lição concluída! A próxima já está desbloqueada.' : undefined;
+  })();
+
+  const [step, setStep] = useState<'theory' | 'practice' | 'complete' | 'failed'>(isDiscovery ? 'theory' : 'practice');
   const [theoryIndex, setTheoryIndex] = useState(0);
   /** Schermate interattive (paradigma, studio del vocabolario) già completate */
   const [doneSteps, setDoneSteps] = useState<Set<number>>(() => new Set());
   const continueRef = useRef<HTMLButtonElement>(null);
-  const [lessonStats, setLessonStats] = useState({ xp: 15, accuracy: 100, bestCombo: 0 });
+  const [lessonStats, setLessonStats] = useState<{ xp: number; accuracy?: number; bestCombo: number }>({ xp: 15, accuracy: 100, bestCombo: 0 });
+
+  const celebrate = () => {
+    soundFX.playComplete();
+    confetti({
+      particleCount: 90,
+      spread: 80,
+      origin: { y: 0.35 },
+      colors: ['#e5392b', '#ffc21a', '#1d5bd8', '#26a558'],
+    });
+    setStep('complete');
+  };
+
+  const handleFinishDiscovery = () => {
+    setLessonStats({ xp: 10, accuracy: undefined, bestCombo: 0 });
+    addXp(10);
+    celebrate();
+  };
 
   const handleFinishPractice = (stats?: PracticeStats) => {
     let accuracy = 100;
@@ -114,15 +178,14 @@ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenPr
       earnedXp = accuracy === 100 ? 20 : accuracy >= 80 ? 15 : 10;
     }
     setLessonStats({ xp: earnedXp, accuracy, bestCombo: stats?.bestCombo ?? 0 });
+    // Test finale non superato: niente XP, si propone di riprovare
+    if (session === 'test' && accuracy < TEST_PASS_ACCURACY) {
+      soundFX.playError();
+      setStep('failed');
+      return;
+    }
     addXp(earnedXp);
-    soundFX.playComplete();
-    confetti({
-      particleCount: 90,
-      spread: 80,
-      origin: { y: 0.35 },
-      colors: ['#e5392b', '#ffc21a', '#1d5bd8', '#26a558'],
-    });
-    setStep('complete');
+    celebrate();
   };
 
   // ---------- TEORIA ----------
@@ -157,12 +220,12 @@ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenPr
                 disabled={!canContinue}
                 onClick={() => {
                   soundFX.playClick();
-                  if (isLast) setStep('practice');
+                  if (isLast) handleFinishDiscovery();
                   else setTheoryIndex((i) => i + 1);
                 }}
                 className="btn-3d flex-1 py-4 text-lg bg-azulejo border-azulejo-dark text-white hover:brightness-110"
               >
-                {isLast ? 'Começar a praticar' : 'Continuar'}
+                {isLast ? 'Concluir' : 'Continuar'}
               </button>
             </div>
           </div>
@@ -178,10 +241,8 @@ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenPr
           <div key={theoryIndex} className="space-y-6 animate-fade-in">
             {theoryIndex === 0 && <Mascot mood="happy" size={72} say="Primeiro, um pouco de teoria!" />}
 
-            <div className="flex items-start justify-between gap-3">
-              <h2 className="text-3xl font-extrabold text-ink leading-tight">{card.title}</h2>
-              <SpeakButton text={card.title} label="Ouvir o título" />
-            </div>
+            {/* Niente audio sul titolo: è in italiano. L'audio resta solo sui testi in portoghese */}
+            <h2 className="text-3xl font-extrabold text-ink leading-tight">{card.title}</h2>
             <p className="text-lg text-ink/80 font-semibold leading-relaxed">{renderFormattedText(card.text)}</p>
 
             {card.conjugation && (
@@ -191,7 +252,7 @@ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenPr
                     <button
                       key={item.pronoun}
                       type="button"
-                      onClick={() => speakPt(`${item.pronoun} ${item.verb}`)}
+                      onClick={() => speakPt(item.spoken)}
                       className="btn-3d !justify-between bg-white border-2 border-azulejo/20 !border-b-4 px-3.5 py-3 text-left"
                     >
                       <span className="text-brand-muted font-bold">{item.pronoun}</span>
@@ -228,20 +289,32 @@ function LessonFlow({ nodeId, onClose, onCompleteNode, content }: LessonScreenPr
   // ---------- PRATICA ----------
   if (step === 'practice') {
     return isDialogue ? (
-      <DialoguePractice exercises={exercises} speaker={content.speaker} onFinish={handleFinishPractice} onClose={onClose} />
+      <DialoguePractice
+        exercises={exercises}
+        speaker={content.speaker}
+        showTranslations={session !== 'test'}
+        onFinish={handleFinishPractice}
+        onClose={onClose}
+      />
     ) : (
       <PracticeSession exercises={exercises} onFinish={handleFinishPractice} onClose={onClose} />
     );
   }
 
+  // ---------- TEST NON SUPERATO ----------
+  if (step === 'failed') {
+    return <TestFailedCard accuracy={lessonStats.accuracy ?? 0} onRetry={onRetry} onClose={onClose} />;
+  }
+
   // ---------- COMPLETATA ----------
   return (
     <LessonCompleteCard
-      title={title}
+      title={`${title} · ${SESSION_INFO[session].name}`}
       xpEarned={lessonStats.xp}
       accuracy={lessonStats.accuracy}
       bestCombo={lessonStats.bestCombo}
-      onContinue={onCompleteNode}
+      note={nextSessionNote}
+      onContinue={onCompleteSession}
     />
   );
 }

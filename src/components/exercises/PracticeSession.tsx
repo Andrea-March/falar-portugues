@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { soundFX } from '@/utils/sound';
 import { speakPortuguese, stopSpeaking } from '@/utils/textToSpeech';
-import { matchAnswer } from '@/utils/answerCheck';
+import { matchAnswerAny } from '@/utils/answerCheck';
 import { useUser } from '@/context/UserContext';
 import { Exercise } from '@/types/exercise';
 import LessonShell from '@/components/common/LessonShell';
@@ -41,6 +41,8 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
   const [answer, setAnswer] = useState('');
   const [feedback, setFeedback] = useState<Feedback>('idle');
   const [accentHint, setAccentHint] = useState(false);
+  /** Risposta riconosciuta (può essere un'alternativa, es. "Obrigada") */
+  const [matched, setMatched] = useState<string | null>(null);
   const [errorCount, setErrorCount] = useState(0);
   const [failedCurrent, setFailedCurrent] = useState(false);
   // Serie di risposte giuste al primo tentativo: un errore o "Não sei" la azzera
@@ -74,9 +76,9 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
   }
 
   const isChoice = exercise.type === 'multiple_choice';
-  const fullSentence = isChoice
-    ? exercise.sentence.replace(/_{3,}/, exercise.correctAnswer)
-    : `${exercise.sentenceBefore}${exercise.correctAnswer}${exercise.sentenceAfter}`;
+  const sentenceWith = (answerText: string) =>
+    isChoice ? exercise.sentence.replace(/_{3,}/, answerText) : `${exercise.sentenceBefore}${answerText}${exercise.sentenceAfter}`;
+  const fullSentence = sentenceWith(matched ?? exercise.correctAnswer);
 
   const countError = () => {
     if (!failedCurrent) {
@@ -85,19 +87,19 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
     }
   };
 
-  const speakLater = () => {
+  const speakLater = (text = fullSentence) => {
     if (speakTimer.current) clearTimeout(speakTimer.current);
-    speakTimer.current = setTimeout(() => speakPortuguese(fullSentence), SPEAK_DELAY_MS);
+    speakTimer.current = setTimeout(() => speakPortuguese(text), SPEAK_DELAY_MS);
   };
 
-  const markCorrect = () => {
+  const markCorrect = (match: string) => {
     const newCombo = failedCurrent ? 0 : combo + 1;
     setCombo(newCombo);
     setBestCombo((b) => Math.max(b, newCombo));
     setAccentHint(false);
     setFeedback('correct');
     soundFX.playSuccess(newCombo);
-    speakLater();
+    speakLater(sentenceWith(match));
   };
 
   const markWrong = () => {
@@ -118,8 +120,11 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
 
   /** Valuta una risposta; `explicit` = l'utente ha premuto Verificar/Invio */
   const evaluate = (value: string, explicit: boolean) => {
-    const result = matchAnswer(value, exercise.correctAnswer);
-    if (result === 'exact') return markCorrect();
+    const { result, match } = matchAnswerAny(value, [exercise.correctAnswer, ...(exercise.alternatives ?? [])]);
+    if (result === 'exact') {
+      setMatched(match);
+      return markCorrect(match);
+    }
     if (!explicit) return;
     if (result === 'accents') {
       setAccentHint(true);
@@ -151,6 +156,7 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
       setAnswer('');
       setFeedback('idle');
       setAccentHint(false);
+      setMatched(null);
       setFailedCurrent(false);
     } else {
       onFinish({ total: exercises.length, errors: errorCount, bestCombo });

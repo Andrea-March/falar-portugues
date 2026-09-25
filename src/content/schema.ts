@@ -48,6 +48,11 @@ const ExerciseBase = {
   context: NonEmpty.optional(),
   /** Traduzione italiana della battuta in "context" (si mostra toccando la bolla) */
   contextIt: NonEmpty.optional(),
+  /**
+   * Altre risposte giuste quando si scrive (es. "Obrigada" accanto a "Obrigado").
+   * Servono perché nelle sessioni "Produção" e "Teste" anche le scelte multiple si scrivono.
+   */
+  accept: z.array(NonEmpty).min(1).optional(),
   trains: z.array(TrainsRef).min(1, 'indica almeno una cosa allenata (verb:… o vocab:…)'),
 };
 
@@ -132,6 +137,8 @@ export const Speaker = z.strictObject({
   role: NonEmpty.optional(),
   /** Un'emoji */
   avatar: NonEmpty,
+  /** Voce delle sue battute: una chiave di audio.config.json (predefinita: "default") */
+  voice: Slug.optional(),
 });
 export type Speaker = z.infer<typeof Speaker>;
 

@@ -73,13 +73,22 @@ export const TENSE_LABELS: Record<string, string> = {
   preterito_imperfeito: 'Pretérito Imperfeito',
   futuro: 'Futuro do Indicativo',
 };
+/** Pronome breve letto ad alta voce insieme alla forma del verbo */
+const SPOKEN: Record<Person, string> = { eu: 'eu', tu: 'tu', ele_ela_voce: 'ele', nos: 'nós', eles_elas_voces: 'eles' };
+
 export const tenseLabel = (t: string) => TENSE_LABELS[t] ?? t.replace(/_/g, ' ');
 
 /** Righe della tabella di coniugazione, nell'ordine standard delle persone */
 export function conjugationRows(verbId: string, tense: string) {
   const forms = getVerb(verbId)?.conjugations[tense];
   if (!forms) return [];
-  return (Object.keys(PERSON_LABELS) as Person[]).map((p) => ({ person: p, pronoun: PERSON_LABELS[p], verb: forms[p] }));
+  return (Object.keys(PERSON_LABELS) as Person[]).map((p) => ({
+    person: p,
+    pronoun: PERSON_LABELS[p],
+    verb: forms[p],
+    /** Cosa si legge: pronome breve + forma, es. "ele é" */
+    spoken: `${SPOKEN[p]} ${forms[p]}`,
+  }));
 }
 
 // ---------- Conversione verso i componenti degli esercizi ----------
@@ -108,18 +117,30 @@ function verbTarget(ex: ContentExercise) {
   return verb ? { verb, tense, person } : null;
 }
 
-function defaultPrompt(ex: ContentExercise) {
+function defaultPrompt(ex: ContentExercise, typed: boolean) {
   const target = verbTarget(ex);
   if (target) return `Conjuga o verbo ${target.verb.infinitive} (${tenseLabel(target.tense).toLowerCase()})`;
-  return ex.type === 'write' ? 'Completa a frase' : 'Escolhe a opção certa';
+  return typed ? 'Completa a frase' : 'Escolhe a opção certa';
 }
 
-/** Converte un esercizio del contenuto nel formato usato dai componenti */
-export function toRuntimeExercise(ex: ContentExercise): RuntimeExercise {
+/**
+ * Converte un esercizio del contenuto nel formato usato dai componenti.
+ * Con `typed` anche le scelte multiple diventano da scrivere (sessioni senza aiuti).
+ */
+export function toRuntimeExercise(ex: ContentExercise, opts: { typed?: boolean } = {}): RuntimeExercise {
   const { before, answer, after } = splitAnswer(ex.text);
-  const base = { id: ex.id, prompt: ex.prompt ?? defaultPrompt(ex), translationIt: ex.it, context: ex.context, contextIt: ex.contextIt, trains: ex.trains };
+  const typed = ex.type === 'write' || Boolean(opts.typed);
+  const base = {
+    id: ex.id,
+    prompt: ex.prompt ?? defaultPrompt(ex, typed),
+    translationIt: ex.it,
+    context: ex.context,
+    contextIt: ex.contextIt,
+    alternatives: ex.accept,
+    trains: ex.trains,
+  };
 
-  if (ex.type === 'write') {
+  if (typed) {
     return { ...base, type: 'fill_in_the_blank', sentenceBefore: before, sentenceAfter: after, correctAnswer: answer };
   }
 
@@ -140,13 +161,18 @@ export function toRuntimeExercise(ex: ContentExercise): RuntimeExercise {
   };
 }
 
+/** Frase completa di un esercizio con una data risposta: è quella che si legge ad alta voce */
+export function exerciseSentence(ex: RuntimeExercise, answer: string = ex.correctAnswer) {
+  return ex.type === 'multiple_choice' ? ex.sentence.replace(/_{3,}/, answer) : `${ex.sentenceBefore}${answer}${ex.sentenceAfter}`;
+}
+
 /** Esercizi di pratica di un verbo (sezione Gramática), filtrabili per tempo */
 export function verbExercises(verbId: string, tense?: string): RuntimeExercise[] {
   const verb = getVerb(verbId);
   if (!verb) return [];
   return verb.exercises
     .filter((ex) => !tense || ex.trains.some((t) => t.startsWith(`verb:${verbId}:${tense}:`)))
-    .map(toRuntimeExercise);
+    .map((ex) => toRuntimeExercise(ex));
 }
 
 // ---------- Teoria pronta da mostrare ----------
@@ -155,7 +181,7 @@ export interface ResolvedTheoryCard {
   kind: 'info';
   title: string;
   text: string;
-  conjugation?: { pronoun: string; verb: string }[];
+  conjugation?: { pronoun: string; verb: string; spoken: string }[];
   examples?: { pt: string; it: string; note?: string }[];
 }
 
@@ -244,7 +270,6 @@ function vocabStudySteps(card: VocabStudyCard['vocabStudy']): (VocabPresentStep 
 
 export type TheoryStep = ResolvedTheoryCard | ParadigmStep | VocabPresentStep | VocabRecallStep;
 
-const SPOKEN: Record<Person, string> = { eu: 'eu', tu: 'tu', ele_ela_voce: 'ele', nos: 'nós', eles_elas_voces: 'eles' };
 
 function paradigmSteps(verbId: string, tense: string): ParadigmStep[] {
   const verb = getVerb(verbId);
@@ -268,4 +293,96 @@ export function theorySteps(items: TheoryItem[]): TheoryStep[] {
     if ('vocabStudy' in item) return vocabStudySteps(item.vocabStudy);
     return [resolveTheory(item)];
   });
+}
+
+// ---------- Sessioni di un nodo ----------
+
+/**
+ * Ogni nodo si fa in più sessioni brevi, dal più guidato al più libero.
+ * "listening" arriverà con l'audio pregenerato: è già previsto qui, ma non ancora attivo.
+ */
+export type SessionKind = 'discovery' | 'guided' | 'listening' | 'production' | 'test';
+
+export const SESSION_INFO: Record<SessionKind, { name: string; description: string; icon: string }> = {
+  discovery: { name: 'Descoberta', description: 'Teoria, ascolto e ricopiatura', icon: '📖' },
+  guided: { name: 'Prática', description: 'Esercizi con opzioni e aiuti', icon: '✏️' },
+  listening: { name: 'Escuta', description: 'Ascolta e scrivi', icon: '🎧' },
+  production: { name: 'Produção', description: 'Scrivi tutto da solo, senza opzioni', icon: '🖊️' },
+  test: { name: 'Teste final', description: 'Tutto mescolato: serve l’80% per superarlo', icon: '🏁' },
+};
+
+/** Precisione minima per superare il test finale (%) */
+export const TEST_PASS_ACCURACY = 80;
+
+export function sessionsFor(node: CourseNode): SessionKind[] {
+  if (node.kind === 'checkpoint') return ['test'];
+  return ['discovery', 'guided', 'production', 'test'];
+}
+
+/** Sessioni completate di un nodo, a partire dai progressi salvati */
+export function sessionsDone(node: CourseNode, completedNodeIds: string[], sessionProgress: Record<string, number>) {
+  const total = sessionsFor(node).length;
+  if (completedNodeIds.includes(node.id)) return total;
+  return Math.min(total, sessionProgress[node.id] ?? 0);
+}
+
+/**
+ * Esercizi ricavati dalla teoria, senza scriverli a mano:
+ * - studio del vocabolario → per ogni situazione si scrive l'espressione;
+ * - paradigma → per ogni persona si scrive la forma del verbo.
+ */
+function generatedExercises(theory: TheoryItem[]): RuntimeExercise[] {
+  return theory.flatMap((item): RuntimeExercise[] => {
+    if ('vocabStudy' in item) {
+      return item.vocabStudy.groups
+        .flatMap((g) => g.items)
+        .map(getVocab)
+        .filter((v): v is VocabItem => Boolean(v?.situation))
+        .map((v) => {
+          const { form, after } = splitTrailingPunctuation(v.pt);
+          return {
+            id: `gen-vocab-${v.id}`,
+            type: 'fill_in_the_blank' as const,
+            prompt: v.situation!,
+            sentenceBefore: '',
+            sentenceAfter: after,
+            correctAnswer: form,
+            trains: [`vocab:${v.id}`],
+          };
+        });
+    }
+    if ('paradigm' in item) {
+      const { verb: verbId, tense } = item.paradigm;
+      const verb = getVerb(verbId);
+      const forms = verb?.conjugations[tense];
+      if (!verb || !forms) return [];
+      return [...SINGULAR, ...PLURAL].map((p) => ({
+        id: `gen-verb-${verbId}-${tense}-${p}`,
+        type: 'fill_in_the_blank' as const,
+        prompt: `Verbo ${verb.infinitive} · ${tenseLabel(tense).toLowerCase()}`,
+        sentenceBefore: `${PERSON_LABELS[p]} `,
+        sentenceAfter: '',
+        correctAnswer: forms[p],
+        trains: [`verb:${verbId}:${tense}:${p}`],
+      }));
+    }
+    return [];
+  });
+}
+
+/**
+ * Esercizi di una sessione. Si scrivono le frasi una volta sola nel JSON;
+ * le sessioni ne ricavano le varie modalità.
+ * - guided: gli esercizi così come sono scritti (opzioni, frase con spazio);
+ * - production: tutto da scrivere, più gli esercizi ricavati dalla teoria, mescolati;
+ * - test: come production, ma serve l'80% (lo controlla la schermata della lezione).
+ * Nelle conversazioni l'ordine resta quello del dialogo.
+ */
+export function sessionExercises(kind: SessionKind, node: CourseNode, content: NodeContent): RuntimeExercise[] {
+  const isDialogue = node.kind === 'dialogue';
+  if (kind === 'discovery') return [];
+  if (kind === 'guided') return content.exercises.map((ex) => toRuntimeExercise(ex));
+  const typed = content.exercises.map((ex) => toRuntimeExercise(ex, { typed: true }));
+  if (isDialogue) return typed;
+  return shuffle([...typed, ...generatedExercises(content.theory ?? [])]);
 }

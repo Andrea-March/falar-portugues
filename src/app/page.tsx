@@ -4,15 +4,15 @@ import React, { useState } from 'react';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import ChapterMap from '@/components/ChapterMap';
-import { nextNodeId, type CourseNode } from '@/content';
+import { nextNodeId, sessionsFor, type CourseNode, type SessionKind } from '@/content';
 import { useUser } from '@/context/UserContext';
 import Mascot from '@/components/common/Mascot';
 import GrammarHub from '@/components/GrammarHub';
 import LessonScreen from '@/components/LessonScreen';
 
 export default function Home() {
-  const { progress, completeNode, isLoaded } = useUser();
-  const [activeNode, setActiveNode] = useState<CourseNode | null>(null);
+  const { progress, completeSession, isLoaded } = useUser();
+  const [active, setActive] = useState<{ node: CourseNode; session: SessionKind } | null>(null);
   const [activeTab, setActiveTab] = useState<'home' | 'grammar' | 'vocab' | 'chat'>('home');
 
   if (!isLoaded) {
@@ -24,15 +24,18 @@ export default function Home() {
   }
 
   // Lezione aperta: occupa tutto lo schermo, niente header né barra in basso
-  if (activeNode) {
+  if (active) {
+    const { node, session } = active;
     return (
       <LessonScreen
-        nodeId={activeNode.id}
-        onClose={() => setActiveNode(null)}
-        onCompleteNode={() => {
-          // Gli XP sono già stati assegnati a fine esercizi (LessonScreen): qui 0 per non contarli due volte
-          completeNode(activeNode.id, nextNodeId(activeNode.id), 0);
-          setActiveNode(null);
+        nodeId={node.id}
+        session={session}
+        onClose={() => setActive(null)}
+        onCompleteSession={() => {
+          // Gli XP sono già stati assegnati a fine sessione (LessonScreen)
+          const list = sessionsFor(node);
+          completeSession(node.id, list.indexOf(session), list.length, nextNodeId(node.id));
+          setActive(null);
         }}
       />
     );
@@ -47,8 +50,9 @@ export default function Home() {
           <div className="animate-fade-in">
             <ChapterMap
               completedNodeIds={progress.completedNodeIds}
+              sessionProgress={progress.sessionProgress}
               currentNodeId={progress.currentNodeId}
-              onSelectNode={(node) => setActiveNode(node)}
+              onSelectSession={(node, session) => setActive({ node, session })}
             />
           </div>
         )}

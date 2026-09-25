@@ -10,7 +10,10 @@ import Mascot from './Mascot';
 interface LessonCompleteCardProps {
   title: string;
   xpEarned?: number;
+  /** Assente nelle sessioni senza esercizi (Descoberta): il riquadro non si mostra */
   accuracy?: number;
+  /** Riga in più sotto il titolo, es. la sessione successiva */
+  note?: string;
   streakDays?: number;
   /** Serie migliore nella lezione: il riquadro compare solo se ha raggiunto il badge */
   bestCombo?: number;
@@ -29,8 +32,9 @@ function StatTile({ icon, value, label, tone }: { icon: React.ReactNode; value: 
   );
 }
 
-export default function LessonCompleteCard({ title, xpEarned = 15, accuracy = 100, streakDays, bestCombo = 0, onContinue }: LessonCompleteCardProps) {
-  const headline = accuracy === 100 ? 'Sem erros!' : accuracy >= 80 ? 'Lição concluída!' : 'Concluída, continua assim!';
+export default function LessonCompleteCard({ title, xpEarned = 15, accuracy, note, streakDays, bestCombo = 0, onContinue }: LessonCompleteCardProps) {
+  const headline =
+    accuracy === undefined ? 'Sessão concluída!' : accuracy === 100 ? 'Sem erros!' : accuracy >= 80 ? 'Sessão concluída!' : 'Concluída, continua assim!';
 
   return (
     <FullscreenPortal>
@@ -40,6 +44,9 @@ export default function LessonCompleteCard({ title, xpEarned = 15, accuracy = 10
           <Mascot mood="cheer" size={160} />
           <h1 className="mt-6 text-4xl font-extrabold text-brand-accentDark">{headline}</h1>
           <p className="mt-2 text-lg text-brand-muted font-semibold">Terminaste “{title}”.</p>
+          {note && (
+            <p className="mt-4 rounded-2xl bg-azulejo-light text-azulejo-dark font-bold px-4 py-2.5 animate-fade-in">{note}</p>
+          )}
 
           <div className="mt-8 w-full flex gap-3">
             <StatTile
@@ -48,12 +55,14 @@ export default function LessonCompleteCard({ title, xpEarned = 15, accuracy = 10
               icon={<Zap size={22} strokeWidth={2.5} className="fill-brand-accent text-brand-accentHover" />}
               tone="bg-brand-accent border-brand-accent text-brand-accentDark"
             />
-            <StatTile
-              label="Precisão"
-              value={`${accuracy}%`}
-              icon={<Target size={22} strokeWidth={2.5} />}
-              tone="bg-ok border-ok text-ok-dark"
-            />
+            {accuracy !== undefined && (
+              <StatTile
+                label="Precisão"
+                value={`${accuracy}%`}
+                icon={<Target size={22} strokeWidth={2.5} />}
+                tone="bg-ok border-ok text-ok-dark"
+              />
+            )}
             {bestCombo >= COMBO_BADGE_FROM && (
               <StatTile
                 label="Seguidas"

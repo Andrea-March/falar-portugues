@@ -83,3 +83,40 @@ gli dice che esiste ma che ce n'è una più adatta.
   "usage": "Dal mattino fino all'ora di pranzo.",
   "situation": "☀️ Sono le 9 del mattino ed entri al bar: saluti il barista." }
 ```
+
+## Sessioni
+
+Ogni nodo si fa in più sessioni (vedi `sessionsFor` in `index.ts`):
+Descoberta (teoria), Prática (esercizi come sono scritti), Produção (tutto da scrivere,
+più esercizi ricavati da teoria e vocabolario), Teste final (come Produção, mescolato,
+serve l'80%). I checkpoint hanno solo il test.
+
+Gli esercizi si scrivono **una volta sola**: le sessioni ne ricavano le modalità.
+Poiché in Produção e Teste anche i `choose` si scrivono, se ci sono più risposte giuste
+indicale in `accept`:
+
+```json
+{ "id": "ex_1_3_4", "type": "choose", "text": "Aqui tem. {Obrigado}!",
+  "wrong": ["De nada", "Por favor"], "accept": ["Obrigada"], "trains": ["vocab:obrigado"] }
+```
+
+## Audio
+
+L'app legge le frasi con audio pregenerati (voce pt-PT), e usa la voce del browser
+solo se un file manca. Il servizio si sceglie in `audio.config.json` ("provider"):
+
+- `piper` (attuale): open source, gira sul computer, gratis. Una volta sola:
+  `pip install piper-tts lameenc`. Il modello della voce si scarica da solo in `.piper-voices/`.
+- `azure`: voci neurali Azure Speech, serve `AZURE_SPEECH_KEY` e `AZURE_SPEECH_REGION` in `.env.local`.
+
+Dopo aver aggiunto o modificato contenuti:
+
+```
+npm run audio:check   # quante frasi mancano, caratteri, peso stimato
+npm run audio         # le genera in public/audio (da committare)
+```
+
+Un interlocutore può avere la sua voce:
+`"speaker": { "name": "Sr. Manuel", "avatar": "👨🏻", "voice": "homem" }`.
+L'elenco di ciò che si legge sta in `speech.ts`: se un componente inizia a leggere
+un testo nuovo, va aggiunto lì, altrimenti per quel testo si sentirà la voce del browser.

@@ -4,7 +4,16 @@ import React, { useEffect, useState } from 'react';
 import { Check, Lock } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
 import Mascot from '@/components/common/Mascot';
-import { chapters as courseChapters, KIND_LABELS, type Chapter, type CourseNode } from '@/content';
+import {
+  chapters as courseChapters,
+  KIND_LABELS,
+  SESSION_INFO,
+  sessionsDone as countSessionsDone,
+  sessionsFor,
+  type Chapter,
+  type CourseNode,
+  type SessionKind,
+} from '@/content';
 
 /** Compatibilità con il codice esistente */
 export type Node = CourseNode;
@@ -12,23 +21,64 @@ export type { Chapter };
 
 interface ChapterMapProps {
   completedNodeIds?: string[];
+  /** Sessioni completate per nodo */
+  sessionProgress?: Record<string, number>;
   currentNodeId?: string;
-  onSelectNode?: (node: Node) => void;
+  onSelectSession?: (node: Node, session: SessionKind) => void;
 }
 
 // Pattern di scostamento orizzontale in percentuale (%)
 const X_OFFSETS = [50, 28, 50, 72];
 const ROW_HEIGHT = 150; // Spazio verticale tra i centri dei nodi (px): lascia posto all'etichetta sotto il nodo
-const LABEL_SPACE = 58; // Altezza occupata dall'etichetta sotto il nodo (px)
+const LABEL_SPACE = 64; // Altezza occupata dall'etichetta sotto il nodo (px)
 const NODE_SIZE = 76;   // Dimensione bottone nodo (px)
+const RING_SIZE = 96;   // Anello delle sessioni attorno al nodo (px)
+
+/**
+ * Anello a segmenti attorno al nodo: un segmento per sessione, pieno quando è fatta.
+ */
+function SessionRing({ done, total, current }: { done: number; total: number; current: boolean }) {
+  const stroke = 6;
+  const r = (RING_SIZE - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const gap = total > 1 ? 7 : 0;
+  const seg = c / total - gap;
+  return (
+    <svg
+      aria-hidden="true"
+      width={RING_SIZE}
+      height={RING_SIZE}
+      viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}
+      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[calc(50%+2px)] -rotate-90 pointer-events-none"
+    >
+      {Array.from({ length: total }, (_, i) => (
+        <circle
+          key={i}
+          cx={RING_SIZE / 2}
+          cy={RING_SIZE / 2}
+          r={r}
+          fill="none"
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          stroke={i < done ? '#ffc21a' : current ? '#f6c9c4' : '#dde3f0'}
+          strokeDasharray={`${seg} ${c - seg}`}
+          strokeDashoffset={-(i * c) / total - gap / 2}
+          className="transition-[stroke] duration-500"
+        />
+      ))}
+    </svg>
+  );
+}
 
 export default function ChapterMap({
-  completedNodeIds = ['node_1_1'],
-  currentNodeId = 'node_1_2',
-  onSelectNode,
+  completedNodeIds = [],
+  sessionProgress = {},
+  currentNodeId = 'node_1_1',
+  onSelectSession,
 }: ChapterMapProps) {
   const chapters = courseChapters;
   const [openNodeId, setOpenNodeId] = useState<string | null>(null);
+  const doneOf = (node: Node) => countSessionsDone(node, completedNodeIds, sessionProgress);
 
   // Il fumetto si chiude toccando altrove o con Esc
   useEffect(() => {
@@ -144,13 +194,16 @@ export default function ChapterMap({
                 const posX = X_OFFSETS[index % X_OFFSETS.length];
                 const posY = index * ROW_HEIGHT + ROW_HEIGHT / 2;
                 const mascotOnRight = posX <= 50;
+                const total = sessionsFor(node).length;
+                const done = doneOf(node);
+                const showRing = !isLocked && total > 1;
 
                 const tone = isLocked
                   ? 'bg-[#e6eaf3] border-[#c7cfdf] text-[#9aa4bd]'
                   : isCompleted
                   ? 'bg-brand-accent border-brand-accentHover text-brand-accentDark'
                   : isCurrent
-                  ? 'bg-brand-primary border-brand-dark text-white ring-[6px] ring-brand-accent/60'
+                  ? `bg-brand-primary border-brand-dark text-white ${showRing ? '' : 'ring-[6px] ring-brand-accent/60'}`
                   : 'bg-white border-brand-border text-ink border-2';
 
                 return (
@@ -162,7 +215,7 @@ export default function ChapterMap({
                     {isCurrent && (
                       <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-20 pointer-events-none animate-bob">
                         <span className="block whitespace-nowrap bg-white text-brand-primary border-2 border-brand-border font-extrabold text-sm px-3 py-1 rounded-xl">
-                          Começar
+                          {done > 0 ? 'Continuar' : 'Começar'}
                         </span>
                       </div>
                     )}
@@ -177,10 +230,14 @@ export default function ChapterMap({
                       </div>
                     )}
 
+                    {showRing && <SessionRing done={done} total={total} current={isCurrent} />}
+
                     <button
                       type="button"
                       data-node-ui
-                      aria-label={`${node.title}${isCompleted ? ' (concluída)' : node.draft ? ' (em breve)' : isLocked ? ' (bloqueada)' : ''}`}
+                      aria-label={`${node.title}${
+                        isCompleted ? ' (concluída)' : node.draft ? ' (em breve)' : isLocked ? ' (bloqueada)' : total > 1 ? ` (${done} de ${total} sessões)` : ''
+                      }`}
                       aria-expanded={openNodeId === node.id}
                       onClick={() => {
                         soundFX.playClick();
@@ -204,7 +261,7 @@ export default function ChapterMap({
                         soundFX.playClick();
                         setOpenNodeId((id) => (id === node.id ? null : node.id));
                       }}
-                      className={`absolute top-full mt-2.5 left-1/2 -translate-x-1/2 w-max max-w-[136px] rounded-xl px-2.5 py-1 text-center cursor-pointer select-none ${
+                      className={`absolute top-full mt-4 left-1/2 -translate-x-1/2 w-max max-w-[136px] rounded-xl px-2.5 py-1 text-center cursor-pointer select-none ${
                         isCurrent ? 'bg-white shadow-md ring-2 ring-brand-primary/25' : 'bg-white/90 shadow-sm'
                       }`}
                     >
@@ -260,20 +317,16 @@ export default function ChapterMap({
                         {isDraft ? 'Em breve: esta lição está a ser preparada.' : 'Completa as lições anteriores para desbloquear.'}
                       </p>
                     ) : (
-                      <button
-                        type="button"
-                        autoFocus
-                        onClick={() => {
+                      <SessionList
+                        node={node}
+                        done={doneOf(node)}
+                        completed={isCompleted}
+                        onStart={(session) => {
                           soundFX.playClick();
                           setOpenNodeId(null);
-                          onSelectNode?.(node);
+                          onSelectSession?.(node, session);
                         }}
-                        className={`btn-3d w-full mt-4 py-3.5 text-lg bg-white ${
-                          isCompleted ? 'border-brand-accentHover text-brand-accentDark' : 'border-brand-border text-brand-primary'
-                        }`}
-                      >
-                        {isCompleted ? 'Rever' : 'Começar'}
-                      </button>
+                      />
                     )}
                   </div>
                 );
@@ -282,6 +335,78 @@ export default function ChapterMap({
           </section>
         );
       })}
+    </div>
+  );
+}
+
+/**
+ * Sessioni del nodo nel fumetto: quelle fatte si possono ripetere, la prossima
+ * ha il pulsante principale, le successive restano chiuse.
+ */
+function SessionList({
+  node,
+  done,
+  completed,
+  onStart,
+}: {
+  node: Node;
+  done: number;
+  completed: boolean;
+  onStart: (session: SessionKind) => void;
+}) {
+  const list = sessionsFor(node);
+  const next = list[done];
+
+  return (
+    <div className="mt-3 space-y-3">
+      <ol className="space-y-1.5" aria-label="Sessões">
+        {list.map((kind, i) => {
+          const info = SESSION_INFO[kind];
+          const state = i < done ? 'done' : i === done ? 'next' : 'later';
+          return (
+            <li key={kind}>
+              <button
+                type="button"
+                disabled={state === 'later'}
+                onClick={() => onStart(kind)}
+                aria-label={`${info.name}${state === 'done' ? ' (feita, toca para repetir)' : state === 'later' ? ' (bloqueada)' : ''}`}
+                className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2 text-left transition-colors ${
+                  state === 'next'
+                    ? 'bg-white/25 ring-2 ring-white/70'
+                    : state === 'done'
+                    ? 'bg-white/15 hover:bg-white/25 cursor-pointer'
+                    : 'bg-white/10 opacity-55 cursor-default'
+                }`}
+              >
+                <span
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-lg ${
+                    state === 'done' ? 'bg-brand-accent text-brand-accentDark' : 'bg-white/90'
+                  }`}
+                  aria-hidden="true"
+                >
+                  {state === 'done' ? <Check size={20} strokeWidth={3.5} /> : state === 'later' ? <Lock size={16} strokeWidth={2.8} className="text-brand-muted" /> : info.icon}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-extrabold leading-tight">{info.name}</span>
+                  <span className="block text-sm font-semibold opacity-85 leading-snug">{info.description}</span>
+                </span>
+                {state === 'done' && <span className="text-xs font-extrabold opacity-80 shrink-0">Repetir</span>}
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+
+      {next && !completed && (
+        <button
+          type="button"
+          autoFocus
+          onClick={() => onStart(next)}
+          className="btn-3d w-full py-3.5 text-lg bg-white border-brand-border text-brand-primary"
+        >
+          {done === 0 ? 'Começar' : 'Continuar'}: {SESSION_INFO[next].name}
+        </button>
+      )}
     </div>
   );
 }

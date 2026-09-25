@@ -34,3 +34,17 @@ export function accentMistakes(input: string, correct: string): Set<number> {
   });
   return out;
 }
+
+/**
+ * Come matchAnswer, ma con più risposte giuste. Restituisce anche quale risposta
+ * è stata riconosciuta, così si mostra e si legge quella scritta dall'utente.
+ */
+export function matchAnswerAny(input: string, answers: string[]): { result: AnswerMatch; match: string } {
+  let accents: string | null = null;
+  for (const a of answers) {
+    const r = matchAnswer(input, a);
+    if (r === 'exact') return { result: 'exact', match: a };
+    if (r === 'accents' && accents === null) accents = a;
+  }
+  return accents !== null ? { result: 'accents', match: accents } : { result: 'wrong', match: answers[0] };
+}

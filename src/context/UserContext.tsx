@@ -6,6 +6,8 @@ const STORAGE_KEY = 'pt_app_user_progress_v1';
 
 export interface UserProgress {
   completedNodeIds: string[];
+  /** Sessioni completate per nodo (i nodi in completedNodeIds le hanno fatte tutte) */
+  sessionProgress: Record<string, number>;
   currentNodeId: string;
   xp: number;
   hearts: number;
@@ -15,6 +17,7 @@ export interface UserProgress {
 
 const DEFAULT_PROGRESS: UserProgress = {
   completedNodeIds: [],
+  sessionProgress: {},
   currentNodeId: 'node_1_1',
   xp: 0,
   hearts: 5,
@@ -25,6 +28,12 @@ const DEFAULT_PROGRESS: UserProgress = {
 interface UserContextType {
   progress: UserProgress;
   completeNode: (nodeId: string, nextNodeId?: string, earnedXp?: number) => void;
+  /**
+   * Segna fatta la sessione `sessionIndex` (da 0) di un nodo con `totalSessions` sessioni.
+   * All'ultima il nodo è completato e si passa al successivo. Rifare una sessione
+   * già fatta non cambia niente.
+   */
+  completeSession: (nodeId: string, sessionIndex: number, totalSessions: number, nextNodeId?: string) => void;
   loseHeart: () => void;
   addXp: (amount: number) => void;
   isLoaded: boolean;
@@ -40,7 +49,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
-        setProgress(JSON.parse(saved));
+        // Unione con i valori predefiniti: i salvataggi vecchi non hanno i campi nuovi
+        setProgress({ ...DEFAULT_PROGRESS, ...JSON.parse(saved) });
       } catch (e) {
         console.error('Errore nel caricamento del localStorage:', e);
       }
@@ -63,6 +73,17 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  const completeSession = (nodeId: string, sessionIndex: number, totalSessions: number, nextNodeId?: string) => {
+    const done = Math.max(progress.sessionProgress[nodeId] ?? 0, sessionIndex + 1);
+    const finished = done >= totalSessions;
+    saveProgress({
+      ...progress,
+      sessionProgress: { ...progress.sessionProgress, [nodeId]: done },
+      completedNodeIds: finished ? Array.from(new Set([...progress.completedNodeIds, nodeId])) : progress.completedNodeIds,
+      currentNodeId: finished && nextNodeId && !progress.completedNodeIds.includes(nodeId) ? nextNodeId : progress.currentNodeId,
+    });
+  };
+
   const loseHeart = () => {
     if (progress.hearts > 0) {
       saveProgress({
@@ -81,7 +102,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <UserContext.Provider
-      value={{ progress, completeNode, loseHeart, addXp, isLoaded }}
+      value={{ progress, completeNode, completeSession, loseHeart, addXp, isLoaded }}
     >
       {children}
     </UserContext.Provider>

@@ -3,7 +3,8 @@
   "speaker": {
     "name": "Sr. Manuel",
     "role": "Empregado · Café no Chiado",
-    "avatar": "👨🏻"
+    "avatar": "👨🏻",
+    "voice": "homem"
   },
   "theory": [
     {
@@ -80,6 +81,9 @@
         "De nada",
         "Por favor",
         "Bom dia"
+      ],
+      "accept": [
+        "Obrigada"
       ]
     },
     {

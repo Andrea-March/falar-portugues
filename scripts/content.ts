@@ -11,6 +11,7 @@ import { readFileSync, readdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join, basename, relative } from 'node:path';
 import type { z } from 'zod';
 import { Course, NodeContent, Verb, VocabSet, Exercise, PERSONS } from '../src/content/schema';
+import audioConfig from '../src/content/audio.config.json';
 
 const ROOT = join(__dirname, '..');
 const DIR = join(ROOT, 'src', 'content');
@@ -91,6 +92,10 @@ function checkExercise(file: string, ex: Exercise) {
   else exerciseIds.set(ex.id, relative(ROOT, file));
 
   if (ex.contextIt && !ex.context) fail(file, `${where}: "contextIt" senza "context"`);
+  if (ex.type === 'choose' && ex.accept && ex.wrong) {
+    const clash = ex.accept.filter((a) => ex.wrong!.some((w) => w.toLowerCase() === a.toLowerCase()));
+    if (clash.length) fail(file, `${where}: "${clash.join('", "')}" è sia in "accept" sia in "wrong"`);
+  }
 
   const answer = answerOf(ex.text);
   const verbTargets: { verb: Verb; tense: string; person: string }[] = [];
@@ -139,6 +144,12 @@ function checkExercise(file: string, ex: Exercise) {
 for (const { file, data } of verbs.values()) data.exercises.forEach((e) => checkExercise(file, e));
 
 for (const { file, data } of nodes.values()) {
+  const voice = data.speaker?.voice;
+  for (const [name, provider] of Object.entries(audioConfig.providers)) {
+    if (voice && !(voice in provider.voices)) {
+      fail(file, `speaker.voice "${voice}" non esiste in audio.config.json per "${name}" (voci: ${Object.keys(provider.voices).join(', ')})`);
+    }
+  }
   data.exercises.forEach((e) => checkExercise(file, e));
   data.theory?.forEach((card, i) => {
     if ('paradigm' in card) {

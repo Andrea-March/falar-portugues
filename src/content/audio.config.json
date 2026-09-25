@@ -1,0 +1,25 @@
+{
+  "$comment": "Audio pregenerato (npm run audio). Le chiavi di 'voices' (default, homem…) sono quelle usate nei contenuti. Cambiare servizio, voce o velocità fa generare i file in una cartella nuova.",
+  "provider": "piper",
+  "extension": "mp3",
+  "bitrateKbps": 48,
+  "providers": {
+    "piper": {
+      "$comment": "Open source, gira sul computer. Requisiti: pip install piper-tts lameenc. Per ora esiste una sola voce pt-PT.",
+      "lengthScale": 1.1,
+      "voices": {
+        "default": "pt_PT-tugão-medium",
+        "homem": "pt_PT-tugão-medium"
+      }
+    },
+    "azure": {
+      "$comment": "Azure Speech (voci neurali). Serve AZURE_SPEECH_KEY e AZURE_SPEECH_REGION in .env.local.",
+      "format": "audio-24khz-48kbitrate-mono-mp3",
+      "rate": "-8%",
+      "voices": {
+        "default": "pt-PT-RaquelNeural",
+        "homem": "pt-PT-DuarteNeural"
+      }
+    }
+  }
+}

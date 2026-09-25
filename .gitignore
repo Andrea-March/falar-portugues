@@ -42,3 +42,9 @@ next-env.d.ts
 
 # patch temporanee
 *.patch
+
+# campioni delle voci (npm run audio:samples)
+audio-samples
+# modelli delle voci Piper (scaricati da npm run audio)
+.piper-voices
+__pycache__

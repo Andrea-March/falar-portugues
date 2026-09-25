@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CheckCheck, Languages, SendHorizontal, Volume2 } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
 import { estimateSpeechMs, speakPortuguese, stopSpeaking } from '@/utils/textToSpeech';
-import { matchAnswer, accentMistakes } from '@/utils/answerCheck';
+import { matchAnswerAny, accentMistakes } from '@/utils/answerCheck';
 import { useUser } from '@/context/UserContext';
 import type { Exercise, MultipleChoiceExercise } from '@/types/exercise';
 import type { Speaker } from '@/content';
@@ -39,6 +39,8 @@ interface Message {
 interface DialoguePracticeProps {
   exercises: Exercise[];
   speaker?: Speaker;
+  /** Traduzione delle battute dell'interlocutore (nel test finale no) */
+  showTranslations?: boolean;
   onFinish: (stats: PracticeStats) => void;
   onClose: () => void;
 }
@@ -50,7 +52,7 @@ interface DialoguePracticeProps {
  * ad alta voce e si passa da soli al turno successivo. Solo errori e soluzione
  * mostrata chiedono un tocco, per lasciare il tempo di leggere.
  */
-export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER, onFinish, onClose }: DialoguePracticeProps) {
+export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER, showTranslations = true, onFinish, onClose }: DialoguePracticeProps) {
   const { progress } = useUser();
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>(() => (exercises[0]?.context ? 'typing' : 'answering'));
@@ -58,6 +60,8 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
   const [answer, setAnswer] = useState('');
   const [feedback, setFeedback] = useState<Feedback>('idle');
   const [accentHint, setAccentHint] = useState(false);
+  /** Risposta riconosciuta (può essere un'alternativa, es. "Obrigada") */
+  const [matched, setMatched] = useState<string | null>(null);
   const [combo, setCombo] = useState(0);
 
   // Valori letti dentro timer e callback della voce: in un ref non diventano "vecchi"
@@ -91,12 +95,12 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
     if (phase !== 'typing' || !exercise?.context) return;
     const { id, context, contextIt } = exercise;
     const t = setTimeout(() => {
-      setMessages((m) => [...m, { key: `npc-${id}`, from: 'npc', text: context, translation: contextIt }]);
+      setMessages((m) => [...m, { key: `npc-${id}`, from: 'npc', text: context, translation: showTranslations ? contextIt : undefined }]);
       setPhase('answering');
-      speakPortuguese(context);
+      speakPortuguese(context, undefined, { voice: speaker.voice });
     }, typingMs(context));
     return () => clearTimeout(t);
-  }, [phase, exercise]);
+  }, [phase, exercise, showTranslations, speaker.voice]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
@@ -124,7 +128,8 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
         return [b, a];
       })()
     : [exercise.sentenceBefore, exercise.sentenceAfter];
-  const fullSentence = `${gapBefore}${exercise.correctAnswer}${gapAfter}`;
+  const sentenceWith = (answerText: string) => `${gapBefore}${answerText}${gapAfter}`;
+  const fullSentence = sentenceWith(matched ?? exercise.correctAnswer);
 
   // ---------- Flusso ----------
 
@@ -139,12 +144,13 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
     setAnswer('');
     setFeedback('idle');
     setAccentHint(false);
+    setMatched(null);
     setPhase(exercises[nextIndex].context ? 'typing' : 'answering');
   };
 
   /** La risposta diventa un messaggio inviato */
-  const sendReply = () => {
-    setMessages((m) => [...m, { key: `me-${exercise.id}`, from: 'me', text: fullSentence, translation: exercise.translationIt }]);
+  const sendReply = (text = fullSentence) => {
+    setMessages((m) => [...m, { key: `me-${exercise.id}`, from: 'me', text, translation: exercise.translationIt }]);
     setPhase('sent');
   };
 
@@ -155,14 +161,15 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
     }
   };
 
-  const markCorrect = () => {
+  const markCorrect = (match: string) => {
+    const sentence = sentenceWith(match);
     const newCombo = stats.current.failedCurrent ? 0 : combo + 1;
     stats.current.bestCombo = Math.max(stats.current.bestCombo, newCombo);
     setCombo(newCombo);
     setAccentHint(false);
     setFeedback('correct');
     soundFX.playSuccess(newCombo);
-    sendReply();
+    sendReply(sentence);
 
     // Si passa al turno dopo a fine lettura; la stima della durata fa da rete
     // di sicurezza per i browser dove "fine lettura" non arriva.
@@ -173,8 +180,8 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
       later(goNext, 250);
     };
     later(() => {
-      speakPortuguese(fullSentence, () => mounted.current && moveOn());
-      later(moveOn, estimateSpeechMs(fullSentence));
+      speakPortuguese(sentence, () => mounted.current && moveOn());
+      later(moveOn, estimateSpeechMs(sentence));
     }, SPEAK_DELAY_MS);
   };
 
@@ -210,8 +217,11 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
   };
 
   const evaluate = (value: string, explicit: boolean) => {
-    const result = matchAnswer(value, exercise.correctAnswer);
-    if (result === 'exact') return markCorrect();
+    const { result, match } = matchAnswerAny(value, [exercise.correctAnswer, ...(exercise.alternatives ?? [])]);
+    if (result === 'exact') {
+      setMatched(match);
+      return markCorrect(match);
+    }
     if (!explicit) return;
     if (result === 'accents') {
       setAccentHint(true);
@@ -286,7 +296,7 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
         </p>
 
         {messages.map((m) =>
-          m.from === 'npc' ? <NpcBubble key={m.key} text={m.text} translation={m.translation} /> : <MyBubble key={m.key} text={m.text} translation={m.translation} />
+          m.from === 'npc' ? <NpcBubble key={m.key} text={m.text} translation={m.translation} voice={speaker.voice} /> : <MyBubble key={m.key} text={m.text} translation={m.translation} />
         )}
 
         {phase === 'typing' && <TypingBubble />}
@@ -345,7 +355,7 @@ function IconButton({ label, onClick, children }: { label: string; onClick: () =
 }
 
 /** Battuta dell'interlocutore (sinistra) */
-function NpcBubble({ text, translation }: { text: string; translation?: string }) {
+function NpcBubble({ text, translation, voice }: { text: string; translation?: string; voice?: string }) {
   const [showIt, setShowIt] = useState(false);
   return (
     <div className="flex animate-bubble-in-left">
@@ -358,7 +368,7 @@ function NpcBubble({ text, translation }: { text: string; translation?: string }
               <Languages size={16} strokeWidth={2.5} />
             </IconButton>
           )}
-          <IconButton label="Ouvir" onClick={() => speakPortuguese(text)}>
+          <IconButton label="Ouvir" onClick={() => speakPortuguese(text, undefined, { voice })}>
             <Volume2 size={16} strokeWidth={2.5} />
           </IconButton>
         </div>
