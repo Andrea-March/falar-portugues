@@ -52,44 +52,84 @@
     {
       "id": "chapter_2",
       "number": 2,
-      "title": "A Rotina Diária",
-      "description": "Descrivi le tue giornate, azioni frequenti e stati temporanei.",
-      "icon": "☀️",
+      "title": "Onde estás?",
+      "description": "Come stai, dove sei, dove si trovano le cose: il verbo estar.",
+      "icon": "🧭",
       "nodes": [
         {
           "id": "node_2_1",
-          "kind": "verb",
-          "title": "Estar",
-          "subtitle": "Stati d'animo e posizioni",
-          "icon": "📖",
-          "draft": true
+          "kind": "vocab",
+          "title": "Como estás?",
+          "subtitle": "Chiedere come va e dove sono le cose",
+          "icon": "🙂"
         },
         {
           "id": "node_2_2",
-          "kind": "vocab",
-          "title": "Horas e dias",
-          "subtitle": "Leggere l'ora e i giorni della settimana",
-          "icon": "⏰",
-          "draft": true
+          "kind": "verb",
+          "title": "Estar",
+          "subtitle": "Come stai e dove sei",
+          "icon": "📖"
         },
         {
           "id": "node_2_3",
-          "kind": "verb",
-          "title": "Ter",
-          "subtitle": "Possesso ed età",
-          "icon": "📖",
-          "draft": true
+          "kind": "dialogue",
+          "title": "Ao telefone",
+          "subtitle": "Pedro ti raggiunge al bar",
+          "icon": "📱"
+        },
+        {
+          "id": "node_2_cultura",
+          "kind": "culture",
+          "title": "Os elétricos",
+          "subtitle": "Tram, autobus e colline",
+          "icon": "🚋"
         },
         {
           "id": "node_2_checkpoint",
           "kind": "checkpoint",
           "title": "Teste final",
-          "subtitle": "Sfida di fine capitolo",
+          "subtitle": "Metti alla prova tutto il capitolo",
           "icon": "🏆",
           "requires": [
             "node_2_1",
             "node_2_2",
             "node_2_3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chapter_3",
+      "number": 3,
+      "title": "A Rotina Diária",
+      "description": "Orari, giorni e il verbo ter.",
+      "icon": "☀️",
+      "nodes": [
+        {
+          "id": "node_3_1",
+          "kind": "vocab",
+          "title": "Horas e dias",
+          "subtitle": "Che ore sono, che giorno è",
+          "icon": "🕐",
+          "draft": true
+        },
+        {
+          "id": "node_3_2",
+          "kind": "verb",
+          "title": "Ter",
+          "subtitle": "Avere",
+          "icon": "📖",
+          "draft": true
+        },
+        {
+          "id": "node_3_checkpoint",
+          "kind": "checkpoint",
+          "title": "Teste final",
+          "subtitle": "Sfida di fine capitolo",
+          "icon": "🏆",
+          "requires": [
+            "node_3_1",
+            "node_3_2"
           ],
           "draft": true
         }

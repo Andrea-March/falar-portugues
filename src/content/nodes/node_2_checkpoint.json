@@ -1,0 +1,71 @@
+{
+  "id": "node_2_checkpoint",
+  "exercises": [
+    {
+      "id": "chk_2_1",
+      "type": "write",
+      "text": "Bom dia! {Como estás}?",
+      "it": "Buongiorno! Come stai?",
+      "prompt": "Saluta e chiedi come va",
+      "trains": [
+        "vocab:como-estas"
+      ]
+    },
+    {
+      "id": "chk_2_2",
+      "type": "choose",
+      "text": "Chamo-me Marco e {estou} em Lisboa.",
+      "it": "Mi chiamo Marco e sono a Lisbona.",
+      "prompt": "Presentati e di' dove sei",
+      "trains": [
+        "verb:estar:presente:eu"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "chk_2_3",
+      "type": "choose",
+      "text": "Sou de Itália, mas agora {estou} no Porto.",
+      "it": "Vengo dall'Italia, ma ora sono a Porto.",
+      "prompt": "Ser o estar?",
+      "trains": [
+        "verb:estar:presente:eu"
+      ],
+      "wrong": [
+        "sou",
+        "é"
+      ]
+    },
+    {
+      "id": "chk_2_4",
+      "type": "write",
+      "text": "Desculpe, {onde está} o elétrico 28?",
+      "it": "Scusi, dov'è il tram 28?",
+      "prompt": "Chiedi dov'è il tram",
+      "trains": [
+        "vocab:onde-esta"
+      ]
+    },
+    {
+      "id": "chk_2_5",
+      "type": "choose",
+      "text": "Boa tarde! O senhor {está} bem?",
+      "it": "Buon pomeriggio! Lei sta bene?",
+      "prompt": "Chiedi con cortesia a un signore se sta bene",
+      "trains": [
+        "verb:estar:presente:ele_ela_voce"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "chk_2_6",
+      "type": "write",
+      "text": "Nós {estamos} ali, no café!",
+      "it": "Siamo lì, al bar!",
+      "prompt": "Di' a Pedro dove siete",
+      "trains": [
+        "verb:estar:presente:nos"
+      ]
+    }
+  ]
+}

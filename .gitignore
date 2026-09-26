@@ -48,3 +48,6 @@ audio-samples
 # modelli delle voci Piper (scaricati da npm run audio)
 .piper-voices
 __pycache__
+
+# file di revisione madrelingua (le approvazioni stanno in src/content/review-approved.json)
+/revisione/

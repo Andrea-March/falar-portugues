@@ -1,0 +1,66 @@
+{
+  "id": "node_2_cultura",
+  "theory": [
+    {
+      "title": "Muoversi a Lisbona",
+      "text": "Lisbona è la città delle sette colline, e per salirle ci sono i tram gialli: **o elétrico**. Il più famoso è il **28**, che attraversa i quartieri storici. Per il resto ci sono la metro e l'autobus, che qui si chiama **o autocarro**.",
+      "vocab": [
+        "eletrico",
+        "autocarro"
+      ],
+      "examples": [
+        {
+          "pt": "Onde está o elétrico 28?",
+          "it": "Dov'è il tram 28?"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "ex_2_cult_1",
+      "type": "choose",
+      "text": "Os famosos {elétricos} de Lisboa são amarelos.",
+      "it": "I famosi tram di Lisbona sono gialli.",
+      "prompt": "Come si chiamano i tram?",
+      "trains": [
+        "vocab:eletrico"
+      ],
+      "wrong": [
+        "autocarros",
+        "metros",
+        "cafés"
+      ]
+    },
+    {
+      "id": "ex_2_cult_2",
+      "type": "choose",
+      "text": "O elétrico mais famoso de Lisboa é o {28}.",
+      "it": "Il tram più famoso di Lisbona è il 28.",
+      "prompt": "Qual è il tram più famoso?",
+      "trains": [
+        "vocab:eletrico"
+      ],
+      "wrong": [
+        "3",
+        "41",
+        "99"
+      ]
+    },
+    {
+      "id": "ex_2_cult_3",
+      "type": "choose",
+      "text": "Para ir ao aeroporto, apanho o {autocarro}.",
+      "it": "Per andare all'aeroporto prendo l'autobus.",
+      "prompt": "Come si dice «autobus» in Portogallo?",
+      "trains": [
+        "vocab:autocarro"
+      ],
+      "wrong": [
+        "ônibus",
+        "elétrico",
+        "café"
+      ]
+    }
+  ]
+}

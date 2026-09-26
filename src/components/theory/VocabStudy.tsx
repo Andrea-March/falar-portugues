@@ -47,13 +47,14 @@ export function VocabPresentStep({ step, initiallyDone, onDone }: StepProps<Pres
           </span>
         )}
         <div className="flex-1 min-w-0 space-y-1.5">
-          <div className="flex items-start gap-2">
-            <h2 className="flex-1 text-2xl font-extrabold text-ink leading-tight">{item.it}</h2>
+          <h2 className="text-2xl font-extrabold text-ink leading-tight break-words">{item.it}</h2>
+          {/* Sotto il titolo, non accanto: sul telefono titolo e due pulsanti in una riga non ci stanno */}
+          <div className="flex items-center gap-2 pt-1">
             <button
               type="button"
               onClick={() => speakPortuguese(item.pt)}
               aria-label={`Ouvir ${item.pt}`}
-              className="btn-3d w-11 h-11 bg-azulejo border-azulejo-dark text-white !border-b-4 shrink-0"
+              className="btn-3d w-11 h-11 flex items-center justify-center bg-azulejo border-azulejo-dark text-white !border-b-4 shrink-0"
             >
               <Volume2 size={20} strokeWidth={2.5} />
             </button>

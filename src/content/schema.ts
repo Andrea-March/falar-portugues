@@ -98,7 +98,7 @@ export const TheoryCard = z.strictObject({
   /** Mostra queste voci del vocabolario (per id) */
   vocab: z.array(Slug).min(1).optional(),
   /** Esempi liberi */
-  examples: z.array(z.strictObject({ pt: NonEmpty, it: NonEmpty })).min(1).optional(),
+  examples: z.array(z.strictObject({ pt: NonEmpty, it: NonEmpty, italianNote: ItalianNote.optional() })).min(1).optional(),
 });
 export type TheoryCard = z.infer<typeof TheoryCard>;
 

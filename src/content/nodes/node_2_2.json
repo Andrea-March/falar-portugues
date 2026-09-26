@@ -1,0 +1,208 @@
+{
+  "id": "node_2_2",
+  "theory": [
+    {
+      "title": "Estar: come stai e dove sei",
+      "text": "Hai già detto **Estou bem** e **Onde está…?**: è il verbo **estar**. Si usa per come stai in questo momento e per dire dove si trova qualcosa o qualcuno. Per chi sei e da dove vieni resta **ser**.",
+      "examples": [
+        {
+          "pt": "Estou bem, obrigado.",
+          "it": "Sto bene, grazie."
+        },
+        {
+          "pt": "Onde está o metro?",
+          "it": "Dov'è la metro?"
+        },
+        {
+          "pt": "Sou de Itália, mas estou em Lisboa.",
+          "it": "Vengo dall'Italia, ma sono a Lisbona.",
+          "italianNote": "In italiano diciamo «sono» in entrambi i casi. In portoghese «sou» è per chi sei, «estou» per come stai o dove sei."
+        }
+      ]
+    },
+    {
+      "paradigm": {
+        "verb": "estar",
+        "tense": "presente"
+      }
+    }
+  ],
+  "exercises": [
+    {
+      "id": "ex_2_2_1",
+      "type": "choose",
+      "text": "— Como estás? — {Estou} bem, e tu?",
+      "it": "— Come stai? — Sto bene, e tu?",
+      "prompt": "Rispondi che stai bene",
+      "trains": [
+        "verb:estar:presente:eu"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "ex_2_2_2",
+      "type": "choose",
+      "text": "Olá, Rita! Como {estás}?",
+      "it": "Ciao Rita! Come stai?",
+      "prompt": "Chiedi a Rita come sta",
+      "trains": [
+        "verb:estar:presente:tu"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "ex_2_2_3",
+      "type": "choose",
+      "text": "Desculpe, onde {está} o metro?",
+      "it": "Scusi, dov'è la metro?",
+      "prompt": "Chiedi dov'è la metro",
+      "trains": [
+        "verb:estar:presente:ele_ela_voce"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "ex_2_2_4",
+      "type": "choose",
+      "text": "Olá! Nós {estamos} aqui, no café!",
+      "it": "Ciao! Siamo qui, al bar!",
+      "prompt": "Di' dove siete tu e i tuoi amici",
+      "trains": [
+        "verb:estar:presente:nos"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "ex_2_2_5",
+      "type": "choose",
+      "text": "Onde {estão} o Marco e a Rita?",
+      "it": "Dove sono Marco e Rita?",
+      "prompt": "Chiedi dove sono i tuoi amici",
+      "trains": [
+        "verb:estar:presente:eles_elas_voces"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "ex_2_2_6",
+      "type": "write",
+      "text": "Eu {estou} em Lisboa.",
+      "it": "Sono a Lisbona.",
+      "trains": [
+        "verb:estar:presente:eu"
+      ]
+    },
+    {
+      "id": "ex_2_2_7",
+      "type": "write",
+      "text": "Hoje {estou} no café do senhor Manuel.",
+      "it": "Oggi sono al bar del signor Manuel.",
+      "trains": [
+        "verb:estar:presente:eu"
+      ]
+    },
+    {
+      "id": "ex_2_2_8",
+      "type": "write",
+      "text": "Onde {estás} agora?",
+      "it": "Dove sei adesso?",
+      "trains": [
+        "verb:estar:presente:tu"
+      ]
+    },
+    {
+      "id": "ex_2_2_9",
+      "type": "write",
+      "text": "Tu {estás} aqui, ótimo!",
+      "it": "Sei qui, ottimo!",
+      "trains": [
+        "verb:estar:presente:tu"
+      ]
+    },
+    {
+      "id": "ex_2_2_10",
+      "type": "write",
+      "text": "O Pedro {está} ali, no café.",
+      "it": "Pedro è lì, al bar.",
+      "trains": [
+        "verb:estar:presente:ele_ela_voce"
+      ]
+    },
+    {
+      "id": "ex_2_2_11",
+      "type": "write",
+      "text": "Boa tarde! Como {está} o senhor?",
+      "it": "Buon pomeriggio! Come sta (Lei)?",
+      "italianNote": "Con «o senhor» / «a senhora» il verbo va alla terza persona: «Como está?», non «Como estás?».",
+      "trains": [
+        "verb:estar:presente:ele_ela_voce"
+      ]
+    },
+    {
+      "id": "ex_2_2_12",
+      "type": "write",
+      "text": "Eu e a Ana {estamos} em Lisboa.",
+      "it": "Io e Ana siamo a Lisbona.",
+      "trains": [
+        "verb:estar:presente:nos"
+      ]
+    },
+    {
+      "id": "ex_2_2_13",
+      "type": "write",
+      "text": "Olá! Nós {estamos} ali, perto do elétrico.",
+      "it": "Ciao! Siamo lì, vicino al tram.",
+      "trains": [
+        "verb:estar:presente:nos"
+      ]
+    },
+    {
+      "id": "ex_2_2_14",
+      "type": "write",
+      "text": "Eles {estão} ali!",
+      "it": "Sono lì!",
+      "trains": [
+        "verb:estar:presente:eles_elas_voces"
+      ]
+    },
+    {
+      "id": "ex_2_2_15",
+      "type": "write",
+      "text": "Olá! Vocês {estão} bem?",
+      "it": "Ciao! State bene?",
+      "trains": [
+        "verb:estar:presente:eles_elas_voces"
+      ]
+    },
+    {
+      "id": "ex_2_2_16",
+      "type": "choose",
+      "text": "Eu {sou} de Itália, mas estou em Lisboa.",
+      "it": "Vengo dall'Italia, ma sono a Lisbona.",
+      "prompt": "Ser o estar? Qui dici da dove vieni",
+      "italianNote": "In italiano diciamo «sono» in entrambi i casi. In portoghese «sou» è per chi sei, «estou» per come stai o dove sei.",
+      "trains": [
+        "verb:ser:presente:eu"
+      ],
+      "wrong": [
+        "estou",
+        "está"
+      ]
+    },
+    {
+      "id": "ex_2_2_17",
+      "type": "choose",
+      "text": "Sou de Itália, mas {estou} em Lisboa.",
+      "it": "Vengo dall'Italia, ma sono a Lisbona.",
+      "prompt": "Ser o estar? Qui dici dove sei",
+      "italianNote": "In italiano diciamo «sono» in entrambi i casi. In portoghese «sou» è per chi sei, «estou» per come stai o dove sei.",
+      "trains": [
+        "verb:estar:presente:eu"
+      ],
+      "wrong": [
+        "sou",
+        "é"
+      ]
+    }
+  ]
+}

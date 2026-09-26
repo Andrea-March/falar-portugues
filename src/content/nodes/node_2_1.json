@@ -1,0 +1,268 @@
+{
+  "id": "node_2_1",
+  "theory": [
+    {
+      "title": "Come stai? Dov'è?",
+      "text": "In Portogallo, dopo il saluto si chiede quasi sempre come va. E in città ti servirà chiedere dove si trovano le cose. Prima le espressioni per chiedere come stai, poi quelle per chiedere e indicare un posto."
+    },
+    {
+      "vocabStudy": {
+        "groups": [
+          {
+            "label": "Come stai",
+            "items": [
+              "como-estas",
+              "tudo-bem",
+              "estou-bem"
+            ]
+          },
+          {
+            "label": "Dove si trova",
+            "items": [
+              "onde-esta",
+              "esta-aqui",
+              "esta-ali"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "warmup": {
+    "speaker": {
+      "name": "Pedro",
+      "role": "Amigo · Lisboa",
+      "avatar": "🧑🏻",
+      "voice": "homem"
+    },
+    "exercises": [
+      {
+        "id": "warm_2_1_1",
+        "type": "choose",
+        "text": "{Tudo bem}! E tu, como estás?",
+        "it": "Tutto bene! E tu, come stai?",
+        "prompt": "Pedro ti saluta: rispondi",
+        "context": "Olá! Tudo bem?",
+        "contextIt": "Ciao! Tutto bene?",
+        "trains": [
+          "vocab:tudo-bem"
+        ],
+        "wrong": [
+          "Muito prazer",
+          "Boa noite"
+        ]
+      },
+      {
+        "id": "warm_2_1_2",
+        "type": "choose",
+        "text": "{Estou bem} também!",
+        "it": "Anch'io sto bene!",
+        "prompt": "Di' che anche tu stai bene",
+        "context": "Estou bem, obrigado. E tu?",
+        "contextIt": "Sto bene, grazie. E tu?",
+        "trains": [
+          "vocab:estou-bem"
+        ],
+        "wrong": [
+          "Muito prazer",
+          "Chamo-me"
+        ]
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "ex_2_1_1",
+      "type": "choose",
+      "text": "Olá, Rita! {Como estás}?",
+      "it": "Ciao Rita! Come stai?",
+      "prompt": "Chiedi a un'amica come sta",
+      "trains": [
+        "vocab:como-estas"
+      ],
+      "wrong": [
+        "Muito prazer",
+        "Chamo-me",
+        "Boa noite"
+      ]
+    },
+    {
+      "id": "ex_2_1_2",
+      "type": "write",
+      "text": "Bom dia, Pedro! {Como estás}?",
+      "it": "Buongiorno Pedro! Come stai?",
+      "trains": [
+        "vocab:como-estas"
+      ]
+    },
+    {
+      "id": "ex_2_1_3",
+      "type": "choose",
+      "text": "— Tudo bem? — {Tudo bem}! E contigo?",
+      "it": "— Tutto bene? — Tutto bene! E tu?",
+      "prompt": "Rispondi a un amico",
+      "trains": [
+        "vocab:tudo-bem"
+      ],
+      "wrong": [
+        "Muito prazer",
+        "Chamo-me",
+        "Boa tarde"
+      ]
+    },
+    {
+      "id": "ex_2_1_4",
+      "type": "write",
+      "text": "Olá, Marco! {Tudo bem}?",
+      "it": "Ciao Marco! Tutto bene?",
+      "trains": [
+        "vocab:tudo-bem"
+      ]
+    },
+    {
+      "id": "ex_2_1_5",
+      "type": "choose",
+      "text": "— Como estás? — {Estou bem}, e tu?",
+      "it": "— Come stai? — Sto bene, e tu?",
+      "prompt": "Rispondi che stai bene",
+      "trains": [
+        "vocab:estou-bem"
+      ],
+      "wrong": [
+        "Muito prazer",
+        "Boa noite",
+        "Chamo-me"
+      ]
+    },
+    {
+      "id": "ex_2_1_6",
+      "type": "write",
+      "text": "{Estou bem}, e tu?",
+      "it": "Sto bene, e tu?",
+      "trains": [
+        "vocab:estou-bem"
+      ]
+    },
+    {
+      "id": "ex_2_1_7",
+      "type": "choose",
+      "text": "Olá, Pedro! Hoje {estou bem}.",
+      "it": "Ciao Pedro! Oggi sto bene.",
+      "prompt": "Di' che oggi stai bene",
+      "trains": [
+        "vocab:estou-bem"
+      ],
+      "wrong": [
+        "muito prazer",
+        "boa noite",
+        "chamo-me"
+      ]
+    },
+    {
+      "id": "ex_2_1_8",
+      "type": "write",
+      "text": "— Tudo bem? — Sim, {tudo bem}!",
+      "it": "— Tutto bene? — Sì, tutto bene!",
+      "trains": [
+        "vocab:tudo-bem"
+      ]
+    },
+    {
+      "id": "ex_2_1_9",
+      "type": "choose",
+      "text": "Desculpe, {onde está} o metro?",
+      "it": "Scusi, dov'è la metro?",
+      "prompt": "Chiedi dov'è la metro",
+      "trains": [
+        "vocab:onde-esta"
+      ],
+      "wrong": [
+        "como está",
+        "tudo bem",
+        "está ali"
+      ]
+    },
+    {
+      "id": "ex_2_1_10",
+      "type": "write",
+      "text": "{Onde está} o Marco?",
+      "it": "Dov'è Marco?",
+      "trains": [
+        "vocab:onde-esta"
+      ]
+    },
+    {
+      "id": "ex_2_1_11",
+      "type": "choose",
+      "text": "— Onde está o café? — {Está ali}, ao lado da farmácia.",
+      "it": "— Dov'è il bar? — È lì, accanto alla farmacia.",
+      "prompt": "Il bar è poco più avanti: indicalo",
+      "trains": [
+        "vocab:esta-ali"
+      ],
+      "wrong": [
+        "Está aqui",
+        "Estou bem",
+        "Muito prazer"
+      ]
+    },
+    {
+      "id": "ex_2_1_12",
+      "type": "write",
+      "text": "O elétrico? {Está ali}!",
+      "it": "Il tram? È lì!",
+      "trains": [
+        "vocab:esta-ali"
+      ]
+    },
+    {
+      "id": "ex_2_1_13",
+      "type": "choose",
+      "text": "— Onde está a Ana? — {Está aqui}, comigo.",
+      "it": "— Dov'è Ana? — È qui, con me.",
+      "prompt": "Ana è proprio accanto a te",
+      "trains": [
+        "vocab:esta-aqui"
+      ],
+      "wrong": [
+        "Está ali",
+        "Estou bem",
+        "Tudo bem"
+      ]
+    },
+    {
+      "id": "ex_2_1_14",
+      "type": "write",
+      "text": "O teu café {está aqui}.",
+      "it": "Il tuo caffè è qui.",
+      "trains": [
+        "vocab:esta-aqui"
+      ]
+    },
+    {
+      "id": "ex_2_1_15",
+      "type": "choose",
+      "text": "Olá! {Onde está} a casa de banho?",
+      "it": "Ciao! Dov'è il bagno?",
+      "prompt": "Chiedi dov'è il bagno",
+      "italianNote": "Il bagno in Portogallo è «a casa de banho»: «banho» non basta.",
+      "trains": [
+        "vocab:onde-esta"
+      ],
+      "wrong": [
+        "Como está",
+        "Está aqui",
+        "Chamo-me"
+      ]
+    },
+    {
+      "id": "ex_2_1_16",
+      "type": "write",
+      "text": "Desculpe, {onde está} a paragem do autocarro?",
+      "it": "Scusi, dov'è la fermata dell'autobus?",
+      "trains": [
+        "vocab:onde-esta"
+      ]
+    }
+  ]
+}

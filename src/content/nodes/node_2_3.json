@@ -1,0 +1,98 @@
+{
+  "id": "node_2_3",
+  "speaker": {
+    "name": "Pedro",
+    "role": "Amigo · Lisboa",
+    "avatar": "🧑🏻",
+    "voice": "homem"
+  },
+  "theory": [
+    {
+      "title": "Ao telefone com o Pedro",
+      "text": "Il tuo amico Pedro ti chiama: vuole sapere come stai e dove sei, per raggiungerti al bar del signor Manuel. Ti serviranno **estou**, **está** ed **estamos**.",
+      "examples": [
+        {
+          "pt": "Estou no café.",
+          "it": "Sono al bar."
+        },
+        {
+          "pt": "Está ali!",
+          "it": "È lì!"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "ex_2_3_1",
+      "type": "choose",
+      "text": "{Tudo bem}! E tu, como estás?",
+      "it": "Tutto bene! E tu, come stai?",
+      "prompt": "Rispondi e chiedigli come sta",
+      "context": "Olá! Tudo bem?",
+      "contextIt": "Ciao! Tutto bene?",
+      "trains": [
+        "vocab:tudo-bem"
+      ],
+      "wrong": [
+        "Muito prazer",
+        "Boa noite",
+        "Está ali"
+      ]
+    },
+    {
+      "id": "ex_2_3_2",
+      "type": "write",
+      "text": "{Estou} no café do senhor Manuel.",
+      "it": "Sono al bar del signor Manuel.",
+      "context": "Estou bem, obrigado. Onde estás agora?",
+      "contextIt": "Sto bene, grazie. Dove sei adesso?",
+      "prompt": "Di' che sei al bar del signor Manuel",
+      "trains": [
+        "verb:estar:presente:eu"
+      ]
+    },
+    {
+      "id": "ex_2_3_3",
+      "type": "write",
+      "text": "Sim, a Rita {está} aqui.",
+      "it": "Sì, Rita è qui.",
+      "context": "E a Rita? Está contigo?",
+      "contextIt": "E Rita? È con te?",
+      "prompt": "Rita è con te: diglielo",
+      "trains": [
+        "verb:estar:presente:ele_ela_voce"
+      ]
+    },
+    {
+      "id": "ex_2_3_4",
+      "type": "choose",
+      "text": "Sim, {estamos} bem!",
+      "it": "Sì, stiamo bene!",
+      "prompt": "Rispondi per te e Rita",
+      "context": "E vocês, estão bem?",
+      "contextIt": "E voi, state bene?",
+      "trains": [
+        "verb:estar:presente:nos"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "ex_2_3_5",
+      "type": "choose",
+      "text": "{Está ali}, ao lado da farmácia!",
+      "it": "È lì, accanto alla farmacia!",
+      "prompt": "Il bar è in fondo alla piazza: indicaglielo",
+      "context": "Já estou na praça! Onde está o café?",
+      "contextIt": "Sono già in piazza! Dov'è il bar?",
+      "trains": [
+        "vocab:esta-ali"
+      ],
+      "wrong": [
+        "Está aqui",
+        "Estou bem",
+        "Muito prazer"
+      ]
+    }
+  ]
+}

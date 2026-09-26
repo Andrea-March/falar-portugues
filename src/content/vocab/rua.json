@@ -1,0 +1,55 @@
+{
+  "id": "rua",
+  "title": "Na rua",
+  "items": [
+    {
+      "id": "estou-bem",
+      "pt": "Estou bem.",
+      "it": "Sto bene.",
+      "icon": "🙂",
+      "usage": "La risposta più semplice a «Como estás?». Aggiungi «e tu?» per ricambiare.",
+      "situation": "🙂 Un amico ti chiede come stai: va tutto bene."
+    },
+    {
+      "id": "onde-esta",
+      "pt": "Onde está…?",
+      "it": "Dov'è…?",
+      "note": "si completa con ciò che cerchi: «Onde está o metro?»",
+      "icon": "🧭",
+      "usage": "Per chiedere dove si trova qualcosa o qualcuno.",
+      "situation": "🧭 Cerchi la metro e chiedi a un passante.",
+      "italianNote": "Per luoghi che non si spostano (un museo, una via) i portoghesi dicono spesso anche «Onde fica…?»."
+    },
+    {
+      "id": "esta-aqui",
+      "pt": "Está aqui.",
+      "it": "È qui.",
+      "icon": "📍",
+      "usage": "Quando la cosa che si cerca è vicinissima, dove sei tu.",
+      "situation": "📍 Ti chiedono dov'è la tua amica, ed è proprio accanto a te."
+    },
+    {
+      "id": "esta-ali",
+      "pt": "Está ali.",
+      "it": "È lì.",
+      "icon": "👉",
+      "usage": "Quando la cosa è un po' più lontana e la indichi.",
+      "situation": "👉 Un turista cerca il tram: lo indichi, qualche metro più avanti."
+    },
+    {
+      "id": "eletrico",
+      "pt": "O elétrico",
+      "it": "Il tram",
+      "icon": "🚋",
+      "usage": "I tram gialli di Lisbona; il più famoso è il 28."
+    },
+    {
+      "id": "autocarro",
+      "pt": "O autocarro",
+      "it": "L'autobus",
+      "icon": "🚌",
+      "usage": "Così si chiama l'autobus in Portogallo.",
+      "italianNote": "In Brasile si dice «ônibus»: in Portogallo solo «autocarro»."
+    }
+  ]
+}

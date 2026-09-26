@@ -13,6 +13,8 @@
     "lint": "eslint",
     "audio": "tsx scripts/audio.ts",
     "audio:check": "tsx scripts/audio.ts --check",
+    "review:export": "tsx scripts/review.ts export",
+    "review:approve": "tsx scripts/review.ts approve",
     "audio:samples": "tsx scripts/audio.ts samples"
   },
   "dependencies": {
