@@ -526,7 +526,27 @@ export interface SessionOptions {
  * - checkpoint: alcune frasi sue + alcune da ogni nodo obbligatorio del capitolo;
  * - altri nodi: un campione, con precedenza alle frasi mai viste.
  */
+/**
+ * Tipi mescolati, alla Duolingo, ma con una progressione:
+ * - Prática: prima le scelte, poi la scrittura; circa 1 scelta su 3 diventa "ascolta e scegli";
+ * - Produção e test: circa 1 esercizio su 3 diventa un dettato ("ascolta e scrivi").
+ * Le conversazioni e la cultura restano come sono (nel dialogo si ascolta già l'altra persona).
+ */
+function mixTypes(kind: SessionKind, node: CourseNode, list: RuntimeExercise[]): RuntimeExercise[] {
+  if (node.kind === 'dialogue' || node.kind === 'culture') return list;
+  if (kind === 'guided') {
+    const choices = list.filter((e) => e.type === 'multiple_choice');
+    const writing = list.filter((e) => e.type !== 'multiple_choice');
+    return [...choices.map((e, i) => (i % 3 === 1 ? { ...e, listening: true } : e)), ...writing];
+  }
+  return list.map((e, i) => (i % 3 === 2 ? { ...e, listening: true } : e));
+}
+
 export function sessionExercises(kind: SessionKind, node: CourseNode, content: NodeContent, opts: SessionOptions = {}): RuntimeExercise[] {
+  return mixTypes(kind, node, pickSession(kind, node, content, opts));
+}
+
+function pickSession(kind: SessionKind, node: CourseNode, content: NodeContent, opts: SessionOptions): RuntimeExercise[] {
   const seen = opts.seen ?? new Set<string>();
   const pool = sessionPool(kind, node, content);
   if (node.kind === 'dialogue') return pool;

@@ -69,7 +69,8 @@ async function piperGenerate(jobs: Job[], onDone: (job: Job) => void): Promise<n
         '--bitrate', String(audioConfig.bitrateKbps),
         '--data-dir', join(ROOT, '.piper-voices'),
       ],
-      { stdio: ['pipe', 'pipe', 'inherit'] }
+      // UTF-8 esplicito: su Windows Python userebbe la codifica di sistema e storpierebbe gli accenti (é → Ã©)
+      { stdio: ['pipe', 'pipe', 'inherit'], env: { ...process.env, PYTHONUTF8: '1', PYTHONIOENCODING: 'utf-8' } }
     );
     const pending = new Map(list.map((j) => [j.out, j]));
     const exited = new Promise<number>((res, rej) => {
@@ -85,7 +86,10 @@ async function piperGenerate(jobs: Job[], onDone: (job: Job) => void): Promise<n
       } else if (kind === 'info') console.log(`  … ${a}`);
       else if (kind === 'fatal') console.error(`✗ ${a}`);
     });
-    for (const j of list) child.stdin.write(JSON.stringify({ text: j.text, out: j.out }) + '\n');
+    // Solo ASCII verso Python: ogni accento viaggia come codice (ã → \u00e3) e nessuna
+    // codifica di sistema (es. Windows) può storpiarlo; json.loads lo ricostruisce.
+    const asciiJson = (o: object) => JSON.stringify(o).replace(/[\u007f-\uffff]/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`);
+    for (const j of list) child.stdin.write(asciiJson({ text: j.text, out: j.out }) + '\n');
     child.stdin.end();
     const code = await exited;
     if (code !== 0) throw new Error('Piper si è interrotto (vedi il messaggio sopra).');

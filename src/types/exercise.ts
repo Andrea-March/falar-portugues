@@ -15,6 +15,8 @@ export interface BaseExercise {
   trains?: string[];
   /** Nota per chi parla italiano, mostrata dopo un errore */
   italianNote?: string;
+  /** Esercizio di ascolto: la frase si sente, la traduzione è nascosta (se l'audio pt-PT c'è) */
+  listening?: boolean;
 }
 
 export interface MultipleChoiceExercise extends BaseExercise {

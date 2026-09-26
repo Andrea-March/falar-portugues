@@ -5,11 +5,12 @@ import { soundFX } from '@/utils/sound';
 import { accentMistakes } from '@/utils/answerCheck';
 import { FillInBlankExercise } from '@/types/exercise';
 import Mascot from '@/components/common/Mascot';
-import { SentenceWithGap, SpeechBubble, mascotMood, type ExerciseViewProps } from './ExerciseRenderer';
+import { ListenButton, SentenceWithGap, SpeechBubble, mascotMood, useListening, type ExerciseViewProps } from './ExerciseRenderer';
 
 const SPECIAL_CHARS = ['á', 'à', 'â', 'ã', 'ç', 'é', 'ê', 'í', 'ó', 'ô', 'õ', 'ú'];
 
 export default function FillInBlank({ exercise, value, feedback, accentHint, onChange, onSubmit }: ExerciseViewProps<FillInBlankExercise>) {
+  const listen = useListening(exercise);
   const inputRef = useRef<HTMLInputElement>(null);
   const locked = feedback !== 'idle';
 
@@ -28,11 +29,12 @@ export default function FillInBlank({ exercise, value, feedback, accentHint, onC
 
   return (
     <div className="space-y-7 animate-fade-in">
-      <h2 className="text-2xl sm:text-3xl font-extrabold text-ink">{exercise.prompt || 'Completa a frase'}</h2>
+      <h2 className="text-2xl sm:text-3xl font-extrabold text-ink">{listen.active ? 'Ouve e escreve' : exercise.prompt || 'Completa a frase'}</h2>
+      {listen.active && <ListenButton onPlay={listen.play} />}
 
       <div className="flex items-end gap-3">
         <Mascot mood={mascotMood(feedback)} size={88} animate={false} />
-        <SpeechBubble translation={exercise.translationIt}>
+        <SpeechBubble translation={listen.active ? undefined : exercise.translationIt}>
           <SentenceWithGap before={exercise.sentenceBefore} after={exercise.sentenceAfter} value={value} feedback={feedback} />
         </SpeechBubble>
       </div>

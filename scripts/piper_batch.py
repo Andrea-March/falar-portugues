@@ -10,6 +10,7 @@ e per ognuna scrive su stdout "ok<TAB>percorso" oppure "err<TAB>percorso<TAB>mot
 import argparse
 import io
 import json
+import re
 import sys
 import urllib.parse
 import urllib.request
@@ -69,10 +70,19 @@ def main() -> None:
     voice = PiperVoice.load(ensure_voice(args.voice, Path(args.data_dir)))
     cfg = SynthesisConfig(length_scale=args.length_scale)
 
+    # Le frasi arrivano in UTF-8 anche su Windows (lì la codifica di sistema storpierebbe gli accenti)
+    sys.stdin.reconfigure(encoding="utf-8")
+    sys.stdout.reconfigure(encoding="utf-8")
+
     for line in sys.stdin:
         if not line.strip():
             continue
         job = json.loads(line)
+        # "Ã" seguito da un altro carattere è il segno tipico di un testo UTF-8 letto male:
+        # meglio un errore chiaro che un audio che dice "copyright" al posto di "é"
+        if re.search(r"Ã[\u0080-\u00bf]", job["text"]):
+            print(f"err\t{job['out']}\ttesto con codifica storpiata, audio non generato", flush=True)
+            continue
         try:
             buf = io.BytesIO()
             with wave.open(buf, "wb") as w:

@@ -3,9 +3,10 @@
 import React, { useEffect } from 'react';
 import { MultipleChoiceExercise } from '@/types/exercise';
 import Mascot from '@/components/common/Mascot';
-import { SentenceWithGap, SpeechBubble, mascotMood, type ExerciseViewProps } from './ExerciseRenderer';
+import { ListenButton, SentenceWithGap, SpeechBubble, mascotMood, useListening, type ExerciseViewProps } from './ExerciseRenderer';
 
 export default function MultipleChoice({ exercise, value, feedback, onChange }: ExerciseViewProps<MultipleChoiceExercise>) {
+  const listen = useListening(exercise);
   const [before, after = ''] = exercise.sentence.split(/_{3,}/);
 
   // Tasti 1–4: rispondono direttamente, come il tocco
@@ -21,11 +22,12 @@ export default function MultipleChoice({ exercise, value, feedback, onChange }: 
 
   return (
     <div className="space-y-7 animate-fade-in">
-      <h2 className="text-2xl sm:text-3xl font-extrabold text-ink">{exercise.prompt || 'Escolhe a opção certa'}</h2>
+      <h2 className="text-2xl sm:text-3xl font-extrabold text-ink">{listen.active ? 'Ouve e escolhe' : exercise.prompt || 'Escolhe a opção certa'}</h2>
+      {listen.active && <ListenButton onPlay={listen.play} />}
 
       <div className="flex items-end gap-3">
         <Mascot mood={mascotMood(feedback)} size={88} animate={false} />
-        <SpeechBubble translation={exercise.translationIt}>
+        <SpeechBubble translation={listen.active ? undefined : exercise.translationIt}>
           <SentenceWithGap before={before} after={after} value={value} feedback={feedback} />
         </SpeechBubble>
       </div>

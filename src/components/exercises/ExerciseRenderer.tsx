@@ -1,6 +1,9 @@
 'use client';
 
 import React from 'react';
+import { Volume2 } from 'lucide-react';
+import { exerciseSentence } from '@/content';
+import { canListenTo, speakPortuguese } from '@/utils/textToSpeech';
 import { Exercise } from '@/types/exercise';
 import MultipleChoice from './MultipleChoice';
 import FillInBlank from './FillInBlank';
@@ -65,5 +68,43 @@ export function SpeechBubble({ children, translation }: { children: React.ReactN
       <p className="text-xl font-bold text-ink">{children}</p>
       {translation && <p className="text-[15px] text-brand-muted font-semibold mt-1">{translation}</p>}
     </div>
+  );
+}
+
+/**
+ * Esercizio di ascolto: controlla se l'audio pt-PT è affidabile e, se sì, fa partire la frase.
+ * Se non lo è, l'esercizio resta quello normale (con la traduzione).
+ */
+export function useListening(exercise: Exercise) {
+  const [active, setActive] = React.useState(false);
+  const sentence = exerciseSentence(exercise);
+  React.useEffect(() => {
+    if (!exercise.listening) return;
+    let alive = true;
+    let t: ReturnType<typeof setTimeout> | undefined;
+    canListenTo(sentence).then((ok) => {
+      if (!alive || !ok) return;
+      setActive(true);
+      t = setTimeout(() => speakPortuguese(sentence), 350);
+    });
+    return () => {
+      alive = false;
+      if (t) clearTimeout(t);
+    };
+  }, [exercise.listening, sentence]);
+  return { active, play: () => speakPortuguese(sentence) };
+}
+
+/** Grande pulsante per riascoltare la frase negli esercizi di ascolto */
+export function ListenButton({ onPlay }: { onPlay: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onPlay}
+      aria-label="Ouvir outra vez"
+      className="btn-3d mx-auto flex items-center justify-center w-20 h-20 rounded-3xl bg-azulejo border-azulejo-dark text-white"
+    >
+      <Volume2 size={36} strokeWidth={2.6} aria-hidden="true" />
+    </button>
   );
 }

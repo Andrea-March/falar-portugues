@@ -176,3 +176,14 @@ export function stopSpeaking() {
   silence();
   finishPending();
 }
+
+/**
+ * L'audio di questo testo è affidabile per un esercizio di ascolto? Sì se c'è il file
+ * pregenerato oppure se il dispositivo ha una vera voce pt-PT. Una voce brasiliana
+ * insegnerebbe la pronuncia sbagliata: in quel caso l'esercizio torna normale.
+ */
+export async function canListenTo(text: string, voice?: VoiceKey): Promise<boolean> {
+  if (typeof window === 'undefined' || !isAudioEnabled()) return false;
+  if (await resolveAudio(text, voice)) return true;
+  return 'speechSynthesis' in window && europeanVoice() !== null;
+}
