@@ -80,11 +80,14 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
  */
 const alive = new Set<SpeechSynthesisUtterance>();
 
-function browserSpeak(clean: string, onEnd: () => void) {
+/** Velocità della lettura lenta (🐢): abbastanza lenta da distinguere le sillabe, senza deformare la voce */
+export const SLOW_RATE = 0.7;
+
+function browserSpeak(clean: string, onEnd: () => void, slow = false) {
   if (!('speechSynthesis' in window)) return onEnd();
   const utterance = new SpeechSynthesisUtterance(clean);
   utterance.lang = 'pt-PT';
-  utterance.rate = 0.9;
+  utterance.rate = slow ? 0.9 * SLOW_RATE : 0.9;
   const voice = europeanVoice();
   if (voice) utterance.voice = voice;
   utterance.onend = onEnd;
@@ -125,7 +128,7 @@ function silence() {
  * se la lettura viene interrotta o sostituita, o dopo una breve pausa se l'audio è disattivato.
  * `voice` sceglie una delle voci di audio.config.json (es. l'interlocutore di un dialogo).
  */
-export function speakPortuguese(text: string, onEnd?: () => void, opts: { voice?: VoiceKey } = {}) {
+export function speakPortuguese(text: string, onEnd?: () => void, opts: { voice?: VoiceKey; slow?: boolean } = {}) {
   if (typeof window === 'undefined' || !isAudioEnabled()) {
     // Audio spento: una piccola pausa, così il ritmo resta naturale
     if (onEnd) setTimeout(onEnd, 450);
@@ -154,15 +157,18 @@ export function speakPortuguese(text: string, onEnd?: () => void, opts: { voice?
 
   resolveAudio(clean, opts.voice).then((url) => {
     if (token !== playToken) return; // nel frattempo è partita un'altra lettura
-    if (!url) return browserSpeak(clean, end);
+    if (!url) return browserSpeak(clean, end, opts.slow);
     player ??= new Audio();
     player.onended = end;
-    player.onerror = () => browserSpeak(clean, end);
+    player.onerror = () => browserSpeak(clean, end, opts.slow);
     player.src = url;
     player.currentTime = 0;
+    // Lettura lenta: più lenta, ma con il tono naturale (preservesPitch è attivo di default)
+    player.playbackRate = opts.slow ? SLOW_RATE : 1;
+    player.preservesPitch = true;
     player.play().catch(() => {
       // Riproduzione bloccata dal browser: si prova con la sua voce
-      if (token === playToken) browserSpeak(clean, end);
+      if (token === playToken) browserSpeak(clean, end, opts.slow);
     });
   });
 }

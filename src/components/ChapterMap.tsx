@@ -30,6 +30,8 @@ interface ChapterMapProps {
   sessionProgress?: Record<string, number>;
   currentNodeId?: string;
   onSelectSession?: (node: Node, session: Session) => void;
+  /** Mostrato in cima al capitolo in corso e fisso sotto l'header mentre lo si scorre (es. il ripasso) */
+  aboveCurrentChapter?: React.ReactNode;
 }
 
 // Pattern di scostamento orizzontale in percentuale (%)
@@ -144,6 +146,7 @@ export default function ChapterMap({
   sessionProgress = {},
   currentNodeId: savedCurrentNodeId,
   onSelectSession,
+  aboveCurrentChapter,
 }: ChapterMapProps) {
   const chapters = courseChapters;
   const [openNodeId, setOpenNodeId] = useState<string | null>(null);
@@ -217,6 +220,15 @@ export default function ChapterMap({
     return (candidates.find(({ node }) => !opened(node)) ?? candidates[0])?.node.id ?? savedCurrentNodeId;
   })();
 
+  // All'apertura la mappa scorre fino al nodo corrente: più avanti nel corso non si parte dall'inizio
+  const currentRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    currentRef.current?.scrollIntoView({ block: 'center' });
+    // Solo all'apertura: poi è l'utente a scorrere
+  }, []);
+
+  const currentChapterId = chapters.find((c) => c.nodes.some((n) => n.id === currentNodeId))?.id;
+
   return (
     <div className="w-full max-w-md mx-auto pb-32 pt-2 space-y-10">
       {chapters.map((chapter, chapterIndex) => {
@@ -226,6 +238,9 @@ export default function ChapterMap({
 
         return (
           <section key={chapter.id} aria-labelledby={`${chapter.id}-title`} className="space-y-6">
+            {chapter.id === currentChapterId && aboveCurrentChapter && (
+              <div className="sticky top-[calc(env(safe-area-inset-top)+3.75rem)] z-30">{aboveCurrentChapter}</div>
+            )}
             {/* Intestazione capitolo: piastrella azulejo */}
             <div className="azulejo-pattern rounded-3xl border-b-[6px] border-azulejo-dark text-white px-5 py-4 flex items-center gap-4">
               <div className="w-14 h-14 rounded-2xl bg-white/95 flex items-center justify-center text-3xl shrink-0">
@@ -302,6 +317,7 @@ export default function ChapterMap({
                   <div
                     key={node.id}
                     className="absolute -translate-x-1/2 -translate-y-1/2"
+                    ref={isCurrent ? currentRef : undefined}
                     style={{ left: `${posX}%`, top: `${posY}px`, zIndex: isCurrent ? 20 : undefined }}
                   >
                     {isCurrent && (

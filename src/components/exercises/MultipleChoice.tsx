@@ -23,7 +23,7 @@ export default function MultipleChoice({ exercise, value, feedback, onChange }: 
   return (
     <div className="space-y-7 animate-fade-in">
       <h2 className="text-2xl sm:text-3xl font-extrabold text-ink">{listen.active ? 'Ouve e escolhe' : exercise.prompt || 'Escolhe a opção certa'}</h2>
-      {listen.active && <ListenButton onPlay={listen.play} />}
+      {listen.active && <ListenButton onPlay={listen.play} sentence={listen.sentence} />}
 
       <div className="flex items-end gap-3">
         <Mascot mood={mascotMood(feedback)} size={88} animate={false} />

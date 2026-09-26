@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { CheckCheck, Languages, SendHorizontal, Volume2 } from 'lucide-react';
+import { CheckCheck, Languages, SendHorizontal, Turtle, Volume2 } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
 import { estimateSpeechMs, speakPortuguese, stopSpeaking } from '@/utils/textToSpeech';
 import { matchAnswerAny, accentMistakes } from '@/utils/answerCheck';
@@ -53,7 +53,7 @@ interface DialoguePracticeProps {
  * mostrata chiedono un tocco, per lasciare il tempo di leggere.
  */
 export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER, showTranslations = true, onFinish, onClose }: DialoguePracticeProps) {
-  const { progress } = useUser();
+  const { recordAnswer } = useUser();
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>(() => (exercises[0]?.context ? 'typing' : 'answering'));
   const [messages, setMessages] = useState<Message[]>([]);
@@ -156,12 +156,14 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
 
   const countError = () => {
     if (!stats.current.failedCurrent) {
+      recordAnswer(exercise.trains, false);
       stats.current.errors += 1;
       stats.current.failedCurrent = true;
     }
   };
 
   const markCorrect = (match: string) => {
+    if (!stats.current.failedCurrent) recordAnswer(exercise.trains, true);
     const sentence = sentenceWith(match);
     const newCombo = stats.current.failedCurrent ? 0 : combo + 1;
     stats.current.bestCombo = Math.max(stats.current.bestCombo, newCombo);
@@ -251,7 +253,6 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
   return (
     <LessonShell
       progress={(done / exercises.length) * 100}
-      hearts={progress.hearts}
       onClose={onClose}
       footer={
         showSheet ? (
@@ -371,6 +372,9 @@ function NpcBubble({ text, translation, voice }: { text: string; translation?: s
           )}
           <IconButton label="Ouvir" onClick={() => speakPortuguese(text, undefined, { voice })}>
             <Volume2 size={16} strokeWidth={2.5} />
+          </IconButton>
+          <IconButton label="Ouvir devagar" onClick={() => speakPortuguese(text, undefined, { voice, slow: true })}>
+            <Turtle size={16} strokeWidth={2.5} />
           </IconButton>
         </div>
       </div>

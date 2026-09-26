@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { sessionXp } from '@/content/rewards';
 import ItalianNote from '@/components/common/ItalianNote';
 import confetti from 'canvas-confetti';
 import { soundFX } from '@/utils/sound';
@@ -205,24 +206,25 @@ function LessonFlow({
   };
 
   const handleFinishDiscovery = () => {
-    setLessonStats({ xp: 10, accuracy: undefined, bestCombo: 0 });
-    addXp(10);
+    const xp = node ? sessionXp('discovery', node) : 0;
+    setLessonStats({ xp, accuracy: undefined, bestCombo: 0 });
+    addXp(xp);
     celebrate();
   };
 
   const handleFinishPractice = (stats?: PracticeStats) => {
     let accuracy = 100;
-    let earnedXp = 15;
     if (stats && stats.total > 0) {
       accuracy = Math.round((Math.max(0, stats.total - stats.errors) / stats.total) * 100);
-      earnedXp = accuracy === 100 ? 20 : accuracy >= 80 ? 15 : 10;
     }
+    const earnedXp = node ? sessionXp(session.kind, node, accuracy) : 0;
     setLessonStats({ xp: earnedXp, accuracy, bestCombo: stats?.bestCombo ?? 0 });
     // Anche un test non superato conta: le frasi sono state viste
     markSeen(exercises.map((e) => e.id));
     // Test finale non superato: niente XP, si propone di riprovare
     if (session.kind === 'test' && accuracy < TEST_PASS_ACCURACY) {
       soundFX.playError();
+      addXp(0); // niente XP, ma l'impegno di oggi conta per la streak
       setStep('failed');
       return;
     }
@@ -372,6 +374,7 @@ function LessonFlow({
       xpEarned={lessonStats.xp}
       accuracy={lessonStats.accuracy}
       bestCombo={lessonStats.bestCombo}
+      streakDays={progress.streak}
       note={nextSessionNote}
       onContinue={onCompleteSession}
     />

@@ -30,7 +30,7 @@ export default function FillInBlank({ exercise, value, feedback, accentHint, onC
   return (
     <div className="space-y-7 animate-fade-in">
       <h2 className="text-2xl sm:text-3xl font-extrabold text-ink">{listen.active ? 'Ouve e escreve' : exercise.prompt || 'Completa a frase'}</h2>
-      {listen.active && <ListenButton onPlay={listen.play} />}
+      {listen.active && <ListenButton onPlay={listen.play} sentence={listen.sentence} />}
 
       <div className="flex items-end gap-3">
         <Mascot mood={mascotMood(feedback)} size={88} animate={false} />

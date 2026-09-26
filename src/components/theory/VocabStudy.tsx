@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import ItalianNote from '@/components/common/ItalianNote';
+import SlowButton from '@/components/common/SlowButton';
 import { Volume2 } from 'lucide-react';
 import type { VocabPresentStep as PresentStep, VocabRecallStep as RecallStep } from '@/content';
 import { speakPortuguese } from '@/utils/textToSpeech';
@@ -46,8 +47,8 @@ export function VocabPresentStep({ step, initiallyDone, onDone }: StepProps<Pres
           </span>
         )}
         <div className="flex-1 min-w-0 space-y-1.5">
-          <div className="flex items-start justify-between gap-3">
-            <h2 className="text-2xl font-extrabold text-ink leading-tight">{item.it}</h2>
+          <div className="flex items-start gap-2">
+            <h2 className="flex-1 text-2xl font-extrabold text-ink leading-tight">{item.it}</h2>
             <button
               type="button"
               onClick={() => speakPortuguese(item.pt)}
@@ -56,6 +57,7 @@ export function VocabPresentStep({ step, initiallyDone, onDone }: StepProps<Pres
             >
               <Volume2 size={20} strokeWidth={2.5} />
             </button>
+            <SlowButton text={item.pt} />
           </div>
           {item.usage && <p className="text-ink/80 font-semibold leading-snug">{item.usage}</p>}
           {item.note && (

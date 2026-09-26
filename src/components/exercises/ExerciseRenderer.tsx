@@ -4,6 +4,7 @@ import React from 'react';
 import { Volume2 } from 'lucide-react';
 import { exerciseSentence } from '@/content';
 import { canListenTo, speakPortuguese } from '@/utils/textToSpeech';
+import SlowButton from '@/components/common/SlowButton';
 import { Exercise } from '@/types/exercise';
 import MultipleChoice from './MultipleChoice';
 import FillInBlank from './FillInBlank';
@@ -92,19 +93,22 @@ export function useListening(exercise: Exercise) {
       if (t) clearTimeout(t);
     };
   }, [exercise.listening, sentence]);
-  return { active, play: () => speakPortuguese(sentence) };
+  return { active, sentence, play: () => speakPortuguese(sentence) };
 }
 
 /** Grande pulsante per riascoltare la frase negli esercizi di ascolto */
-export function ListenButton({ onPlay }: { onPlay: () => void }) {
+export function ListenButton({ onPlay, sentence }: { onPlay: () => void; sentence: string }) {
   return (
-    <button
-      type="button"
-      onClick={onPlay}
-      aria-label="Ouvir outra vez"
-      className="btn-3d mx-auto flex items-center justify-center w-20 h-20 rounded-3xl bg-azulejo border-azulejo-dark text-white"
-    >
-      <Volume2 size={36} strokeWidth={2.6} aria-hidden="true" />
-    </button>
+    <div className="flex items-end justify-center gap-3">
+      <button
+        type="button"
+        onClick={onPlay}
+        aria-label="Ouvir outra vez"
+        className="btn-3d flex items-center justify-center w-20 h-20 rounded-3xl bg-azulejo border-azulejo-dark text-white"
+      >
+        <Volume2 size={36} strokeWidth={2.6} aria-hidden="true" />
+      </button>
+      <SlowButton text={sentence} size="lg" />
+    </div>
   );
 }

@@ -36,7 +36,7 @@ interface PracticeSessionProps {
 const SPEAK_DELAY_MS = 550;
 
 export default function PracticeSession({ exercises, onFinish, onClose }: PracticeSessionProps) {
-  const { progress } = useUser();
+  const { recordAnswer } = useUser();
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState('');
   const [feedback, setFeedback] = useState<Feedback>('idle');
@@ -82,6 +82,7 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
 
   const countError = () => {
     if (!failedCurrent) {
+      recordAnswer(exercise.trains, false);
       setErrorCount((n) => n + 1);
       setFailedCurrent(true);
     }
@@ -93,6 +94,7 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
   };
 
   const markCorrect = (match: string) => {
+    if (!failedCurrent) recordAnswer(exercise.trains, true);
     const newCombo = failedCurrent ? 0 : combo + 1;
     setCombo(newCombo);
     setBestCombo((b) => Math.max(b, newCombo));
@@ -175,7 +177,6 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
   return (
     <LessonShell
       progress={(done / exercises.length) * 100}
-      hearts={progress.hearts}
       onClose={onClose}
       footer={
         <FeedbackSheet

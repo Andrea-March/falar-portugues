@@ -4,15 +4,21 @@ import React, { useState } from 'react';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import ChapterMap from '@/components/ChapterMap';
-import { nextNodeId, isOptionalNode, sessionsFor, sameSession, type CourseNode, type Session } from '@/content';
+import { chapters, nextNodeId, isOptionalNode, sessionsFor, sameSession, type CourseNode, type Session } from '@/content';
+import Onboarding from '@/components/Onboarding';
+import { dayKey } from '@/content/rewards';
 import { useUser } from '@/context/UserContext';
 import Mascot from '@/components/common/Mascot';
 import GrammarHub from '@/components/GrammarHub';
 import LessonScreen from '@/components/LessonScreen';
+import ReviewScreen from '@/components/ReviewScreen';
+import { dueRefs } from '@/content/review';
+import { RotateCcw } from 'lucide-react';
 
 export default function Home() {
-  const { progress, completeSession, isLoaded } = useUser();
+  const { progress, completeSession, completeOnboarding, isLoaded } = useUser();
   const [active, setActive] = useState<{ node: CourseNode; session: Session } | null>(null);
+  const [reviewing, setReviewing] = useState(false);
   const [activeTab, setActiveTab] = useState<'home' | 'grammar' | 'vocab' | 'chat'>('home');
 
   if (!isLoaded) {
@@ -22,6 +28,21 @@ export default function Home() {
       </div>
     );
   }
+
+  // Primo avvio: onboarding, poi dritti nella prima sessione della prima lezione
+  if (!progress.onboarded) {
+    return (
+      <Onboarding
+        onDone={(choices) => {
+          completeOnboarding(choices);
+          const first = chapters[0].nodes[0];
+          setActive({ node: first, session: sessionsFor(first)[0] });
+        }}
+      />
+    );
+  }
+
+  if (reviewing) return <ReviewScreen onClose={() => setReviewing(false)} />;
 
   // Lezione aperta: occupa tutto lo schermo, niente header né barra in basso
   if (active) {
@@ -44,12 +65,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen pb-28">
-      <Header streak={progress.streak} xp={progress.xp} hearts={progress.hearts} />
+      <Header
+        streak={progress.streak}
+        xp={progress.xp}
+        today={progress.xpDay === dayKey() ? progress.xpToday : 0}
+        goal={progress.dailyGoal}
+      />
 
       <main className="max-w-md mx-auto px-4 pt-3">
         {activeTab === 'home' && (
           <div className="animate-fade-in">
             <ChapterMap
+              aboveCurrentChapter={<ReviewButton review={progress.review} onStart={() => setReviewing(true)} />}
               completedNodeIds={progress.completedNodeIds}
               sessionProgress={progress.sessionProgress}
               currentNodeId={progress.currentNodeId}
@@ -88,5 +115,31 @@ function ComingSoon({ title, text, onBack }: { title: string; text: string; onBa
         Voltar ao percurso
       </button>
     </div>
+  );
+}
+
+/** Pulsante del ripasso sopra la mappa: compare dopo le prime risposte */
+function ReviewButton({ review, onStart }: { review: Record<string, unknown>; onStart: () => void }) {
+  const learned = Object.keys(review).length;
+  if (learned === 0) return null;
+  const due = dueRefs(review as Parameters<typeof dueRefs>[0]).length;
+  return (
+    <button
+      type="button"
+      onClick={onStart}
+      className={`w-full flex items-center shadow-md gap-3 rounded-2xl border-2 border-b-4 px-4 py-3 text-left transition-transform active:translate-y-[2px] ${
+        due > 0 ? 'bg-azulejo border-azulejo-dark text-white' : 'bg-white border-brand-border text-ink'
+      }`}
+    >
+      <span className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${due > 0 ? 'bg-white/20' : 'bg-azulejo-light text-azulejo-dark'}`}>
+        <RotateCcw size={22} strokeWidth={2.8} aria-hidden="true" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block font-extrabold leading-tight">Revisão</span>
+        <span className="block text-sm font-semibold opacity-85 leading-snug">
+          {due > 0 ? `${due} ${due === 1 ? 'cosa da rinfrescare' : 'cose da rinfrescare'}` : 'Tutto ripassato: puoi allenarti comunque'}
+        </span>
+      </span>
+    </button>
   );
 }
