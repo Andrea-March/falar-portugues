@@ -48,6 +48,21 @@ export function preloadSpeech(items: { text: string; voice?: VoiceKey }[]) {
   for (let i = 0; i < 3; i++) void worker();
 }
 
+/**
+ * Scarica gli audio senza tenerli in memoria: li salva il service worker, per usarli offline.
+ * Si salta con "risparmio dati" attivo.
+ */
+export function cacheSpeechForOffline(items: { text: string; voice?: VoiceKey }[]) {
+  if (typeof window === 'undefined' || !navigator.onLine) return;
+  const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+  if (saveData) return;
+  const queue = [...new Set(items.map((it) => audioUrl(it.text, it.voice)))];
+  const worker = async () => {
+    while (queue.length) await fetch(queue.shift()!).catch(() => undefined);
+  };
+  for (let i = 0; i < 2; i++) void worker();
+}
+
 // ---------- Voce del browser (riserva) ----------
 
 let cachedVoice: SpeechSynthesisVoice | null | undefined;

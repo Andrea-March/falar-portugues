@@ -55,7 +55,13 @@ export function loadNode(id: string): Promise<NodeContent | null> {
   let p = nodeCache.get(id);
   if (!p) {
     const loader = nodeLoaders[id];
-    p = loader ? loader().catch(() => null) : Promise.resolve(null);
+    // Un errore (es. offline con la lezione non ancora salvata) non resta in memoria: si riproverà
+    p = loader
+      ? loader().catch(() => {
+          nodeCache.delete(id);
+          return null;
+        })
+      : Promise.resolve(null);
     nodeCache.set(id, p);
   }
   return p;

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { UserProvider } from '@/context/UserContext';
+import ServiceWorker from '@/components/common/ServiceWorker';
 
 const baloo = { variable: '' }; const nunito = { variable: '' };
 
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="pt" className={`${baloo.variable} ${nunito.variable}`}>
       <body className="bg-brand-background text-ink antialiased min-h-screen">
         <UserProvider>{children}</UserProvider>
+        <ServiceWorker />
       </body>
     </html>
   );

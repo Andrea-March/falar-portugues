@@ -126,7 +126,16 @@ export default function LessonScreen(props: LessonScreenProps) {
       <LessonShell progress={0} onClose={props.onClose}>
         <div className="flex flex-col items-center text-center gap-4 pt-16">
           <Mascot mood="sad" size={120} />
-          <h2 className="text-2xl font-extrabold">Não encontrámos esta lição</h2>
+          {typeof navigator !== 'undefined' && !navigator.onLine ? (
+            <>
+              <h2 className="text-2xl font-extrabold">Sem ligação</h2>
+              <p className="text-lg font-semibold text-brand-muted max-w-xs">
+                Questa lezione non è ancora salvata sul telefono. Aprila quando torna la rete.
+              </p>
+            </>
+          ) : (
+            <h2 className="text-2xl font-extrabold">Não encontrámos esta lição</h2>
+          )}
           <button type="button" onClick={() => { soundFX.playClick(); props.onClose(); }} className="btn-3d btn-primary px-8 py-3.5 text-lg">
             Voltar ao percurso
           </button>

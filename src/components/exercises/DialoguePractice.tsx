@@ -265,6 +265,7 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
             correctAnswer={exercise.correctAnswer}
             sentence={fullSentence}
             italianNote={exercise.italianNote}
+            report={{ exerciseId: exercise.id, sentence: fullSentence, correctAnswer: exercise.correctAnswer, answer }}
             onCheck={() => evaluate(answer, true)}
             onDontKnow={reveal}
             onReveal={reveal}

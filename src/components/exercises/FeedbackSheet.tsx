@@ -2,7 +2,9 @@
 
 import React, { useState } from 'react';
 import ItalianNote from '@/components/common/ItalianNote';
-import { Sparkles, Volume2 } from 'lucide-react';
+import { Flag, Sparkles, Volume2 } from 'lucide-react';
+import type { ExerciseReport } from '@/utils/feedback';
+import ReportDialog from '@/components/feedback/ReportDialog';
 import { COMBO_BADGE_FROM } from '@/utils/sound';
 import { speakPortuguese } from '@/utils/textToSpeech';
 import Mascot from '@/components/common/Mascot';
@@ -18,11 +20,34 @@ interface FeedbackSheetProps {
   sentence: string;
   /** Nota per italiani, mostrata dopo un errore o con la soluzione */
   italianNote?: string;
+  /** Dati per "Reportar": l'utente segnala un problema nell'esercizio (traduzione, audio, risposta non accettata) */
+  report?: ExerciseReport;
   onCheck: () => void;
   onDontKnow: () => void;
   onReveal: () => void;
   onContinue: () => void;
   onRetry: () => void;
+}
+
+/** Piccolo link per segnalare un problema: apre il modulo, con l'esercizio già allegato */
+function ReportLink({ report, tone }: { report?: ExerciseReport; tone: string }) {
+  const [open, setOpen] = useState(false);
+  if (!report) return null;
+  return (
+    <>
+      {open && <ReportDialog report={report} onClose={() => setOpen(false)} />}
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label="Reportar um problema neste exercício"
+        title="Segnala un problema in questo esercizio"
+        className={`self-start shrink-0 inline-flex items-center gap-1 text-sm font-bold opacity-70 hover:opacity-100 cursor-pointer ${tone}`}
+      >
+        <Flag size={15} strokeWidth={2.6} />
+        Reportar
+      </button>
+    </>
+  );
 }
 
 const PRAISE = ['Muito bem!', 'Excelente!', 'Perfeito!', 'Boa!', 'Isso mesmo!'];
@@ -47,6 +72,7 @@ export default function FeedbackSheet({
   correctAnswer,
   sentence,
   italianNote,
+  report,
   onCheck,
   onDontKnow,
   onReveal,
@@ -100,6 +126,7 @@ export default function FeedbackSheet({
               </div>
               <SentenceButton sentence={sentence} tone="text-ok-dark" />
             </div>
+            <ReportLink report={report} tone="text-ok-dark" />
           </div>
           <button type="button" autoFocus onClick={onContinue} className="btn-3d btn-ok w-full py-4 text-lg">
             Continuar
@@ -122,6 +149,7 @@ export default function FeedbackSheet({
               </p>
               <SentenceButton sentence={sentence} tone="text-azulejo-dark" />
             </div>
+            <ReportLink report={report} tone="text-azulejo-dark" />
           </div>
           {italianNote && <ItalianNote text={italianNote} />}
           <button
@@ -153,6 +181,7 @@ export default function FeedbackSheet({
               Ver a solução
             </button>
           </div>
+          <ReportLink report={report} tone="text-ko-dark" />
         </div>
         {italianNote && <ItalianNote text={italianNote} />}
         <button type="button" autoFocus onClick={onRetry} className="btn-3d btn-ko w-full py-4 text-lg">

@@ -1,7 +1,7 @@
 'use client';
 
 import { Flame, Target, Zap } from 'lucide-react';
-import AudioToggle from '@/components/common/AudioToggle';
+import AppMenu from '@/components/AppMenu';
 
 interface HeaderProps {
   streak: number;
@@ -48,7 +48,8 @@ export default function Header({ streak, xp, today, goal }: HeaderProps) {
             label="XP di oggi / obiettivo"
             tone={met ? 'bg-brand-accentHover text-white' : 'bg-brand-accentLight text-brand-accentDark'}
           />
-          <AudioToggle className="ml-0.5" />
+          {/* Audio, feedback, privacy: nel menu, per non affollare l'header */}
+          <AppMenu />
         </div>
       </div>
     </header>

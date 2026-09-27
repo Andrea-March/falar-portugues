@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3f6fc">
+<title>Sem ligação · Falaluso</title>
+<style>
+  :root { --ink: #1f2433; --muted: #5d6680; --bg: #f3f6fc; --red: #e5392b; --red-dark: #b8281c; }
+  @media (prefers-color-scheme: dark) { :root { --ink: #eef1f8; --muted: #a6aec4; --bg: #141824; } }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 18px/1.5 ui-rounded, "SF Pro Rounded", "Nunito", "Segoe UI", system-ui, sans-serif;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    padding: env(safe-area-inset-top, 0px) 1.5rem env(safe-area-inset-bottom, 0px);
+    box-sizing: border-box;
+  }
+  main { max-width: 22rem; }
+  .galo { font-size: 4.5rem; line-height: 1; }
+  h1 { font-size: 2rem; margin: .6rem 0 .3rem; }
+  p { color: var(--muted); font-weight: 700; margin: 0 0 1.6rem; }
+  button {
+    font: inherit; font-weight: 800; font-size: 1.1rem; color: #fff; background: var(--red);
+    border: 0; border-bottom: 5px solid var(--red-dark); border-radius: 1rem; padding: .85rem 1.8rem; cursor: pointer;
+  }
+  button:active { transform: translateY(3px); border-bottom-width: 2px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="galo" aria-hidden="true">🐓</div>
+  <h1>Sem ligação</h1>
+  <p>Sei offline e questa pagina non era ancora salvata sul telefono. Riprova quando torna la rete.</p>
+  <button type="button" onclick="location.reload()">Tentar de novo</button>
+</main>
+</body>
+</html>

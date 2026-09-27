@@ -4,6 +4,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Check, Lock } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
 import Mascot from '@/components/common/Mascot';
+import { prepareOffline } from '@/utils/offline';
 import {
   chapters as courseChapters,
   isOptionalNode,
@@ -260,6 +261,13 @@ export default function ChapterMap({
     currentRef.current?.scrollIntoView({ block: 'center' });
     // Solo all'apertura: poi è l'utente a scorrere
   }, []);
+
+  // Nodo corrente e successivo pronti anche senza rete (vedi utils/offline.ts)
+  useEffect(() => {
+    // Un attimo dopo l'apertura: prima si carica quello che serve per la mappa
+    const t = setTimeout(() => prepareOffline(currentNodeId), 1500);
+    return () => clearTimeout(t);
+  }, [currentNodeId]);
 
   const currentChapterId = chapters.find((c) => c.nodes.some((n) => n.id === currentNodeId))?.id;
 
