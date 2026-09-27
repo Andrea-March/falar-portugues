@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy · Falaluso</title>
+<meta name="description" content="Informativa sulla privacy dell'app Falaluso, di Galo Studio.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐓</text></svg>">
+<style>
+  :root {
+    --ink: #1f2433;
+    --muted: #5d6680;
+    --line: #dde3f0;
+    --paper: #ffffff;
+    --tint: #f3f6fc;
+    --red: #e5392b;
+    --blue: #1d5bd8;
+    --blue-tint: #e8effd;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #eef1f8;
+      --muted: #a6aec4;
+      --line: #2c3346;
+      --paper: #141824;
+      --tint: #1b2030;
+      --blue: #7aa5ff;
+      --blue-tint: #1d2742;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 17px/1.65 ui-rounded, "SF Pro Rounded", "Nunito", "Segoe UI", system-ui, sans-serif;
+    padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+  }
+  .tiles {
+    height: 14px;
+    background:
+      conic-gradient(from 45deg at 50% 50%, var(--blue) 0 25%, transparent 0 50%, var(--blue) 0 75%, transparent 0) 0 0 / 14px 14px,
+      var(--blue-tint);
+  }
+  main { max-width: 42rem; margin: 0 auto; padding: 2.25rem 1.25rem 4rem; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: .6rem; font-weight: 800; font-size: 1.15rem; }
+  .brand span { font-size: 1.8rem; line-height: 1; }
+  nav a {
+    display: inline-block; padding: .3rem .8rem; border-radius: 999px; border: 2px solid var(--line);
+    color: var(--muted); font-weight: 800; text-decoration: none; font-size: .9rem;
+  }
+  nav a:hover { color: var(--ink); }
+  h1 { font-size: clamp(2rem, 6vw, 2.6rem); line-height: 1.1; margin: 2rem 0 .4rem; letter-spacing: -.01em; }
+  .updated { color: var(--muted); font-weight: 600; margin: 0 0 1.75rem; }
+  .summary {
+    background: var(--blue-tint); border-radius: 1.25rem; padding: 1.1rem 1.25rem; margin-bottom: 2rem;
+    border-bottom: 5px solid color-mix(in srgb, var(--blue) 35%, transparent);
+  }
+  .summary p { margin: 0; font-weight: 700; }
+  h2 { font-size: 1.3rem; margin: 2.2rem 0 .5rem; line-height: 1.25; }
+  p, li { color: color-mix(in srgb, var(--ink) 88%, var(--muted)); }
+  ul { padding-left: 1.2rem; }
+  li { margin: .3rem 0; }
+  a { color: var(--blue); }
+  .contact {
+    margin-top: 2.5rem; padding: 1.1rem 1.25rem; border: 2px solid var(--line); border-bottom-width: 5px; border-radius: 1.25rem;
+  }
+  .contact p { margin: .2rem 0; }
+  footer { color: var(--muted); font-size: .9rem; margin-top: 3rem; }
+
+  /* Lingua: italiano di base, inglese con #en (funziona anche senza JavaScript) */
+  #en { display: none; }
+  #en:target { display: block; }
+  body:has(#en:target) #it { display: none; }
+  body:has(#en:target) a[href="#en"], body:not(:has(#en:target)) a[href="#it"] {
+    background: var(--red); border-color: var(--red); color: #fff;
+  }
+</style>
+</head>
+<body>
+<div class="tiles" aria-hidden="true"></div>
+<main>
+  <header>
+    <div class="brand"><span aria-hidden="true">🐓</span> Falaluso · Galo Studio</div>
+    <nav aria-label="Lingua / Language">
+      <a href="#it" hreflang="it" lang="it">Italiano</a>
+      <a href="#en" hreflang="en" lang="en">English</a>
+    </nav>
+  </header>
+
+  <!-- ===================== ITALIANO ===================== -->
+  <article id="it" lang="it">
+    <h1>Informativa sulla privacy</h1>
+    <p class="updated">Ultimo aggiornamento: 27 settembre 2026</p>
+
+    <div class="summary">
+      <p>In breve: Falaluso non ti chiede di registrarti e non raccoglie dati personali. I tuoi progressi restano sul tuo dispositivo. Niente pubblicità, niente analytics, niente tracciamento.</p>
+    </div>
+
+    <h2>Chi è il titolare</h2>
+    <p>Falaluso è un'app per imparare il portoghese europeo, pubblicata da Andrea March con il nome Galo Studio. Il titolare del trattamento è Andrea March, che puoi contattare all'indirizzo <a href="mailto:privacy@falaluso.com">privacy@falaluso.com</a>.</p>
+
+    <h2>Cosa resta sul tuo dispositivo</h2>
+    <p>Per funzionare l'app salva, solo nella memoria del tuo dispositivo:</p>
+    <ul>
+      <li>le lezioni e le sessioni completate, i punti (XP) e la serie di giorni di studio;</li>
+      <li>le risposte giuste o sbagliate agli esercizi, che servono a proporti il ripasso al momento giusto;</li>
+      <li>le scelte fatte all'inizio, come l'obiettivo giornaliero e il motivo per cui studi;</li>
+      <li>le tue preferenze, come l'audio attivo o disattivato.</li>
+    </ul>
+    <p>Questi dati non vengono inviati a noi né a nessun altro: non abbiamo un server che li riceve. L'app chiede al sistema di conservarli in modo persistente, così non vengono cancellati per fare spazio. Se cancelli i dati dell'app o la disinstalli, vengono eliminati e non possiamo recuperarli.</p>
+    <p>Questa memorizzazione è strettamente necessaria a farti usare l'app, quindi non richiede un consenso separato. Non usiamo cookie di profilazione o di terze parti.</p>
+
+    <h2>Cosa passa da servizi di terzi</h2>
+    <ul>
+      <li><strong>Hosting (Vercel Inc.).</strong> L'app e i suoi file audio sono ospitati su Vercel. Come ogni sito, quando scarichi le pagine il servizio registra dati tecnici come l'indirizzo IP, il tipo di browser o dispositivo e l'orario della richiesta, per consegnare i contenuti e proteggersi da abusi. Vercel ha sede negli Stati Uniti e tratta questi dati come responsabile, con le garanzie previste dal GDPR per il trasferimento fuori dall'UE, come il Data Privacy Framework UE-USA o le clausole contrattuali standard. Base giuridica: il nostro legittimo interesse a far funzionare l'app in modo sicuro.</li>
+      <li><strong>Google Play.</strong> Se scarichi l'app dal Play Store, Google tratta i dati legati al tuo account Google e al download secondo la propria <a href="https://policies.google.com/privacy" rel="noopener">informativa sulla privacy</a>. Noi riceviamo da Google solo statistiche aggregate e anonime, come il numero di installazioni.</li>
+      <li><strong>Voce del dispositivo.</strong> Quasi tutte le frasi hanno un audio già registrato. Se ne manca uno, l'app usa la sintesi vocale del tuo dispositivo o browser. Alcune voci di sistema funzionano online: in quel caso la frase del corso da leggere viene inviata al fornitore della voce (per esempio Google). Si tratta solo di frasi delle lezioni, mai di dati che ti riguardano.</li>
+    </ul>
+
+    <h2>Cosa non facciamo</h2>
+    <ul>
+      <li>Non chiediamo nome, email, età o altri dati personali.</li>
+      <li>Non mostriamo pubblicità e non vendiamo né condividiamo dati.</li>
+      <li>Non usiamo strumenti di analisi, profilazione o tracciamento.</li>
+      <li>Non accediamo a microfono, fotocamera, posizione o contatti.</li>
+    </ul>
+
+    <h2>Minori</h2>
+    <p>Falaluso non raccoglie dati personali di nessuno, minori compresi. Se sei un genitore e hai domande, scrivici.</p>
+
+    <h2>I tuoi diritti</h2>
+    <p>Il GDPR ti riconosce il diritto di accedere ai tuoi dati, correggerli, cancellarli, limitarne il trattamento, opporti e riceverli in un formato portabile. Poiché i dati dell'app restano sul tuo dispositivo, puoi cancellarli in ogni momento dalle impostazioni del telefono o del browser. Per qualsiasi richiesta scrivi a <a href="mailto:privacy@falaluso.com">privacy@falaluso.com</a>. Hai anche il diritto di presentare reclamo al <a href="https://www.garanteprivacy.it" rel="noopener">Garante per la protezione dei dati personali</a>.</p>
+
+    <h2>Modifiche</h2>
+    <p>Se in futuro aggiungeremo funzioni che trattano dati in modo diverso, per esempio la sincronizzazione tra dispositivi, aggiorneremo questa pagina prima di attivarle e cambieremo la data in alto.</p>
+
+    <div class="contact">
+      <p><strong>Contatti</strong></p>
+      <p>Andrea March · Galo Studio</p>
+      <p><a href="mailto:privacy@falaluso.com">privacy@falaluso.com</a></p>
+    </div>
+  </article>
+
+  <!-- ===================== ENGLISH ===================== -->
+  <article id="en" lang="en">
+    <h1>Privacy policy</h1>
+    <p class="updated">Last updated: 27 September 2026</p>
+
+    <div class="summary">
+      <p>In short: Falaluso doesn't ask you to sign up and doesn't collect personal data. Your progress stays on your device. No ads, no analytics, no tracking.</p>
+    </div>
+
+    <h2>Who is responsible</h2>
+    <p>Falaluso is an app for learning European Portuguese, published by Andrea March under the name Galo Studio. The data controller is Andrea March, who you can reach at <a href="mailto:privacy@falaluso.com">privacy@falaluso.com</a>.</p>
+
+    <h2>What stays on your device</h2>
+    <p>To work, the app stores the following only in your device's storage:</p>
+    <ul>
+      <li>the lessons and sessions you have completed, your points (XP) and your study streak;</li>
+      <li>whether your answers to exercises were right or wrong, so the app can schedule your reviews;</li>
+      <li>the choices you made at the start, such as your daily goal and why you're studying;</li>
+      <li>your preferences, such as whether sound is on or off.</li>
+    </ul>
+    <p>This data is not sent to us or to anyone else: we have no server that receives it. The app asks the system to keep it persistently, so it isn't deleted to free up space. If you clear the app's data or uninstall it, the data is deleted and we cannot recover it.</p>
+    <p>This storage is strictly necessary for you to use the app, so it doesn't require separate consent. We don't use profiling or third-party cookies.</p>
+
+    <h2>What goes through third-party services</h2>
+    <ul>
+      <li><strong>Hosting (Vercel Inc.).</strong> The app and its audio files are hosted on Vercel. Like any website, when you download pages the service logs technical data such as your IP address, browser or device type and the time of the request, to deliver content and protect against abuse. Vercel is based in the United States and processes this data as a processor, with the safeguards the GDPR requires for transfers outside the EU, such as the EU-US Data Privacy Framework or standard contractual clauses. Legal basis: our legitimate interest in running the app securely.</li>
+      <li><strong>Google Play.</strong> If you download the app from the Play Store, Google processes data related to your Google account and the download under its own <a href="https://policies.google.com/privacy" rel="noopener">privacy policy</a>. We only receive aggregated, anonymous statistics from Google, such as the number of installs.</li>
+      <li><strong>Device voice.</strong> Almost every sentence has pre-recorded audio. If one is missing, the app uses your device's or browser's speech synthesis. Some system voices work online: in that case the course sentence to be read is sent to the voice provider (for example Google). These are only lesson sentences, never data about you.</li>
+    </ul>
+
+    <h2>What we don't do</h2>
+    <ul>
+      <li>We don't ask for your name, email, age or any other personal data.</li>
+      <li>We don't show ads, and we don't sell or share data.</li>
+      <li>We don't use analytics, profiling or tracking tools.</li>
+      <li>We don't access your microphone, camera, location or contacts.</li>
+    </ul>
+
+    <h2>Children</h2>
+    <p>Falaluso doesn't collect personal data from anyone, children included. If you're a parent and have questions, write to us.</p>
+
+    <h2>Your rights</h2>
+    <p>Under the GDPR you have the right to access, correct and delete your data, to restrict or object to its processing, and to receive it in a portable format. Since the app's data stays on your device, you can delete it at any time from your phone or browser settings. For any request, write to <a href="mailto:privacy@falaluso.com">privacy@falaluso.com</a>. You also have the right to lodge a complaint with a data protection authority, such as the Italian <a href="https://www.garanteprivacy.it" rel="noopener">Garante per la protezione dei dati personali</a>.</p>
+
+    <h2>Changes</h2>
+    <p>If we add features that handle data differently in the future, such as syncing between devices, we will update this page before enabling them and change the date at the top.</p>
+
+    <div class="contact">
+      <p><strong>Contact</strong></p>
+      <p>Andrea March · Galo Studio</p>
+      <p><a href="mailto:privacy@falaluso.com">privacy@falaluso.com</a></p>
+    </div>
+  </article>
+
+  <footer>© 2026 Galo Studio</footer>
+</main>
+</body>
+</html>

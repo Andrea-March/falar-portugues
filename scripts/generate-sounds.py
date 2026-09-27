@@ -66,6 +66,18 @@ b=np.zeros(int(SR*0.8)); place(b, pluck(N(72),0.5),0)
 for i,m in enumerate([84,88,91]): place(b, 0.35*bell(N(m),0.5,1.0,3.0), 0.05+0.045*i)
 finish(reverb(b,0.18),-3,'correct-c')                       # pizzico + scintilla
 
+# Serie (4ª e 5ª di fila): stessa marimba di correct-a, più morbida e senza salire di registro.
+# La nota più alta resta il si di correct-a: la serie si sente perché le note aumentano, non perché fischiano.
+def soft_marimba(f, d=0.7): return lp(marimba(f, d, 0.45), 2800)
+b=np.zeros(int(SR*1.0))
+for i,m in enumerate([76,79,83]): place(b, soft_marimba(N(m)), 0.085*i)
+finish(reverb(b,0.18),-5,'correct-d')                       # 4ª: tre note che salgono
+b=np.zeros(int(SR*1.3))
+for i,m in enumerate([72,76,79]): place(b, soft_marimba(N(m)), 0.08*i)
+for m in [76,83]: place(b, 0.7*soft_marimba(N(m),0.9), 0.26)
+place(b, 0.35*lp(soft_tone(N(60),1.0,1.0,0.35),900), 0.26)  # appoggio grave, appena percepibile
+finish(reverb(b,0.22),-5,'correct-e')                       # 5ª+: arpeggio che si posa su un accordo
+
 # ---------- WRONG (gentili, più bassi di volume) ----------
 b=np.zeros(int(SR*0.55)); place(b, lp(marimba(N(55),0.4,0.4),1800),0); place(b, lp(marimba(N(52),0.45,0.4),1500),0.11)
 finish(reverb(b,0.1),-7,'wrong-a')                          # "tonk" di legno discendente

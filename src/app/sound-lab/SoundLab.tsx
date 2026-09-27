@@ -25,6 +25,8 @@ const GROUPS: { name: string; label: string; variants: { file: string; note: str
       { file: 'correct-a', note: 'Marimba, due note che salgono' },
       { file: 'correct-b', note: 'Campanella morbida' },
       { file: 'correct-c', note: 'Pizzico + scintilla' },
+      { file: 'correct-d', note: 'Marimba morbida, tre note (serie)' },
+      { file: 'correct-e', note: 'Marimba morbida, arpeggio su accordo (serie)' },
     ],
   },
   {

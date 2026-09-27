@@ -11,9 +11,9 @@ export const SOUND_FILES = {
   click: '/sounds/click-b.mp3',
   correct: '/sounds/correct-a.mp3',
   /** 4ª risposta giusta di fila */
-  correct2: '/sounds/correct-b.mp3',
+  correct2: '/sounds/correct-d.mp3',
   /** 5ª di fila e oltre */
-  correct3: '/sounds/correct-c.mp3',
+  correct3: '/sounds/correct-e.mp3',
   wrong: '/sounds/wrong-a.mp3',
   complete: '/sounds/complete-a.mp3',
 } as const;
