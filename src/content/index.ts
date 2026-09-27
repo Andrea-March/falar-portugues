@@ -296,7 +296,7 @@ function vocabStudySteps(card: VocabStudyCard['vocabStudy']): (VocabPresentStep 
 export type TheoryStep = ResolvedTheoryCard | ParadigmStep | VocabPresentStep | VocabRecallStep;
 
 
-function paradigmSteps(verbId: string, tense: string): ParadigmStep[] {
+export function paradigmSteps(verbId: string, tense: string): ParadigmStep[] {
   const verb = getVerb(verbId);
   const forms = verb?.conjugations[tense];
   if (!verb || !forms) return [];
@@ -439,7 +439,7 @@ export function sessionsDone(node: CourseNode, completedNodeIds: string[], sessi
  * - studio del vocabolario → per ogni situazione si scrive l'espressione;
  * - paradigma → per ogni persona si scrive la forma del verbo.
  */
-function generatedExercises(theory: TheoryItem[]): RuntimeExercise[] {
+export function generatedExercises(theory: TheoryItem[]): RuntimeExercise[] {
   return theory.flatMap((item): RuntimeExercise[] => {
     if ('vocabStudy' in item) {
       return item.vocabStudy.groups

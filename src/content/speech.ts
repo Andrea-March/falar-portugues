@@ -13,7 +13,7 @@ import {
   sessionsFor,
   dialogueSpeaker,
   theorySteps,
-  verbExercises,
+  conjugationRows,
   verbs,
   type CourseNode,
   type NodeContent,
@@ -67,14 +67,14 @@ export function sessionSpeech(session: Session, node: CourseNode, content: NodeC
   return out;
 }
 
-/** Testi della sezione Gramática: infinito, forme con il pronome, esercizi dei verbi */
+/**
+ * Testi della sezione Gramática: infinito e righe della tabella (pronome breve + forma,
+ * come nello studio del paradigma). Gli esercizi vengono dai nodi, già inclusi sopra.
+ */
 function grammarSpeech(): SpeechItem[] {
   return verbs.flatMap((v) => [
     { text: v.infinitive },
-    ...Object.values(v.conjugations).flatMap((forms) =>
-      (Object.keys(PERSON_LABELS) as Person[]).filter((p) => forms[p]).map((p) => ({ text: `${PERSON_LABELS[p]} ${forms[p]}` }))
-    ),
-    ...verbExercises(v.id).map((ex) => ({ text: exerciseSentence(ex) })),
+    ...Object.keys(v.conjugations).flatMap((tense) => conjugationRows(v.id, tense).map((r) => ({ text: r.spoken }))),
   ]);
 }
 

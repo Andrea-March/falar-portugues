@@ -1,118 +1,145 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { ChevronRight } from 'lucide-react';
+import { useUser } from '@/context/UserContext';
+import { studiedVerbs, verbPractice, type StudiedVerb } from '@/content/grammar';
+import { exerciseSentence, tenseLabel } from '@/content';
+import { reviewXp } from '@/content/rewards';
+import { preloadSpeech } from '@/utils/textToSpeech';
+import { soundFX } from '@/utils/sound';
+import type { Exercise } from '@/types/exercise';
+import Mascot from '@/components/common/Mascot';
 import VerbStudy from './VerbStudy';
-import VerbPractice from './exercises/VerbPractice';
+import ParadigmReview from './theory/ParadigmReview';
+import PracticeSession, { type PracticeStats } from './exercises/PracticeSession';
+import LessonCompleteCard from './common/LessonCompleteCard';
 
+type View =
+  | { kind: 'hub' }
+  | { kind: 'verb'; verb: StudiedVerb }
+  | { kind: 'paradigm'; verb: StudiedVerb; tense: string }
+  | { kind: 'practice'; verb: StudiedVerb; exercises: Exercise[] }
+  | { kind: 'done'; verb: StudiedVerb; accuracy: number; bestCombo: number; xp: number };
+
+/**
+ * Gramática: il quaderno di ciò che si è studiato. Mostra solo i verbi già incontrati
+ * nel percorso, con i tempi studiati lì; quelli che arriveranno restano nascosti.
+ */
 export default function GrammarHub() {
-  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
-  const [practiceVerbId, setPracticeVerbId] = useState<string | null>(null);
-  const [practiceTense, setPracticeTense] = useState<string | undefined>(undefined);
+  const { progress, addXp } = useUser();
+  const [verbs, setVerbs] = useState<StudiedVerb[] | null>(null);
+  const [view, setView] = useState<View>({ kind: 'hub' });
 
-  const topics = [
-    {
-      id: 'verbs',
-      title: 'Conjugação de Verbos',
-      description: 'Presente do Indicativo dos verbos mais usados em PT-PT',
-      icon: '📖',
-      tag: 'Essencial',
-      available: true,
-    },
-    {
-      id: 'articles',
-      title: 'Artigos Definidos e Indefinidos',
-      description: 'O, a, os, as / Um, uma, uns, umas e contrações',
-      icon: '🧩',
-      tag: 'Em breve',
-      available: false,
-    },
-    {
-      id: 'pronouns',
-      title: 'Pronomes Pessoais e Possessivos',
-      description: 'Eu, tu, ele/ela, nós... e meu, teu, seu',
-      icon: '👤',
-      tag: 'Em breve',
-      available: false,
-    },
-  ];
-
-  // Vista 3: Pratica specifica per un singolo verbo selezionato
-  if (practiceVerbId) {
-    const back = () => {
-      setPracticeVerbId(null);
-      setPracticeTense(undefined);
+  useEffect(() => {
+    let alive = true;
+    studiedVerbs(progress.sessionProgress, progress.completedNodeIds).then((list) => alive && setVerbs(list));
+    return () => {
+      alive = false;
     };
-    return <VerbPractice verbId={practiceVerbId} tense={practiceTense} onFinish={back} onClose={back} />;
+  }, [progress.sessionProgress, progress.completedNodeIds]);
+
+  const startPractice = async (verb: StudiedVerb, tense: string) => {
+    const exercises = await verbPractice(verb.verbId, tense, progress.sessionProgress, progress.completedNodeIds);
+    preloadSpeech(exercises.map((e) => ({ text: exerciseSentence(e) })));
+    setView({ kind: 'practice', verb, exercises });
+  };
+
+  if (view.kind === 'paradigm') {
+    return <ParadigmReview verbId={view.verb.verbId} tense={view.tense} onClose={() => setView({ kind: 'verb', verb: view.verb })} />;
   }
 
-  // Vista 2: Consultazione Verbo (VerbStudy)
-  if (selectedTopic === 'verbs') {
+  if (view.kind === 'practice') {
+    const back = () => setView({ kind: 'verb', verb: view.verb });
     return (
-      <div className="space-y-4 animate-fadeIn">
-        <button
-          onClick={() => setSelectedTopic(null)}
-          className="text-xs font-bold text-stone-600 hover:text-stone-800 flex items-center gap-1 bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded-xl transition-all w-fit"
-        >
-          ← Voltar à Gramática
-        </button>
-
-        <VerbStudy
-          onStartPractice={(verbId, tense) => {
-            setPracticeVerbId(verbId);
-            setPracticeTense(tense);
-          }}
-        />
-      </div>
+      <PracticeSession
+        exercises={view.exercises}
+        onClose={back}
+        onFinish={(stats: PracticeStats) => {
+          // Allenamento libero: vale come un ripasso senza scadenze
+          const accuracy = Math.round(((stats.total - stats.errors) / stats.total) * 100);
+          const xp = reviewXp(false, accuracy);
+          addXp(xp);
+          soundFX.playComplete();
+          setView({ kind: 'done', verb: view.verb, accuracy, bestCombo: stats.bestCombo, xp });
+        }}
+      />
     );
   }
 
-  // Vista 1: Hub Grammatica Principale
-  return (
-    <div className="space-y-4 animate-fadeIn">
-      <div className="bg-brand-surface p-5 rounded-2xl border border-orange-200/80 shadow-sm space-y-1">
-        <h2 className="text-xl font-black text-stone-800">Gramática Portuguesa</h2>
-        <p className="text-xs text-stone-500">
-          Consulta as regras e tabelas de conjugação para reforçar a tua aprendizagem.
-        </p>
-      </div>
+  if (view.kind === 'done') {
+    return (
+      <LessonCompleteCard
+        title={`Verbo ${view.verb.infinitive}`}
+        xpEarned={view.xp}
+        streakDays={progress.streak}
+        accuracy={view.accuracy}
+        bestCombo={view.bestCombo}
+        onContinue={() => setView({ kind: 'verb', verb: view.verb })}
+      />
+    );
+  }
 
-      <div className="space-y-3">
-        {topics.map((topic) => (
-          <div
-            key={topic.id}
-            onClick={() => topic.available && setSelectedTopic(topic.id)}
-            className={`p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
-              topic.available
-                ? 'bg-brand-surface border-orange-200/80 shadow-sm hover:border-brand-primary cursor-pointer active:scale-[0.99]'
-                : 'bg-stone-100/70 border-stone-200 opacity-60 cursor-not-allowed'
-            }`}
-          >
-            <div className="flex items-center gap-3.5">
-              <span className="text-2xl p-2.5 bg-orange-100/70 rounded-xl shrink-0">
-                {topic.icon}
-              </span>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold text-stone-800">{topic.title}</h3>
-                  <span
-                    className={`text-[9px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider ${
-                      topic.available
-                        ? 'bg-emerald-100 text-emerald-800'
-                        : 'bg-stone-200 text-stone-600'
-                    }`}
-                  >
-                    {topic.tag}
+  if (view.kind === 'verb') {
+    return (
+      <VerbStudy
+        verb={view.verb}
+        onBack={() => setView({ kind: 'hub' })}
+        onStudy={(tense) => setView({ kind: 'paradigm', verb: view.verb, tense })}
+        onPractice={(tense) => startPractice(view.verb, tense)}
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-5 animate-fade-in">
+      <header>
+        <h2 className="font-display text-3xl font-extrabold text-ink leading-tight">Gramática</h2>
+        <p className="font-semibold text-brand-muted">Il quaderno di quello che hai studiato nel percorso.</p>
+      </header>
+
+      {verbs === null ? (
+        <div className="flex justify-center pt-10" aria-busy="true">
+          <Mascot mood="think" size={80} />
+        </div>
+      ) : verbs.length === 0 ? (
+        <div className="flex flex-col items-center text-center gap-3 pt-8">
+          <Mascot mood="idle" size={100} />
+          <p className="text-lg font-bold text-brand-muted max-w-xs">
+            Qui troverai i verbi man mano che li studi. Il primo arriva presto nel percorso!
+          </p>
+        </div>
+      ) : (
+        <section aria-labelledby="grammar-verbs" className="space-y-3">
+          <h3 id="grammar-verbs" className="text-xs font-extrabold uppercase tracking-[0.09em] text-azulejo">
+            Verbos
+          </h3>
+          {verbs.map((verb) => (
+            <button
+              key={verb.verbId}
+              type="button"
+              onClick={() => {
+                soundFX.playClick();
+                setView({ kind: 'verb', verb });
+              }}
+              className="btn-3d w-full !justify-between bg-white border-2 border-brand-border !border-b-[5px] px-4 py-3.5 text-left"
+            >
+              <span className="flex items-center gap-3 min-w-0">
+                <span className="w-11 h-11 rounded-2xl bg-azulejo-light flex items-center justify-center text-xl shrink-0" aria-hidden="true">
+                  📖
+                </span>
+                <span className="min-w-0">
+                  <span className="block font-display text-xl font-extrabold text-ink leading-tight">{verb.infinitive}</span>
+                  <span className="block text-sm font-semibold text-brand-muted truncate">
+                    {verb.it} · {verb.tenses.map((t) => tenseLabel(t).toLowerCase()).join(', ')}
                   </span>
-                </div>
-                <p className="text-xs text-stone-500 mt-0.5 leading-snug">
-                  {topic.description}
-                </p>
-              </div>
-            </div>
-            {topic.available && <span className="text-stone-400 font-bold text-sm">→</span>}
-          </div>
-        ))}
-      </div>
+                </span>
+              </span>
+              <ChevronRight size={22} strokeWidth={2.8} className="text-brand-muted shrink-0" />
+            </button>
+          ))}
+        </section>
+      )}
     </div>
   );
 }

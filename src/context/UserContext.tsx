@@ -94,6 +94,17 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setIsLoaded(true);
   }, []);
 
+  // I progressi stanno solo sul dispositivo: chiediamo al browser di non cancellarli
+  // quando serve spazio (o, su Safari, dopo giorni senza visite). Se rifiuta, cambia nulla.
+  useEffect(() => {
+    const storage = typeof navigator !== 'undefined' ? navigator.storage : undefined;
+    if (!storage?.persist) return;
+    storage
+      .persisted()
+      .then((already) => (already ? true : storage.persist()))
+      .catch(() => undefined);
+  }, []);
+
   /** Aggiorna e salva a partire dallo stato più recente: più aggiornamenti di fila non si sovrascrivono */
   const saveProgress = (update: (prev: UserProgress) => UserProgress) => {
     setProgress((prev) => {

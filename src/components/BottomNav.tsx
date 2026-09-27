@@ -1,10 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Map, BookOpen, Clapperboard, MessageCircle, type LucideIcon } from 'lucide-react';
+import { Map, BookOpen, type LucideIcon } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
 
-export type TabType = 'home' | 'grammar' | 'vocab' | 'chat';
+/** Vídeos e Conversa torneranno qui quando esisteranno: niente segnaposto "Em breve" nell'MVP */
+export type TabType = 'home' | 'grammar';
 
 interface BottomNavProps {
   activeTab: TabType;
@@ -14,8 +15,6 @@ interface BottomNavProps {
 const NAV_ITEMS: { id: TabType; label: string; Icon: LucideIcon }[] = [
   { id: 'home', label: 'Percurso', Icon: Map },
   { id: 'grammar', label: 'Gramática', Icon: BookOpen },
-  { id: 'vocab', label: 'Vídeos', Icon: Clapperboard },
-  { id: 'chat', label: 'Conversa', Icon: MessageCircle },
 ];
 
 export default function BottomNav({ activeTab, setActiveTab }: BottomNavProps) {

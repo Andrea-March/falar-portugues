@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Header from '@/components/Header';
-import BottomNav from '@/components/BottomNav';
+import BottomNav, { type TabType } from '@/components/BottomNav';
 import ChapterMap from '@/components/ChapterMap';
 import { chapters, nextNodeId, isOptionalNode, sessionsFor, sameSession, type CourseNode, type Session } from '@/content';
 import Onboarding from '@/components/Onboarding';
@@ -19,7 +19,7 @@ export default function Home() {
   const { progress, completeSession, completeOnboarding, isLoaded } = useUser();
   const [active, setActive] = useState<{ node: CourseNode; session: Session } | null>(null);
   const [reviewing, setReviewing] = useState(false);
-  const [activeTab, setActiveTab] = useState<'home' | 'grammar' | 'vocab' | 'chat'>('home');
+  const [activeTab, setActiveTab] = useState<TabType>('home');
 
   if (!isLoaded) {
     return (
@@ -91,29 +91,9 @@ export default function Home() {
           </div>
         )}
 
-        {activeTab === 'vocab' && (
-          <ComingSoon title="Vídeos" text="Pequenos clipes do dia a dia em Lisboa, em breve." onBack={() => setActiveTab('home')} />
-        )}
-
-        {activeTab === 'chat' && (
-          <ComingSoon title="Conversa" text="Pratica diálogos reais comigo, em breve." onBack={() => setActiveTab('home')} />
-        )}
       </main>
 
       <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
-    </div>
-  );
-}
-
-function ComingSoon({ title, text, onBack }: { title: string; text: string; onBack: () => void }) {
-  return (
-    <div className="flex flex-col items-center text-center pt-16 gap-3 animate-fade-in">
-      <Mascot mood="think" size={120} />
-      <h2 className="text-3xl font-extrabold text-ink mt-2">{title}</h2>
-      <p className="text-lg text-brand-muted font-semibold max-w-xs">{text}</p>
-      <button type="button" onClick={onBack} className="btn-3d btn-ghost px-6 py-3 mt-3">
-        Voltar ao percurso
-      </button>
     </div>
   );
 }
