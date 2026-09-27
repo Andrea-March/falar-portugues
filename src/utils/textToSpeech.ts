@@ -87,7 +87,7 @@ function browserSpeak(clean: string, onEnd: () => void, slow = false) {
   if (!('speechSynthesis' in window)) return onEnd();
   const utterance = new SpeechSynthesisUtterance(clean);
   utterance.lang = 'pt-PT';
-  utterance.rate = slow ? 0.9 * SLOW_RATE : 0.9;
+  utterance.rate = slow ? SLOW_RATE : 1;
   const voice = europeanVoice();
   if (voice) utterance.voice = voice;
   utterance.onend = onEnd;

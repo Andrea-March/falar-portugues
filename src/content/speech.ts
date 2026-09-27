@@ -11,6 +11,7 @@ import {
   PERSON_LABELS,
   sessionPool,
   sessionsFor,
+  dialogueSpeaker,
   theorySteps,
   verbExercises,
   verbs,
@@ -59,7 +60,7 @@ export function sessionSpeech(session: Session, node: CourseNode, content: NodeC
   }
 
   for (const ex of sessionPool(kind, node, content)) {
-    if (ex.context) out.push({ text: ex.context, voice: content.speaker?.voice });
+    if (ex.context) out.push({ text: ex.context, voice: dialogueSpeaker(kind, content)?.voice });
     out.push({ text: exerciseSentence(ex) });
     ex.alternatives?.forEach((a) => out.push({ text: exerciseSentence(ex, a) }));
   }

@@ -48,6 +48,7 @@
       "context": "Estou bem, obrigado. Onde estás agora?",
       "contextIt": "Sto bene, grazie. Dove sei adesso?",
       "prompt": "Di' che sei al bar del signor Manuel",
+      "wrongFrom": "verb-forms",
       "trains": [
         "verb:estar:presente:eu"
       ]
@@ -60,6 +61,7 @@
       "context": "E a Rita? Está contigo?",
       "contextIt": "E Rita? È con te?",
       "prompt": "Rita è con te: diglielo",
+      "wrongFrom": "verb-forms",
       "trains": [
         "verb:estar:presente:ele_ela_voce"
       ]
@@ -94,5 +96,77 @@
         "Muito prazer"
       ]
     }
-  ]
+  ],
+  "test": {
+    "speaker": {
+      "name": "Rita",
+      "role": "Amiga · Lisboa",
+      "avatar": "👩🏽"
+    },
+    "exercises": [
+      {
+        "id": "ex_2_3_t1",
+        "type": "write",
+        "text": "{Estou bem}, obrigado. E tu?",
+        "it": "Sto bene, grazie. E tu?",
+        "context": "Olá! Como estás?",
+        "contextIt": "Ciao! Come stai?",
+        "prompt": "Rispondi che stai bene e chiedile come sta",
+        "accept": [
+          "Tudo bem"
+        ],
+        "trains": [
+          "vocab:estou-bem"
+        ]
+      },
+      {
+        "id": "ex_2_3_t2",
+        "type": "write",
+        "text": "{Estou} no elétrico.",
+        "it": "Sono sul tram.",
+        "context": "Estou bem! Onde estás agora?",
+        "contextIt": "Sto bene! Dove sei adesso?",
+        "prompt": "Di' che sei sul tram",
+        "trains": [
+          "verb:estar:presente:eu"
+        ]
+      },
+      {
+        "id": "ex_2_3_t3",
+        "type": "write",
+        "text": "Não, o Pedro {está} no café.",
+        "it": "No, Pedro è al bar.",
+        "context": "E o Pedro? Está contigo?",
+        "contextIt": "E Pedro? È con te?",
+        "prompt": "Pedro non è con te: è al bar",
+        "trains": [
+          "verb:estar:presente:ele_ela_voce"
+        ]
+      },
+      {
+        "id": "ex_2_3_t4",
+        "type": "write",
+        "text": "Sim, {estamos} no café amanhã!",
+        "it": "Sì, domani siamo al bar!",
+        "context": "E amanhã? Tu e o Pedro estão no café?",
+        "contextIt": "E domani? Tu e Pedro siete al bar?",
+        "prompt": "Rispondi di sì, per te e Pedro",
+        "trains": [
+          "verb:estar:presente:nos"
+        ]
+      },
+      {
+        "id": "ex_2_3_t5",
+        "type": "write",
+        "text": "{Boa noite}, Rita!",
+        "it": "Buonanotte, Rita!",
+        "context": "Boa! Até amanhã, boa noite!",
+        "contextIt": "Bene! A domani, buonanotte!",
+        "prompt": "Ricambia il saluto",
+        "trains": [
+          "vocab:boa-noite"
+        ]
+      }
+    ]
+  }
 }

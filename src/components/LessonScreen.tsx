@@ -18,6 +18,7 @@ import { sessionSpeech } from '@/content/speech';
 import LessonCompleteCard from '@/components/common/LessonCompleteCard';
 import TestFailedCard from '@/components/common/TestFailedCard';
 import {
+  dialogueSpeaker,
   fullNodeTitle,
   getCourseNode,
   loadNode,
@@ -352,7 +353,7 @@ function LessonFlow({
     return isDialogue ? (
       <DialoguePractice
         exercises={exercises}
-        speaker={content.speaker}
+        speaker={dialogueSpeaker(session.kind, content)}
         showTranslations={session.kind !== 'test'}
         onFinish={handleFinishPractice}
         onClose={onClose}

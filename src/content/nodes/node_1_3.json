@@ -28,6 +28,11 @@
       "prompt": "Ordina un caffè in modo cortese",
       "text": "Bom dia. {Queria} um café, por favor.",
       "it": "Buongiorno. Vorrei un caffè, per favore.",
+      "wrong": [
+        "Obrigado",
+        "Quanto é",
+        "Chamo-me"
+      ],
       "trains": [
         "vocab:queria"
       ]
@@ -57,6 +62,7 @@
       "prompt": "Di' che vieni dall'Italia",
       "text": "Não, {sou} de Itália.",
       "it": "No, vengo dall'Italia.",
+      "wrongFrom": "verb-forms",
       "trains": [
         "verb:ser:presente:eu"
       ]
@@ -106,9 +112,90 @@
       "prompt": "Ricambia il saluto",
       "text": "{Bom dia}, até amanhã!",
       "it": "Buona giornata, a domani!",
+      "wrong": [
+        "Boa noite",
+        "Muito prazer",
+        "Por favor"
+      ],
       "trains": [
         "vocab:bom-dia"
       ]
     }
-  ]
+  ],
+  "test": {
+    "exercises": [
+      {
+        "id": "ex_1_3_t1",
+        "type": "write",
+        "text": "Boa tarde. {Queria} um café, por favor.",
+        "it": "Buon pomeriggio. Vorrei un caffè, per favore.",
+        "context": "Boa tarde! O que vai ser?",
+        "contextIt": "Buon pomeriggio! Cosa le porto?",
+        "prompt": "Ordina un caffè in modo cortese",
+        "trains": [
+          "vocab:queria"
+        ]
+      },
+      {
+        "id": "ex_1_3_t2",
+        "type": "write",
+        "text": "Sim, {sou} de Itália.",
+        "it": "Sì, sono dell'Italia.",
+        "context": "É italiano?",
+        "contextIt": "È italiano?",
+        "prompt": "Di' che vieni dall'Italia",
+        "trains": [
+          "verb:ser:presente:eu"
+        ]
+      },
+      {
+        "id": "ex_1_3_t3",
+        "type": "write",
+        "text": "{Chamo-me} Marco.",
+        "it": "Mi chiamo Marco.",
+        "context": "E como se chama?",
+        "contextIt": "E come si chiama?",
+        "prompt": "Di' che ti chiami Marco",
+        "trains": [
+          "vocab:chamo-me"
+        ]
+      },
+      {
+        "id": "ex_1_3_t4",
+        "type": "write",
+        "text": "{Muito prazer}, Manuel!",
+        "it": "Piacere, Manuel!",
+        "context": "Eu sou o Manuel.",
+        "contextIt": "Io sono Manuel.",
+        "prompt": "Rispondi alla presentazione",
+        "trains": [
+          "vocab:muito-prazer"
+        ]
+      },
+      {
+        "id": "ex_1_3_t5",
+        "type": "write",
+        "text": "Obrigado. {Quanto é}?",
+        "it": "Grazie. Quant'è?",
+        "context": "Aqui tem: o café.",
+        "contextIt": "Ecco a lei: il caffè.",
+        "prompt": "Ringrazia e chiedi quanto devi pagare",
+        "trains": [
+          "vocab:quanto-e"
+        ]
+      },
+      {
+        "id": "ex_1_3_t6",
+        "type": "write",
+        "text": "Aqui tem. {Boa tarde}!",
+        "it": "Ecco a lei. Buon pomeriggio!",
+        "context": "São dois euros. Boa tarde, até amanhã!",
+        "contextIt": "Sono due euro. Buon pomeriggio, a domani!",
+        "prompt": "Paga e ricambia il saluto",
+        "trains": [
+          "vocab:boa-tarde"
+        ]
+      }
+    ]
+  }
 }

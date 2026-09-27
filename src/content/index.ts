@@ -146,10 +146,12 @@ function italianNoteFromTrains(trains: string[]): string | undefined {
 /**
  * Converte un esercizio del contenuto nel formato usato dai componenti.
  * Con `typed` anche le scelte multiple diventano da scrivere (sessioni senza aiuti).
+ * Con `choice` anche un "write" diventa a scelta, se ha le sue opzioni sbagliate.
  */
-export function toRuntimeExercise(ex: ContentExercise, opts: { typed?: boolean } = {}): RuntimeExercise {
+export function toRuntimeExercise(ex: ContentExercise, opts: { typed?: boolean; choice?: boolean } = {}): RuntimeExercise {
   const { before, answer, after } = splitAnswer(ex.text);
-  const typed = ex.type === 'write' || Boolean(opts.typed);
+  const canChoose = ex.type === 'choose' || Boolean(ex.wrong || ex.wrongFrom);
+  const typed = opts.typed || !canChoose || (ex.type === 'write' && !opts.choice);
   const base = {
     id: ex.id,
     prompt: ex.prompt ?? defaultPrompt(ex, typed),
@@ -170,7 +172,9 @@ export function toRuntimeExercise(ex: ContentExercise, opts: { typed?: boolean }
     const t = verbTarget(ex);
     const forms = t ? Object.values(t.verb.conjugations[t.tense] ?? {}) : [];
     const unique = [...new Set(forms)].filter((f) => f.toLowerCase() !== answer.toLowerCase());
-    wrong = shuffle(unique).slice(0, 3);
+    // A inizio frase la risposta è maiuscola: le altre forme devono esserlo pure, o si indovina dalla maiuscola
+    const capital = answer[0] !== answer[0].toLowerCase();
+    wrong = shuffle(unique).slice(0, 3).map((f) => (capital ? f[0].toUpperCase() + f.slice(1) : f));
   }
 
   return {
@@ -487,16 +491,25 @@ export const CHECKPOINT_PER_NODE = 3;
 /**
  * Tutti gli esercizi che una sessione può proporre, prima del campionamento.
  * Serve anche a chi deve conoscere ogni frase possibile (es. la generazione degli audio).
- * - guided: gli esercizi così come sono scritti (opzioni, frase con spazio);
+ * - guided: gli esercizi così come sono scritti (opzioni, frase con spazio); nelle conversazioni tutti a scelta;
  * - production / test: tutto da scrivere, più gli esercizi ricavati dalla teoria.
  * Nelle conversazioni l'ordine resta quello del dialogo.
  */
 export function sessionPool(kind: SessionKind, node: CourseNode, content: NodeContent): RuntimeExercise[] {
   if (kind === 'discovery') return [];
-  if (kind === 'guided') return content.exercises.map((ex) => toRuntimeExercise(ex));
-  const typed = content.exercises.map((ex) => toRuntimeExercise(ex, { typed: true }));
+  // Nella conversazione l'ordine dei turni è fisso, quindi in Prática sono tutti a scelta:
+  // così non si scrive prima di aver scelto (la scrittura arriva in Produção)
+  if (kind === 'guided') return content.exercises.map((ex) => toRuntimeExercise(ex, { choice: node.kind === 'dialogue' }));
+  // Conversazioni: il test ha un dialogo suo (vedi "test" nello schema)
+  const source = node.kind === 'dialogue' && kind === 'test' && content.test ? content.test.exercises : content.exercises;
+  const typed = source.map((ex) => toRuntimeExercise(ex, { typed: true }));
   if (node.kind === 'dialogue') return typed;
   return [...typed, ...generatedExercises(content.theory ?? [])];
+}
+
+/** Interlocutore di una sessione di conversazione: il test può averne uno diverso */
+export function dialogueSpeaker(kind: SessionKind, content: NodeContent) {
+  return (kind === 'test' ? content.test?.speaker : undefined) ?? content.speaker;
 }
 
 /**

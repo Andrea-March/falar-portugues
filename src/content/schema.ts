@@ -65,10 +65,20 @@ const ExerciseBase = {
 };
 
 /** L'utente scrive la risposta */
-export const WriteExercise = z.strictObject({
-  ...ExerciseBase,
-  type: z.literal('write'),
-});
+export const WriteExercise = z
+  .strictObject({
+    ...ExerciseBase,
+    type: z.literal('write'),
+    /**
+     * Facoltativi: opzioni sbagliate per quando una sessione trasforma il turno in scelta.
+     * Obbligatori nelle conversazioni, dove in Prática tutti i turni sono a scelta.
+     */
+    wrong: z.array(NonEmpty).min(1).optional(),
+    wrongFrom: z.literal('verb-forms').optional(),
+  })
+  .refine((e) => !(e.wrong && e.wrongFrom), {
+    message: 'indica "wrong" oppure "wrongFrom": "verb-forms", non entrambi',
+  });
 
 /** L'utente sceglie tra opzioni */
 export const ChooseExercise = z
@@ -165,6 +175,18 @@ export const NodeContent = z.strictObject({
     })
     .optional(),
   exercises: z.array(Exercise).min(1),
+  /**
+   * Solo nodi "dialogue": la conversazione del Teste final. È una conversazione nuova
+   * nella stessa situazione, così il test non si supera ricordando quella di Produção.
+   * Riusa le espressioni di tutto il capitolo. Si scrive tutto, senza traduzioni.
+   */
+  test: z
+    .strictObject({
+      /** Interlocutore, se diverso da quello del nodo */
+      speaker: Speaker.optional(),
+      exercises: z.array(Exercise).min(3),
+    })
+    .optional(),
 });
 export type NodeContent = z.infer<typeof NodeContent>;
 

@@ -39,6 +39,7 @@ La risposta va tra graffe dentro la frase. Lo stesso formato vale per tutti i ti
 
 - `write`: l'utente scrive. `choose`: sceglie tra opzioni.
 - `wrong`: opzioni sbagliate scritte a mano. `wrongFrom: "verb-forms"`: generate dalle altre forme del verbo.
+  Nelle conversazioni servono anche nei `write`: in Prática tutti i turni sono a scelta.
 - `trains` (obbligatorio): cosa allena l'esercizio, servirà per il ripasso.
   `verb:<verbo>:<tempo>:<persona>` oppure `vocab:<id voce>`.
   Persone: `eu`, `tu`, `ele_ela_voce`, `nos`, `eles_elas_voces`.
@@ -90,6 +91,11 @@ Ogni nodo si fa in più sessioni (vedi `sessionsFor` in `index.ts`):
 Descoberta (teoria), Prática (esercizi come sono scritti), Produção (tutto da scrivere,
 più esercizi ricavati da teoria e vocabolario), Teste final (come Produção, mescolato,
 serve l'80%). I checkpoint hanno solo il test.
+
+Nelle conversazioni (`dialogue`) Prática ha tutti i turni a scelta, Produção tutti da
+scrivere, e il Teste final usa una **conversazione nuova** nella stessa situazione,
+scritta nel campo `test` (obbligatorio), così non si supera ricordando quella di Produção.
+Riusa le espressioni di tutto il capitolo; `test.speaker` se l'interlocutore cambia.
 
 Gli esercizi si scrivono **una volta sola**: le sessioni ne ricavano le modalità.
 Poiché in Produção e Teste anche i `choose` si scrivono, se ci sono più risposte giuste

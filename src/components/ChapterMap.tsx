@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Check, Lock } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
 import Mascot from '@/components/common/Mascot';
@@ -40,6 +40,8 @@ const ROW_HEIGHT = 128; // Spazio verticale tra i centri dei nodi (px): lascia p
 const LABEL_SPACE = 58; // Altezza occupata dall'etichetta sotto il nodo (px)
 const NODE_SIZE = 62;   // Dimensione bottone nodo (px)
 const RING_SIZE = 80;   // Anello delle sessioni attorno al nodo (px)
+const ABOVE_GAP = 16;   // Spazio tra il fumetto aperto sopra e il nodo (px)
+const SCREEN_MARGIN = 12; // Margine dal bordo dello schermo utile (sotto l'header, sopra la barra in basso)
 
 /**
  * Colore per tipo di nodo, uguale in tutti i capitoli: si riconosce a colpo d'occhio
@@ -150,6 +152,9 @@ export default function ChapterMap({
 }: ChapterMapProps) {
   const chapters = courseChapters;
   const [openNodeId, setOpenNodeId] = useState<string | null>(null);
+  /** Il fumetto si apre sotto il nodo; se lì non c'è posto ma sopra sì, si apre sopra */
+  const [placement, setPlacement] = useState<'below' | 'above'>('below');
+  const popupRef = useRef<HTMLDivElement>(null);
   const doneOf = (node: Node) => countSessionsDone(node, completedNodeIds, sessionProgress);
 
   // Il fumetto si chiude toccando altrove o con Esc
@@ -165,6 +170,35 @@ export default function ChapterMap({
       document.removeEventListener('pointerdown', onPointer);
       document.removeEventListener('keydown', onKey);
     };
+  }, [openNodeId]);
+
+  /**
+   * Posizione del fumetto, decisa prima che venga disegnato: sotto il nodo se ci sta
+   * nello schermo, altrimenti sopra. Se non ci sta da nessuna delle due parti resta sotto
+   * e la mappa scorre con dolcezza solo quanto basta. Il focus va al pulsante principale
+   * senza far scorrere la pagina (prima era l'autoFocus a provocare il salto in giù).
+   */
+  useLayoutEffect(() => {
+    if (!openNodeId) return;
+    const popup = popupRef.current;
+    const anchor = document.querySelector<HTMLElement>(`[data-node-id="${openNodeId}"]`);
+    if (!popup || !anchor) return;
+
+    const height = popup.offsetHeight;
+    const a = anchor.getBoundingClientRect();
+    const centerY = a.top + a.height / 2;
+    const screenTop = (document.querySelector('header')?.getBoundingClientRect().bottom ?? 0) + SCREEN_MARGIN;
+    const screenBottom = (document.querySelector('nav')?.getBoundingClientRect().top ?? window.innerHeight) - SCREEN_MARGIN;
+    const belowEnd = centerY + NODE_SIZE / 2 + LABEL_SPACE + height;
+    const aboveStart = centerY - NODE_SIZE / 2 - ABOVE_GAP - height;
+
+    if (belowEnd <= screenBottom) setPlacement('below');
+    else if (aboveStart >= screenTop) setPlacement('above');
+    else {
+      setPlacement('below');
+      window.scrollBy({ top: belowEnd - screenBottom, behavior: 'smooth' });
+    }
+    popup.querySelector<HTMLElement>('[data-primary]')?.focus({ preventScroll: true });
   }, [openNodeId]);
 
   /** Il nodo ha fatto abbastanza sessioni (fino a Prática) da sbloccare il successivo */
@@ -239,7 +273,9 @@ export default function ChapterMap({
         return (
           <section key={chapter.id} aria-labelledby={`${chapter.id}-title`} className="space-y-6">
             {chapter.id === currentChapterId && aboveCurrentChapter && (
-              <div className="sticky top-[calc(env(safe-area-inset-top)+3.75rem)] z-30">{aboveCurrentChapter}</div>
+              // z-25: sopra i nodi (il corrente è z-20) ma sotto il fumetto dei nodi (z-30),
+              // anche quando il fumetto arriva da un capitolo precedente e sconfina in questo
+              <div className="sticky top-[calc(env(safe-area-inset-top)+3.75rem)] z-[25]">{aboveCurrentChapter}</div>
             )}
             {/* Intestazione capitolo: piastrella azulejo */}
             <div className="azulejo-pattern rounded-3xl border-b-[6px] border-azulejo-dark text-white px-5 py-4 flex items-center gap-4">
@@ -317,6 +353,7 @@ export default function ChapterMap({
                   <div
                     key={node.id}
                     className="absolute -translate-x-1/2 -translate-y-1/2"
+                    data-node-id={node.id}
                     ref={isCurrent ? currentRef : undefined}
                     style={{ left: `${posX}%`, top: `${posY}px`, zIndex: isCurrent ? 20 : undefined }}
                   >
@@ -396,25 +433,33 @@ export default function ChapterMap({
                 const isDraft = Boolean(node.draft);
                 const isLocked = !checkIsUnlocked(node, index, chapterIndex, chapters) || isDraft;
                 const posX = X_OFFSETS[index % X_OFFSETS.length];
-                const top = index * ROW_HEIGHT + ROW_HEIGHT / 2 + NODE_SIZE / 2 + LABEL_SPACE; // sotto l'etichetta
+                const centerY = index * ROW_HEIGHT + ROW_HEIGHT / 2;
+                const above = placement === 'above';
+                // Sotto: dopo l'etichetta. Sopra: il bordo inferiore poco sopra il nodo.
+                const position: React.CSSProperties = above
+                  ? { bottom: svgHeight - (centerY - NODE_SIZE / 2 - ABOVE_GAP) }
+                  : { top: centerY + NODE_SIZE / 2 + LABEL_SPACE };
                 const tone = isLocked
                   ? 'bg-[#e6eaf3] border-[#c7cfdf] text-brand-muted'
                   : isCompleted
                   ? 'bg-brand-accent border-brand-accentHover text-brand-accentDark'
                   : 'bg-brand-primary border-brand-dark text-white';
                 const arrowBg = isLocked ? 'bg-[#e6eaf3]' : isCompleted ? 'bg-brand-accent' : 'bg-brand-primary';
+                // Aperto sopra, la punta esce dal bordo inferiore (più scuro): prende quel colore
+                const arrowEdge = isLocked ? 'bg-[#c7cfdf]' : isCompleted ? 'bg-brand-accentHover' : 'bg-brand-dark';
 
                 return (
                   <div
                     data-node-ui
                     role="dialog"
                     aria-label={node.title}
+                    ref={popupRef}
                     className={`absolute inset-x-0 z-30 rounded-3xl border-b-[6px] px-5 py-4 animate-pop ${tone}`}
-                    style={{ top }}
+                    style={position}
                   >
                     <span
                       aria-hidden="true"
-                      className={`absolute -top-2 w-4 h-4 rotate-45 -translate-x-1/2 rounded-sm ${arrowBg}`}
+                      className={`absolute ${above ? '-bottom-3' : '-top-2'} w-4 h-4 rotate-45 -translate-x-1/2 rounded-sm ${above ? arrowEdge : arrowBg}`}
                       style={{ left: `${posX}%` }}
                     />
                     <p className="text-xs font-extrabold uppercase tracking-[0.09em] opacity-80">{KIND_LABELS[node.kind]}</p>
@@ -508,7 +553,7 @@ function SessionList({
       {next && !completed && (
         <button
           type="button"
-          autoFocus
+          data-primary
           onClick={() => onStart(next)}
           className="btn-3d w-full py-3.5 text-lg bg-white border-brand-border text-brand-primary"
         >

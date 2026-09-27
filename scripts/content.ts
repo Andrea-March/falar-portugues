@@ -92,7 +92,7 @@ function checkExercise(file: string, ex: Exercise) {
   else exerciseIds.set(ex.id, relative(ROOT, file));
 
   if (ex.contextIt && !ex.context) fail(file, `${where}: "contextIt" senza "context"`);
-  if (ex.type === 'choose' && ex.accept && ex.wrong) {
+  if (ex.accept && ex.wrong) {
     const clash = ex.accept.filter((a) => ex.wrong!.some((w) => w.toLowerCase() === a.toLowerCase()));
     if (clash.length) fail(file, `${where}: "${clash.join('", "')}" è sia in "accept" sia in "wrong"`);
   }
@@ -124,7 +124,7 @@ function checkExercise(file: string, ex: Exercise) {
       fail(file, `${where}: la risposta "${answer}" non è la forma di ${verb.infinitive} (${tense}, ${person}), che è "${form}"`);
   }
 
-  if (ex.type === 'choose') {
+  {
     if (ex.wrongFrom === 'verb-forms') {
       if (verbTargets.length === 0) fail(file, `${where}: "wrongFrom": "verb-forms" richiede un "verb:…" in trains`);
       else {
@@ -160,6 +160,25 @@ for (const { file, data } of nodes.values()) {
   }
   // I nodi di frasi dividono la Descoberta in due sessioni: servono almeno due gruppi da studiare
   const kindInCourse = course?.chapters.flatMap((c) => c.nodes).find((n) => n.id === data.id)?.kind;
+  if (data.test) {
+    if (kindInCourse !== 'dialogue') fail(file, `"test" (conversazione del Teste final) vale solo per i nodi "dialogue"`);
+    data.test.exercises.forEach((e) => checkExercise(file, e));
+    const tv = data.test.speaker?.voice;
+    for (const [name, provider] of Object.entries(audioConfig.providers)) {
+      if (tv && !(tv in provider.voices)) fail(file, `test.speaker.voice "${tv}" non esiste in audio.config.json per "${name}"`);
+    }
+    // Il test deve essere una conversazione nuova, non la stessa riscritta
+    const own = new Set(data.exercises.map((e) => e.text));
+    for (const e of data.test.exercises) if (own.has(e.text)) fail(file, `${e.id}: la battuta "${e.text}" è identica a una della conversazione normale`);
+  }
+  // Nelle conversazioni Prática propone tutti i turni a scelta: anche quelli "write" servono di opzioni
+  if (kindInCourse === 'dialogue') {
+    if (!data.test) fail(file, `una conversazione vuole anche "test": un dialogo nuovo per il Teste final`);
+    for (const ex of data.exercises) {
+      if (ex.type === 'write' && !ex.wrong && !ex.wrongFrom)
+        fail(file, `${ex.id}: in una conversazione anche i turni "write" vogliono "wrong" o "wrongFrom" (in Prática diventano a scelta)`);
+    }
+  }
   if (kindInCourse === 'vocab') {
     const groups = data.theory?.flatMap((c) => ('vocabStudy' in c ? c.vocabStudy.groups : [])) ?? [];
     if (groups.length < 2) fail(file, `un nodo "vocab" deve avere uno studio del vocabolario con almeno 2 gruppi (Descoberta 1 e 2)`);
