@@ -1,52 +1,12 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { firstNodeId } from '@/content';
-import { updateReview, type ReviewState } from '@/content/review';
-import { dayKey, nextStreak, visibleStreak } from '@/content/rewards';
+import React, { createContext, useContext, useEffect, useSyncExternalStore } from 'react';
+import { updateReview } from '@/content/review';
+import { dayKey, nextStreak } from '@/content/rewards';
+import { DEFAULT_PROGRESS, type UserProgress } from '@/progress/model';
+import { getProgress, getServerProgress, subscribeProgress, updateProgress } from '@/progress/store';
 
-const STORAGE_KEY = 'pt_app_user_progress_v1';
-
-export interface UserProgress {
-  completedNodeIds: string[];
-  /** Sessioni completate per nodo (i nodi in completedNodeIds le hanno fatte tutte) */
-  sessionProgress: Record<string, number>;
-  /** Esercizi già proposti in una sessione: le sessioni successive privilegiano quelli nuovi */
-  seenExerciseIds: string[];
-  /** Ripasso: per ogni cosa allenata (espressione, forma verbale) casella e scadenza */
-  review: ReviewState;
-  currentNodeId: string;
-  xp: number;
-  hearts: number;
-  maxHearts: number;
-  streak: number;
-  /** Ultimo giorno con almeno una sessione conclusa (es. "2026-09-26") */
-  lastActiveDay?: string;
-  /** Onboarding fatto */
-  onboarded: boolean;
-  /** Obiettivo giornaliero in XP (scelto nell'onboarding) */
-  dailyGoal: number;
-  /** Perché si impara (dall'onboarding) */
-  motivation?: string;
-  /** XP guadagnati in xpDay */
-  xpToday: number;
-  xpDay?: string;
-}
-
-const DEFAULT_PROGRESS: UserProgress = {
-  completedNodeIds: [],
-  sessionProgress: {},
-  seenExerciseIds: [],
-  review: {},
-  currentNodeId: firstNodeId,
-  xp: 0,
-  hearts: 5,
-  maxHearts: 5,
-  streak: 0,
-  onboarded: false,
-  dailyGoal: 30,
-  xpToday: 0,
-};
+export type { UserProgress } from '@/progress/model';
 
 interface UserContextType {
   progress: UserProgress;
@@ -70,29 +30,10 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [progress, setProgress] = useState<UserProgress>(DEFAULT_PROGRESS);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        // Unione con i valori predefiniti: i salvataggi vecchi non hanno i campi nuovi
-        const parsed = JSON.parse(saved);
-        const loaded: UserProgress = {
-          ...DEFAULT_PROGRESS,
-          ...parsed,
-          // Chi usava l'app prima dell'onboarding non deve rifarlo
-          onboarded: parsed.onboarded ?? (parsed.xp ?? 0) > 0,
-        };
-        // Se ieri e oggi non si è studiato, la streak è interrotta
-        setProgress({ ...loaded, streak: visibleStreak(loaded.streak, loaded.lastActiveDay) });
-      } catch (e) {
-        console.error('Errore nel caricamento del localStorage:', e);
-      }
-    }
-    setIsLoaded(true);
-  }, []);
+  // null solo sul server e durante l'idratazione: poi arrivano i progressi salvati
+  const loaded = useSyncExternalStore(subscribeProgress, getProgress, getServerProgress);
+  const progress = loaded ?? DEFAULT_PROGRESS;
+  const isLoaded = loaded !== null;
 
   // I progressi stanno solo sul dispositivo: chiediamo al browser di non cancellarli
   // quando serve spazio (o, su Safari, dopo giorni senza visite). Se rifiuta, cambia nulla.
@@ -105,14 +46,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       .catch(() => undefined);
   }, []);
 
-  /** Aggiorna e salva a partire dallo stato più recente: più aggiornamenti di fila non si sovrascrivono */
-  const saveProgress = (update: (prev: UserProgress) => UserProgress) => {
-    setProgress((prev) => {
-      const next = update(prev);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      return next;
-    });
-  };
+  const saveProgress = updateProgress;
 
   const completeNode = (nodeId: string, nextNodeId?: string, earnedXp = 15) => {
     saveProgress((p) => ({

@@ -15,6 +15,8 @@ export interface ReviewItem {
   due: number;
   errors: number;
   lastWrong?: number;
+  /** Ultima risposta (ms): serve per unire i progressi di due dispositivi */
+  at?: number;
 }
 export type ReviewState = Record<string, ReviewItem>;
 
@@ -25,9 +27,9 @@ export const REVIEW_INTERVALS_DAYS = [0, 1, 3, 7, 14, 30, 60];
 export const REVIEW_SIZE = 10;
 
 export function updateReview(item: ReviewItem | undefined, correct: boolean, now = Date.now()): ReviewItem {
-  if (!correct) return { box: 0, due: now, errors: (item?.errors ?? 0) + 1, lastWrong: now };
+  if (!correct) return { box: 0, due: now, errors: (item?.errors ?? 0) + 1, lastWrong: now, at: now };
   const box = Math.min((item?.box ?? 0) + 1, REVIEW_INTERVALS_DAYS.length - 1);
-  return { ...item, box, errors: item?.errors ?? 0, due: now + REVIEW_INTERVALS_DAYS[box] * DAY };
+  return { ...item, box, errors: item?.errors ?? 0, due: now + REVIEW_INTERVALS_DAYS[box] * DAY, at: now };
 }
 
 /** Cose da ripassare adesso, le più urgenti prima: prima gli errori recenti, poi le scadenze più vecchie */

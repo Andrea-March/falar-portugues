@@ -15,7 +15,8 @@
     "audio:check": "tsx scripts/audio.ts --check",
     "review:export": "tsx scripts/review.ts export",
     "review:approve": "tsx scripts/review.ts approve",
-    "audio:samples": "tsx scripts/audio.ts samples"
+    "audio:samples": "tsx scripts/audio.ts samples",
+    "test": "tsx --test \"src/**/*.test.ts\""
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",
