@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Menu, MessageCircleHeart, ShieldCheck, Trash2, Volume2, VolumeX, X } from 'lucide-react';
+import { CloudCheck, CloudUpload, Menu, MessageCircleHeart, ShieldCheck, Trash2, Volume2, VolumeX, X } from 'lucide-react';
 import { APP_VERSION, PRIVACY_URL } from '@/config';
 import DeleteAccountDialog from '@/components/account/DeleteAccountDialog';
 import GeneralFeedbackDialog from '@/components/feedback/GeneralFeedbackDialog';
+import { linkGoogle, useAccount } from '@/progress/account';
 import { useSyncStatus, type SyncStatus } from '@/progress/sync';
 import { setAudioEnabled, useAudioEnabled } from '@/utils/audioSettings';
 import { soundFX } from '@/utils/sound';
@@ -28,6 +29,14 @@ export default function AppMenu() {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const syncLabel = SYNC_LABEL[useSyncStatus()];
+  const account = useAccount();
+  const [linking, setLinking] = useState<'idle' | 'opening' | 'error'>('idle');
+
+  const saveWithGoogle = async () => {
+    setLinking('opening');
+    const { ok } = await linkGoogle(); // se va bene la pagina passa a Google
+    if (!ok) setLinking('error');
+  };
   const audio = useAudioEnabled();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -71,6 +80,27 @@ export default function AppMenu() {
           role="menu"
           className="absolute right-0 top-full mt-2 w-64 rounded-3xl border-2 border-b-[6px] border-brand-border bg-white p-2 shadow-lg animate-pop origin-top-right"
         >
+          {account.signedIn && account.anonymous && (
+            <button role="menuitem" type="button" disabled={linking === 'opening'} onClick={() => void saveWithGoogle()} className={row}>
+              <CloudUpload size={22} strokeWidth={2.4} className="text-azulejo" />
+              <span className="min-w-0">
+                <span className="block">{linking === 'opening' ? 'A abrir o Google…' : 'Guardar progresso'}</span>
+                <span className={`block text-sm font-semibold ${linking === 'error' ? 'text-ko-dark' : 'text-brand-muted'}`}>
+                  {linking === 'error' ? 'Non è andata: riprova tra poco' : 'Con Google li ritrovi anche su un altro telefono'}
+                </span>
+              </span>
+            </button>
+          )}
+          {account.signedIn && !account.anonymous && (
+            <div className="flex items-center gap-3 px-3 py-2.5 font-extrabold text-ink">
+              <CloudCheck size={22} strokeWidth={2.4} className="text-ok-dark" />
+              <span className="min-w-0">
+                <span className="block">Conta Google</span>
+                <span className="block text-sm font-semibold text-brand-muted truncate">{account.email ?? 'Progressi al sicuro'}</span>
+              </span>
+            </div>
+          )}
+
           <button role="menuitemcheckbox" aria-checked={audio} type="button" onClick={() => setAudioEnabled(!audio)} className={row}>
             {audio ? <Volume2 size={22} strokeWidth={2.4} className="text-azulejo" /> : <VolumeX size={22} strokeWidth={2.4} className="text-brand-primary" />}
             <span className="flex-1">Som</span>

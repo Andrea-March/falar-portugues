@@ -9,6 +9,7 @@
 import { useSyncExternalStore } from 'react';
 import { normalizeProgress } from './model';
 import { getProgress, mergeIncoming, subscribeProgress } from './store';
+import { handleAuthRedirect, setAccountFromUser } from './account';
 import { getSupabase } from './supabase';
 
 const PUSH_DELAY_MS = 3000;
@@ -38,13 +39,24 @@ let pushing: Promise<void> | null = null;
 let lastPushed = -1;
 let lastPull = 0;
 
+/** Sta partendo un reindirizzamento verso Google: non si fa altro */
+let redirecting = false;
+
 async function ensureUser(): Promise<string | null> {
   const supabase = getSupabase();
   if (!supabase) return null;
+  if (await handleAuthRedirect()) {
+    redirecting = true;
+    return null;
+  }
   const { data } = await supabase.auth.getSession();
-  if (data.session) return data.session.user.id;
+  if (data.session) {
+    setAccountFromUser(data.session.user);
+    return data.session.user.id;
+  }
   const { data: signed, error } = await supabase.auth.signInAnonymously();
   if (error) throw error;
+  setAccountFromUser(signed.user);
   return signed.user?.id ?? null;
 }
 
@@ -122,6 +134,7 @@ async function connect() {
   setStatus('connecting');
   try {
     userId = await ensureUser();
+    if (redirecting) return;
     if (!userId) return setStatus('off');
     await pushNow();
   } catch (e) {
@@ -144,6 +157,8 @@ export function startSync() {
   document.addEventListener('visibilitychange', onVisibility);
   window.addEventListener('online', onOnline);
   window.addEventListener('offline', () => setStatus('offline'));
+  // L'email può arrivare anche dopo (per esempio quando si aggiorna il token)
+  getSupabase()?.auth.onAuthStateChange((_event, session) => setAccountFromUser(session?.user));
   void connect();
 }
 
@@ -161,6 +176,7 @@ export async function afterAccountDeleted() {
   userId = null;
   lastPushed = -1;
   await getSupabase()?.auth.signOut({ scope: 'local' });
+  setAccountFromUser(null);
 }
 
 export function useSyncStatus(): SyncStatus {

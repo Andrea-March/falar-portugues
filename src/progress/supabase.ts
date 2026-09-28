@@ -15,7 +15,8 @@ export function getSupabase(): SupabaseClient | null {
   if (client !== undefined) return client;
   if (typeof window === 'undefined' || !url || !key) return (client = null);
   client = createClient(url, key, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
+    // PKCE: al ritorno da Google arriva un codice monouso, non i token nell'URL
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' },
   });
   return client;
 }

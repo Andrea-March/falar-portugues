@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient, User } from '@supabase/supabase-js';
+import { getAccount, setAccountFromUser } from './account';
 import { setSupabaseForTests } from './supabase';
 import * as store from './store';
 import * as sync from './sync';
@@ -25,8 +26,10 @@ let cloud: { data: unknown } | null = null;
 const calls = { signIn: 0, upsert: 0 };
 const fake = {
   auth: {
+    initialize: async () => ({ error: null }),
+    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: noop } } }),
     getSession: async () => ({ data: { session: null } }),
-    signInAnonymously: async () => (calls.signIn++, { data: { user: { id: 'u1' } }, error: null }),
+    signInAnonymously: async () => (calls.signIn++, { data: { user: { id: 'u1', is_anonymous: true } }, error: null }),
   },
   from: () => ({
     select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: cloud, error: null }) }) }),
@@ -59,4 +62,10 @@ test('al primo avvio unisce il cloud al telefono e invia il risultato', async ()
   await new Promise((r) => setTimeout(r, 3200));
   assert.equal(calls.upsert, 2);
   assert.equal((cloud!.data as { xp: number }).xp, 85);
+});
+
+test("dopo l'avvio l'account è anonimo; collegato a Google mostra l'email", () => {
+  assert.deepEqual(getAccount(), { signedIn: true, anonymous: true, email: undefined });
+  setAccountFromUser({ id: 'u1', is_anonymous: false, email: 'ines@example.com' } as User);
+  assert.deepEqual(getAccount(), { signedIn: true, anonymous: false, email: 'ines@example.com' });
 });
