@@ -6,8 +6,9 @@ import { accentMistakes } from '@/utils/answerCheck';
 import { FillInBlankExercise } from '@/types/exercise';
 import Mascot from '@/components/common/Mascot';
 import { ListenButton, SentenceWithGap, SpeechBubble, mascotMood, useListening, type ExerciseViewProps } from './ExerciseRenderer';
+import { courseConfig, ui } from '@/content';
 
-const SPECIAL_CHARS = ['á', 'à', 'â', 'ã', 'ç', 'é', 'ê', 'í', 'ó', 'ô', 'õ', 'ú'];
+const SPECIAL_CHARS = courseConfig.specialChars;
 
 export default function FillInBlank({ exercise, value, feedback, accentHint, onChange, onSubmit }: ExerciseViewProps<FillInBlankExercise>) {
   const listen = useListening(exercise);
@@ -29,12 +30,12 @@ export default function FillInBlank({ exercise, value, feedback, accentHint, onC
 
   return (
     <div className="space-y-7 animate-fade-in">
-      <h2 className="text-2xl sm:text-3xl font-extrabold text-ink">{listen.active ? 'Ouve e escreve' : exercise.prompt || 'Completa a frase'}</h2>
+      <h2 className="text-2xl sm:text-3xl font-extrabold text-ink">{listen.active ? ui.answer.listenAndWrite : exercise.prompt || ui.exercise.complete}</h2>
       {listen.active && <ListenButton onPlay={listen.play} sentence={listen.sentence} />}
 
       <div className="flex items-end gap-3">
         <Mascot mood={mascotMood(feedback)} size={88} animate={false} />
-        <SpeechBubble translation={listen.active ? undefined : exercise.translationIt}>
+        <SpeechBubble translation={listen.active ? undefined : exercise.translation}>
           <SentenceWithGap before={exercise.sentenceBefore} after={exercise.sentenceAfter} value={value} feedback={feedback} />
         </SpeechBubble>
       </div>
@@ -46,7 +47,7 @@ export default function FillInBlank({ exercise, value, feedback, accentHint, onC
         }}
         className="space-y-3"
       >
-        <label htmlFor={`answer-${exercise.id}`} className="sr-only">A tua resposta</label>
+        <label htmlFor={`answer-${exercise.id}`} className="sr-only">{ui.answer.yourAnswer}</label>
         <input
           ref={inputRef}
           id={`answer-${exercise.id}`}
@@ -54,7 +55,7 @@ export default function FillInBlank({ exercise, value, feedback, accentHint, onC
           value={value}
           readOnly={locked}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Escreve em português"
+          placeholder={ui.answer.writeInTarget}
           autoFocus
           autoComplete="off"
           autoCapitalize="off"
@@ -70,7 +71,7 @@ export default function FillInBlank({ exercise, value, feedback, accentHint, onC
             role="status"
             className="rounded-2xl bg-brand-accentLight border-2 border-brand-accent px-4 py-3 text-brand-accentDark font-bold animate-pop"
           >
-            Quase! Confere os acentos
+            {ui.answer.accentHint}
             {wrongLetters.size > 0 && (
               <span className="block mt-1 text-lg font-extrabold text-ink">
                 {[...value.trim()].map((ch, i) =>
@@ -86,7 +87,7 @@ export default function FillInBlank({ exercise, value, feedback, accentHint, onC
         )}
 
         {!locked && (
-          <div className="flex flex-wrap gap-2" aria-label="Caracteres especiais">
+          <div className="flex flex-wrap gap-2" aria-label={ui.answer.specialChars}>
             {SPECIAL_CHARS.map((char) => (
               <button
                 key={char}

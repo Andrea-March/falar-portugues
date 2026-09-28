@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { soundFX } from '@/utils/sound';
-import { speakPortuguese, stopSpeaking } from '@/utils/textToSpeech';
+import { speakTarget, stopSpeaking } from '@/utils/textToSpeech';
 import { matchAnswerAny } from '@/utils/answerCheck';
 import { useUser } from '@/context/UserContext';
 import { Exercise } from '@/types/exercise';
@@ -10,6 +10,7 @@ import LessonShell from '@/components/common/LessonShell';
 import Mascot from '@/components/common/Mascot';
 import ExerciseRenderer from './ExerciseRenderer';
 import FeedbackSheet from './FeedbackSheet';
+import { ui } from '@/content';
 
 /**
  * idle     → l'utente sta rispondendo
@@ -65,8 +66,8 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
       <LessonShell progress={100} onClose={onClose}>
         <div className="flex flex-col items-center text-center gap-4 pt-16">
           <Mascot mood="think" size={120} />
-          <h2 className="text-2xl font-extrabold">Ainda não há exercícios aqui</h2>
-          <p className="text-brand-muted font-semibold">Esta lição está a ser preparada.</p>
+          <h2 className="text-2xl font-extrabold">{ui.lesson.noExercises}</h2>
+          <p className="text-brand-muted font-semibold">{ui.dialogue.emptyHint}</p>
           <button type="button" onClick={() => onFinish({ total: 0, errors: 0, bestCombo: 0 })} className="btn-3d btn-primary px-8 py-3.5 text-lg mt-2">
             Concluir
           </button>
@@ -90,7 +91,7 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
 
   const speakLater = (text = fullSentence) => {
     if (speakTimer.current) clearTimeout(speakTimer.current);
-    speakTimer.current = setTimeout(() => speakPortuguese(text), SPEAK_DELAY_MS);
+    speakTimer.current = setTimeout(() => speakTarget(text), SPEAK_DELAY_MS);
   };
 
   const markCorrect = (match: string) => {
@@ -187,7 +188,7 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
           canCheck={answer.trim().length > 0}
           correctAnswer={exercise.correctAnswer}
           sentence={fullSentence}
-          italianNote={exercise.italianNote}
+          learnerNote={exercise.learnerNote}
           report={{ exerciseId: exercise.id, sentence: fullSentence, correctAnswer: exercise.correctAnswer, answer }}
           onCheck={() => evaluate(answer, true)}
           onDontKnow={reveal}

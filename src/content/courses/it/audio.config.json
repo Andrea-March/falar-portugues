@@ -1,0 +1,23 @@
+{
+  "$comment": "Audio pregenerato (COURSE=it npm run audio). Voce Piper: derivata da lessac (licenza di sola ricerca), va bene per uso privato; per pubblicare usare Azure.",
+  "provider": "piper",
+  "extension": "mp3",
+  "bitrateKbps": 48,
+  "providers": {
+    "piper": {
+      "$comment": "Open source, gira sul computer. Requisiti: pip install piper-tts lameenc.",
+      "lengthScale": 1.1,
+      "voices": {
+        "default": "it_IT-paola-medium"
+      }
+    },
+    "azure": {
+      "$comment": "Azure Speech (voci neurali). Serve AZURE_SPEECH_KEY e AZURE_SPEECH_REGION in .env.local.",
+      "format": "audio-24khz-48kbitrate-mono-mp3",
+      "rate": "-8%",
+      "voices": {
+        "default": "it-IT-ElsaNeural"
+      }
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import { APP_VERSION, CONTACT_EMAIL } from '@/config';
+import { courseConfig, ui } from '@/content';
 
 /**
  * Feedback via email: la riserva dei moduli (components/feedback) quando l'invio non riesce.
@@ -10,7 +11,7 @@ function mailto(subject: string, details: string[]) {
     '',
     '',
     '———',
-    'Non cancellare queste righe: ci aiutano a capire di cosa parli.',
+    ui.feedback.mailKeepLines,
     ...details,
     `Versione: ${APP_VERSION}`,
     typeof navigator !== 'undefined' ? `Dispositivo: ${navigator.userAgent}` : '',
@@ -22,7 +23,7 @@ function mailto(subject: string, details: string[]) {
 
 /** Feedback generale (menu in alto) */
 export function generalFeedbackUrl() {
-  return mailto('Falaluso · feedback', []);
+  return mailto(`${courseConfig.appName} · feedback`, []);
 }
 
 export interface ExerciseReport {
@@ -35,7 +36,7 @@ export interface ExerciseReport {
 
 /** Segnalazione di un esercizio, con tutto il contesto già compilato */
 export function exerciseReportUrl({ exerciseId, sentence, correctAnswer, answer }: ExerciseReport) {
-  return mailto(`Falaluso · problema nell'esercizio ${exerciseId}`, [
+  return mailto(`${courseConfig.appName} · problema nell'esercizio ${exerciseId}`, [
     `Esercizio: ${exerciseId}`,
     `Frase: ${sentence}`,
     `Risposta attesa: ${correctAnswer}`,

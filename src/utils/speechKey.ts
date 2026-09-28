@@ -1,4 +1,4 @@
-import audioConfig from '../content/audio.config.json';
+import { audioConfig } from '../content/registry.generated';
 
 /**
  * Condiviso tra l'app e lo script che genera gli audio (scripts/audio.ts):

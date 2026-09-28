@@ -5,6 +5,7 @@ import { X } from 'lucide-react';
 import FullscreenPortal from '@/components/common/FullscreenPortal';
 import { resetProgress } from '@/progress/store';
 import { accessToken, afterAccountDeleted } from '@/progress/sync';
+import { ui } from '@/content';
 
 type Status = 'idle' | 'deleting' | 'error' | 'offline';
 
@@ -56,13 +57,13 @@ export default function DeleteAccountDialog({ onClose }: { onClose: () => void }
         >
           <div className="flex items-start justify-between gap-3 mb-4">
             <h2 id={titleId} className="font-display text-2xl font-extrabold text-ink leading-tight">
-              Apagar a conta?
+              {ui.deleteAccount.title}
             </h2>
             <button
               type="button"
               onClick={onClose}
               disabled={status === 'deleting'}
-              aria-label="Fechar"
+              aria-label={ui.common.close}
               className="p-1.5 -mr-1.5 rounded-lg text-brand-muted hover:text-ink cursor-pointer"
             >
               <X size={24} strokeWidth={2.4} />
@@ -70,25 +71,24 @@ export default function DeleteAccountDialog({ onClose }: { onClose: () => void }
           </div>
 
           <p className="font-semibold text-ink">
-            Cancelliamo il tuo account e tutti i progressi: lezioni completate, XP, serie di giorni e ripasso, sia nel cloud sia su
-            questo dispositivo.
+            {ui.deleteAccount.body}
           </p>
-          <p className="font-bold text-ko-dark mt-3">Non si può annullare: ripartirai dall&apos;inizio.</p>
+          <p className="font-bold text-ko-dark mt-3">{ui.deleteAccount.warning}</p>
 
           {(status === 'error' || status === 'offline') && (
             <div role="alert" className="mt-4 rounded-2xl bg-ko-light text-ko-dark px-4 py-3 font-bold">
               {status === 'offline'
-                ? 'Sem ligação: serve la rete per cancellare i dati nel cloud.'
-                : 'Non ci siamo riusciti. Riprova tra poco, oppure scrivici dalla pagina Privacidade.'}
+                ? ui.deleteAccount.offline
+                : ui.deleteAccount.error}
             </div>
           )}
 
           <div className="flex flex-col gap-3 mt-5">
             <button type="button" disabled={status === 'deleting'} onClick={() => void remove()} className="btn-3d btn-ko w-full py-3.5 text-lg">
-              {status === 'deleting' ? 'A apagar…' : 'Apagar tudo'}
+              {status === 'deleting' ? ui.deleteAccount.deleting : ui.deleteAccount.confirm}
             </button>
             <button type="button" autoFocus disabled={status === 'deleting'} onClick={onClose} className="btn-3d btn-ghost w-full py-3.5 text-lg">
-              Cancelar
+              {ui.common.cancel}
             </button>
           </div>
         </div>

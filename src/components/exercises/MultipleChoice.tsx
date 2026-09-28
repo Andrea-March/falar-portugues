@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { MultipleChoiceExercise } from '@/types/exercise';
 import Mascot from '@/components/common/Mascot';
 import { ListenButton, SentenceWithGap, SpeechBubble, mascotMood, useListening, type ExerciseViewProps } from './ExerciseRenderer';
+import { ui } from '@/content';
 
 export default function MultipleChoice({ exercise, value, feedback, onChange }: ExerciseViewProps<MultipleChoiceExercise>) {
   const listen = useListening(exercise);
@@ -22,17 +23,17 @@ export default function MultipleChoice({ exercise, value, feedback, onChange }: 
 
   return (
     <div className="space-y-7 animate-fade-in">
-      <h2 className="text-2xl sm:text-3xl font-extrabold text-ink">{listen.active ? 'Ouve e escolhe' : exercise.prompt || 'Escolhe a opção certa'}</h2>
+      <h2 className="text-2xl sm:text-3xl font-extrabold text-ink">{listen.active ? ui.answer.listenAndChoose : exercise.prompt || ui.exercise.choose}</h2>
       {listen.active && <ListenButton onPlay={listen.play} sentence={listen.sentence} />}
 
       <div className="flex items-end gap-3">
         <Mascot mood={mascotMood(feedback)} size={88} animate={false} />
-        <SpeechBubble translation={listen.active ? undefined : exercise.translationIt}>
+        <SpeechBubble translation={listen.active ? undefined : exercise.translation}>
           <SentenceWithGap before={before} after={after} value={value} feedback={feedback} />
         </SpeechBubble>
       </div>
 
-      <div className="grid gap-3" role="radiogroup" aria-label="Opções">
+      <div className="grid gap-3" role="radiogroup" aria-label={ui.answer.options}>
         {exercise.options.map((option, i) => {
           const isSelected = value === option;
           const isRevealedAnswer = feedback === 'revealed' && option === exercise.correctAnswer;

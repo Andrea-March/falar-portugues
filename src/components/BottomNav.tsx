@@ -3,6 +3,7 @@
 import React from 'react';
 import { Map, BookOpen, type LucideIcon } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
+import { ui } from '@/content';
 
 /** Vídeos e Conversa torneranno qui quando esisteranno: niente segnaposto "Em breve" nell'MVP */
 export type TabType = 'home' | 'grammar';
@@ -13,8 +14,8 @@ interface BottomNavProps {
 }
 
 const NAV_ITEMS: { id: TabType; label: string; Icon: LucideIcon }[] = [
-  { id: 'home', label: 'Percurso', Icon: Map },
-  { id: 'grammar', label: 'Gramática', Icon: BookOpen },
+  { id: 'home', label: ui.nav.path, Icon: Map },
+  { id: 'grammar', label: ui.grammar.title, Icon: BookOpen },
 ];
 
 export default function BottomNav({ activeTab, setActiveTab }: BottomNavProps) {

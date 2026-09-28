@@ -6,6 +6,7 @@ import { COMBO_BADGE_FROM } from '@/utils/sound';
 import { soundFX } from '@/utils/sound';
 import FullscreenPortal from './FullscreenPortal';
 import Mascot from './Mascot';
+import { ui } from '@/content';
 
 interface LessonCompleteCardProps {
   title: string;
@@ -34,7 +35,7 @@ function StatTile({ icon, value, label, tone }: { icon: React.ReactNode; value: 
 
 export default function LessonCompleteCard({ title, xpEarned = 15, accuracy, note, streakDays, bestCombo = 0, onContinue }: LessonCompleteCardProps) {
   const headline =
-    accuracy === undefined ? 'Sessão concluída!' : accuracy === 100 ? 'Sem erros!' : accuracy >= 80 ? 'Sessão concluída!' : 'Concluída, continua assim!';
+    accuracy === undefined ? ui.complete.done : accuracy === 100 ? ui.complete.perfect : accuracy >= 80 ? ui.complete.done : ui.complete.keepGoing;
 
   return (
     <FullscreenPortal>
@@ -57,7 +58,7 @@ export default function LessonCompleteCard({ title, xpEarned = 15, accuracy, not
             />
             {accuracy !== undefined && (
               <StatTile
-                label="Precisão"
+                label={ui.complete.accuracy}
                 value={`${accuracy}%`}
                 icon={<Target size={22} strokeWidth={2.5} />}
                 tone="bg-ok border-ok text-ok-dark"
@@ -65,7 +66,7 @@ export default function LessonCompleteCard({ title, xpEarned = 15, accuracy, not
             )}
             {bestCombo >= COMBO_BADGE_FROM && (
               <StatTile
-                label="Seguidas"
+                label={ui.complete.combo}
                 value={`${bestCombo}`}
                 icon={<Sparkles size={22} strokeWidth={2.5} />}
                 tone="bg-azulejo border-azulejo text-azulejo-dark"
@@ -73,7 +74,7 @@ export default function LessonCompleteCard({ title, xpEarned = 15, accuracy, not
             )}
             {streakDays !== undefined && (
               <StatTile
-                label="Dias"
+                label={ui.complete.days}
                 value={`${streakDays}`}
                 icon={<Flame size={22} strokeWidth={2.5} />}
                 tone="bg-brand-primary border-brand-primary text-brand-dark"

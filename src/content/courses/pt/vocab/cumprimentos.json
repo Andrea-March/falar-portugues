@@ -1,0 +1,73 @@
+{
+  "id": "cumprimentos",
+  "title": "Cumprimentos",
+  "items": [
+    {
+      "id": "ola",
+      "text": "Olá!",
+      "translation": "Ciao!",
+      "note": "informale",
+      "icon": "👋",
+      "usage": "Il saluto informale, va bene a qualsiasi ora.",
+      "situation": "👋 Incontri un amico: il saluto informale che va bene a ogni ora."
+    },
+    {
+      "id": "bom-dia",
+      "text": "Bom dia!",
+      "translation": "Buongiorno!",
+      "icon": "☀️",
+      "usage": "Dal mattino fino all'ora di pranzo, non a mezzogiorno in punto.",
+      "situation": "☀️ Sono le 9 del mattino ed entri al bar: saluti il barista."
+    },
+    {
+      "id": "boa-tarde",
+      "text": "Boa tarde!",
+      "translation": "Buon pomeriggio!",
+      "icon": "🌤️",
+      "usage": "Dopo pranzo, finché non fa buio.",
+      "situation": "🌤️ Sono le 16: entri in un negozio e saluti."
+    },
+    {
+      "id": "boa-noite",
+      "text": "Boa noite!",
+      "translation": "Buona sera / Buona notte!",
+      "icon": "🌙",
+      "usage": "Quando è buio: sia per salutare arrivando, sia per congedarsi o andare a dormire.",
+      "situation": "🌙 Sono le 23: dai la buonanotte prima di andare a dormire."
+    },
+    {
+      "id": "como-estas",
+      "text": "Como estás?",
+      "translation": "Come stai?",
+      "note": "informale",
+      "icon": "🙂",
+      "usage": "Per chiedere come sta a qualcuno a cui dai del tu.",
+      "situation": "🙂 Chiedi a un'amica come sta, dandole del tu."
+    },
+    {
+      "id": "tudo-bem",
+      "text": "Tudo bem?",
+      "translation": "Tutto bene? / Come va?",
+      "icon": "🤝",
+      "usage": "Domanda veloce che fa anche da risposta: «Tudo bem?» – «Tudo bem!»",
+      "situation": "🤝 Incroci un collega e chiedi al volo se è tutto a posto."
+    },
+    {
+      "id": "chamo-me",
+      "text": "Chamo-me…",
+      "translation": "Mi chiamo…",
+      "note": "si completa con il proprio nome: «Chamo-me Ana»",
+      "icon": "🙋",
+      "usage": "Per dire come ti chiami quando ti presenti.",
+      "situation": "🙋 Ti presenti a qualcuno per la prima volta: dici come ti chiami."
+    },
+    {
+      "id": "muito-prazer",
+      "text": "Muito prazer!",
+      "translation": "Piacere (di conoscerti)!",
+      "icon": "🤗",
+      "usage": "Si dice appena dopo esservi presentati a vicenda.",
+      "situation": "🤗 Hai appena saputo il nome di qualcuno: rispondi con piacere."
+    }
+  ]
+}

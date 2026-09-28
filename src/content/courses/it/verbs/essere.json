@@ -1,0 +1,38 @@
+{
+  "id": "essere",
+  "infinitive": "essere",
+  "translation": "ser / estar",
+  "regular": false,
+  "group": "ere",
+  "conjugations": {
+    "presente": {
+      "io": "sono",
+      "tu": "sei",
+      "lui_lei": "è",
+      "noi": "siamo",
+      "voi": "siete",
+      "loro": "sono"
+    }
+  },
+  "exercises": [
+    {
+      "id": "it_essere_v1",
+      "type": "choose",
+      "text": "Noi {siamo} a Firenze per una settimana.",
+      "translation": "Estamos em Florença durante uma semana.",
+      "trains": [
+        "verb:essere:presente:noi"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "it_essere_v2",
+      "type": "write",
+      "text": "Tu {sei} di Porto?",
+      "translation": "És do Porto?",
+      "trains": [
+        "verb:essere:presente:tu"
+      ]
+    }
+  ]
+}

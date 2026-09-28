@@ -4,6 +4,7 @@ import React from 'react';
 import type { ParadigmStep as Step } from '@/content';
 import { tenseLabel } from '@/content';
 import TraceRows from './TraceRows';
+import { ui } from '@/content';
 
 interface ParadigmStepProps {
   step: Step;
@@ -24,7 +25,7 @@ export default function ParadigmStep({ step, initiallyDone, onDone }: ParadigmSt
           <span className="rounded-full bg-azulejo-light text-azulejo-dark font-extrabold px-3 py-0.5">{step.label}</span>
         </div>
         <p className="text-brand-muted font-semibold">
-          {trace ? 'Escreve cada forma por cima do modelo.' : 'Escreve as formas sem modelo. Os erros aqui não contam.'}
+          {trace ? ui.paradigm.traceHint : ui.paradigm.recallHint}
         </p>
       </header>
 

@@ -1,0 +1,100 @@
+{
+  "id": "node_1_checkpoint",
+  "exercises": [
+    {
+      "id": "chk_1_1",
+      "type": "choose",
+      "text": "Você {é} de Portugal?",
+      "trains": [
+        "verb:ser:presente:ele_ela_voce"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "chk_1_2",
+      "type": "choose",
+      "text": "Queria um pastel de {nata}, por favor.",
+      "prompt": "Completa l'ordinazione al bar",
+      "trains": [
+        "vocab:pastel-de-nata"
+      ],
+      "wrong": [
+        "café",
+        "dia",
+        "noite"
+      ]
+    },
+    {
+      "id": "chk_1_3",
+      "type": "choose",
+      "text": "{Boa noite}, até amanhã!",
+      "prompt": "Come saluti la sera tardi?",
+      "trains": [
+        "vocab:boa-noite"
+      ],
+      "wrong": [
+        "Bom dia",
+        "Boa tarde",
+        "Olá"
+      ]
+    },
+    {
+      "id": "chk_1_4",
+      "type": "choose",
+      "text": "Eu {sou} de Itália.",
+      "prompt": "Presentati dicendo da dove vieni",
+      "trains": [
+        "verb:ser:presente:eu"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "chk_1_5",
+      "type": "choose",
+      "text": "São 9 da manhã, entras no café e dizes: {Bom dia}!",
+      "prompt": "Saluta di mattina presto",
+      "trains": [
+        "vocab:bom-dia"
+      ],
+      "wrong": [
+        "Boa tarde",
+        "Boa noite",
+        "Muito prazer"
+      ]
+    },
+    {
+      "id": "chk_1_6",
+      "type": "choose",
+      "text": "No café, pedes com simpatia: {Queria} um café, por favor.",
+      "prompt": "Ordina con cortesia",
+      "trains": [
+        "vocab:queria"
+      ],
+      "wrong": [
+        "Obrigado",
+        "Quanto é",
+        "Por favor"
+      ]
+    },
+    {
+      "id": "chk_1_7",
+      "type": "write",
+      "text": "Bom dia! Chamo-me Marco e {sou} de Itália.",
+      "translation": "Buongiorno! Mi chiamo Marco e vengo dall'Italia.",
+      "prompt": "Presentati completamente",
+      "trains": [
+        "verb:ser:presente:eu"
+      ]
+    },
+    {
+      "id": "chk_1_8",
+      "type": "write",
+      "text": "Boa tarde! {Queria} uma bica, por favor.",
+      "translation": "Buon pomeriggio! Vorrei un caffè, per favore.",
+      "prompt": "Saluta e ordina un caffè",
+      "trains": [
+        "vocab:queria"
+      ]
+    }
+  ]
+}

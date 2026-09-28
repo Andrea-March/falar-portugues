@@ -6,14 +6,14 @@ import { z } from 'zod';
  * - exercise: chiuso, per segnalare un problema in un esercizio, con il contesto allegato.
  */
 
-/** Motivi della segnalazione di un esercizio, nell'ordine in cui compaiono */
+/** Motivi della segnalazione di un esercizio, nell'ordine in cui compaiono (etichette in ui.report.reasons) */
 export const REPORT_REASONS = [
-  { id: 'not_accepted', label: 'La mia risposta era giusta, ma non è stata accettata' },
-  { id: 'portuguese', label: "C'è un errore nel portoghese" },
-  { id: 'translation', label: 'Traduzione o spiegazione sbagliata' },
-  { id: 'audio', label: "L'audio non va o dice altro" },
-  { id: 'unclear', label: "L'esercizio non è chiaro" },
-  { id: 'other', label: 'Altro' },
+  { id: 'not_accepted' },
+  { id: 'portuguese' },
+  { id: 'translation' },
+  { id: 'audio' },
+  { id: 'unclear' },
+  { id: 'other' },
 ] as const;
 
 export type ReportReason = (typeof REPORT_REASONS)[number]['id'];

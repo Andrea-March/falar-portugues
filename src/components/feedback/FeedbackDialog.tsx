@@ -7,6 +7,7 @@ import Mascot from '@/components/common/Mascot';
 import { APP_VERSION } from '@/config';
 import type { FeedbackPayload } from '@/utils/feedbackSchema';
 import { soundFX } from '@/utils/sound';
+import { ui } from '@/content';
 
 type Status = 'idle' | 'sending' | 'sent' | 'error' | 'offline';
 
@@ -81,14 +82,14 @@ export default function FeedbackDialog({ title, subtitle, status, onClose, fallb
           <div className="flex items-start justify-between gap-3 mb-4">
             <div>
               <h2 id={titleId} className="font-display text-2xl font-extrabold text-ink leading-tight">
-                {status === 'sent' ? 'Obrigado!' : title}
+                {status === 'sent' ? ui.feedback.thanks : title}
               </h2>
               {subtitle && status !== 'sent' && <p className="font-semibold text-brand-muted mt-0.5">{subtitle}</p>}
             </div>
             <button
               type="button"
               onClick={onClose}
-              aria-label="Fechar"
+              aria-label={ui.common.close}
               className="p-1.5 -mr-1.5 rounded-lg text-brand-muted hover:text-ink cursor-pointer"
             >
               <X size={24} strokeWidth={2.4} />
@@ -99,10 +100,10 @@ export default function FeedbackDialog({ title, subtitle, status, onClose, fallb
             <div className="flex flex-col items-center text-center gap-3 py-2">
               <Mascot mood="cheer" size={96} />
               <p className="text-lg font-bold text-brand-muted max-w-xs">
-                L&apos;abbiamo ricevuto: ci aiuta davvero a migliorare Falaluso.
+                {ui.feedback.received}
               </p>
               <button type="button" autoFocus onClick={onClose} className="btn-3d btn-primary w-full py-3.5 text-lg mt-2">
-                Fechar
+                {ui.common.close}
               </button>
             </div>
           ) : (
@@ -110,16 +111,16 @@ export default function FeedbackDialog({ title, subtitle, status, onClose, fallb
               {children}
               {(status === 'error' || status === 'offline') && (
                 <div role="alert" className="mt-4 rounded-2xl bg-ko-light text-ko-dark px-4 py-3 font-bold">
-                  {status === 'offline' ? 'Sem ligação: riprova quando torna la rete.' : 'Non siamo riusciti a inviarlo.'}{' '}
+                  {status === 'offline' ? ui.feedback.offline : ui.feedback.error}{' '}
                   <button type="button" onClick={onRetry} className="underline underline-offset-2 cursor-pointer">
-                    Riprova
+                    {ui.common.retry}
                   </button>
                   {status === 'error' && (
                     <>
                       {' '}
-                      oppure{' '}
+                      {ui.feedback.or}{' '}
                       <a href={fallbackMailto} className="underline underline-offset-2">
-                        scrivici un&apos;email
+                        {ui.feedback.writeEmail}
                       </a>
                       .
                     </>

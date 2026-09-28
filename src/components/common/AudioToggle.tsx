@@ -2,6 +2,7 @@
 
 import { Volume2, VolumeX } from 'lucide-react';
 import { setAudioEnabled, useAudioEnabled } from '@/utils/audioSettings';
+import { ui } from '@/content';
 
 export default function AudioToggle({ className = '' }: { className?: string }) {
   const enabled = useAudioEnabled();
@@ -10,8 +11,8 @@ export default function AudioToggle({ className = '' }: { className?: string }) 
       type="button"
       onClick={() => setAudioEnabled(!enabled)}
       aria-pressed={!enabled}
-      aria-label={enabled ? 'Desligar o som' : 'Ligar o som'}
-      title={enabled ? 'Desligar o som' : 'Ligar o som'}
+      aria-label={enabled ? ui.audio.off : ui.audio.on}
+      title={enabled ? ui.audio.off : ui.audio.on}
       className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
         enabled ? 'text-brand-muted hover:text-ink' : 'text-brand-primary bg-brand-light'
       } ${className}`}

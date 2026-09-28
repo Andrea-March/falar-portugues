@@ -1,0 +1,172 @@
+{
+  "id": "node_2_3",
+  "speaker": {
+    "name": "Pedro",
+    "role": "Amigo · Lisboa",
+    "avatar": "🧑🏻",
+    "voice": "homem"
+  },
+  "theory": [
+    {
+      "title": "Ao telefone com o Pedro",
+      "text": "Il tuo amico Pedro ti chiama: vuole sapere come stai e dove sei, per raggiungerti al bar del signor Manuel. Ti serviranno **estou**, **está** ed **estamos**.",
+      "examples": [
+        {
+          "text": "Estou no café.",
+          "translation": "Sono al bar."
+        },
+        {
+          "text": "Está ali!",
+          "translation": "È lì!"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "ex_2_3_1",
+      "type": "choose",
+      "text": "{Tudo bem}! E tu, como estás?",
+      "translation": "Tutto bene! E tu, come stai?",
+      "prompt": "Rispondi e chiedigli come sta",
+      "context": "Olá! Tudo bem?",
+      "contextTranslation": "Ciao! Tutto bene?",
+      "trains": [
+        "vocab:tudo-bem"
+      ],
+      "wrong": [
+        "Muito prazer",
+        "Boa noite",
+        "Está ali"
+      ]
+    },
+    {
+      "id": "ex_2_3_2",
+      "type": "write",
+      "text": "{Estou} no café do senhor Manuel.",
+      "translation": "Sono al bar del signor Manuel.",
+      "context": "Estou bem, obrigado. Onde estás agora?",
+      "contextTranslation": "Sto bene, grazie. Dove sei adesso?",
+      "prompt": "Di' che sei al bar del signor Manuel",
+      "wrongFrom": "verb-forms",
+      "trains": [
+        "verb:estar:presente:eu"
+      ]
+    },
+    {
+      "id": "ex_2_3_3",
+      "type": "write",
+      "text": "Sim, a Rita {está} aqui.",
+      "translation": "Sì, Rita è qui.",
+      "context": "E a Rita? Está contigo?",
+      "contextTranslation": "E Rita? È con te?",
+      "prompt": "Rita è con te: diglielo",
+      "wrongFrom": "verb-forms",
+      "trains": [
+        "verb:estar:presente:ele_ela_voce"
+      ]
+    },
+    {
+      "id": "ex_2_3_4",
+      "type": "choose",
+      "text": "Sim, {estamos} bem!",
+      "translation": "Sì, stiamo bene!",
+      "prompt": "Rispondi per te e Rita",
+      "context": "E vocês, estão bem?",
+      "contextTranslation": "E voi, state bene?",
+      "trains": [
+        "verb:estar:presente:nos"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "ex_2_3_5",
+      "type": "choose",
+      "text": "{Está ali}, ao lado da farmácia!",
+      "translation": "È lì, accanto alla farmacia!",
+      "prompt": "Il bar è in fondo alla piazza: indicaglielo",
+      "context": "Já estou na praça! Onde está o café?",
+      "contextTranslation": "Sono già in piazza! Dov'è il bar?",
+      "trains": [
+        "vocab:esta-ali"
+      ],
+      "wrong": [
+        "Está aqui",
+        "Estou bem",
+        "Muito prazer"
+      ]
+    }
+  ],
+  "test": {
+    "speaker": {
+      "name": "Rita",
+      "role": "Amiga · Lisboa",
+      "avatar": "👩🏽"
+    },
+    "exercises": [
+      {
+        "id": "ex_2_3_t1",
+        "type": "write",
+        "text": "{Estou bem}, obrigado. E tu?",
+        "translation": "Sto bene, grazie. E tu?",
+        "context": "Olá! Como estás?",
+        "contextTranslation": "Ciao! Come stai?",
+        "prompt": "Rispondi che stai bene e chiedile come sta",
+        "accept": [
+          "Tudo bem"
+        ],
+        "trains": [
+          "vocab:estou-bem"
+        ]
+      },
+      {
+        "id": "ex_2_3_t2",
+        "type": "write",
+        "text": "{Estou} no elétrico.",
+        "translation": "Sono sul tram.",
+        "context": "Estou bem! Onde estás agora?",
+        "contextTranslation": "Sto bene! Dove sei adesso?",
+        "prompt": "Di' che sei sul tram",
+        "trains": [
+          "verb:estar:presente:eu"
+        ]
+      },
+      {
+        "id": "ex_2_3_t3",
+        "type": "write",
+        "text": "Não, o Pedro {está} no café.",
+        "translation": "No, Pedro è al bar.",
+        "context": "E o Pedro? Está contigo?",
+        "contextTranslation": "E Pedro? È con te?",
+        "prompt": "Pedro non è con te: è al bar",
+        "trains": [
+          "verb:estar:presente:ele_ela_voce"
+        ]
+      },
+      {
+        "id": "ex_2_3_t4",
+        "type": "write",
+        "text": "Sim, {estamos} no café amanhã!",
+        "translation": "Sì, domani siamo al bar!",
+        "context": "E amanhã? Tu e o Pedro estão no café?",
+        "contextTranslation": "E domani? Tu e Pedro siete al bar?",
+        "prompt": "Rispondi di sì, per te e Pedro",
+        "trains": [
+          "verb:estar:presente:nos"
+        ]
+      },
+      {
+        "id": "ex_2_3_t5",
+        "type": "write",
+        "text": "{Boa noite}, Rita!",
+        "translation": "Buonanotte, Rita!",
+        "context": "Boa! Até amanhã, boa noite!",
+        "contextTranslation": "Bene! A domani, buonanotte!",
+        "prompt": "Ricambia il saluto",
+        "trains": [
+          "vocab:boa-noite"
+        ]
+      }
+    ]
+  }
+}

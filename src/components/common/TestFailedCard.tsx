@@ -5,6 +5,7 @@ import { soundFX } from '@/utils/sound';
 import { TEST_PASS_ACCURACY } from '@/content';
 import FullscreenPortal from './FullscreenPortal';
 import Mascot from './Mascot';
+import { ui } from '@/content';
 
 interface TestFailedCardProps {
   accuracy: number;
@@ -20,9 +21,9 @@ export default function TestFailedCard({ accuracy, onRetry, onClose }: TestFaile
         <main className="flex-1 overflow-y-auto">
           <div className="max-w-md mx-auto px-6 pt-12 pb-6 flex flex-col items-center text-center">
             <Mascot mood="sad" size={150} />
-            <h1 className="mt-6 text-4xl font-extrabold text-ink">Quase lá!</h1>
+            <h1 className="mt-6 text-4xl font-extrabold text-ink">{ui.testFailed.title}</h1>
             <p className="mt-2 text-lg text-brand-muted font-semibold">
-              Acertaste {accuracy}% à primeira. Para passar o teste precisas de {TEST_PASS_ACCURACY}%.
+              {ui.testFailed.body(accuracy, TEST_PASS_ACCURACY)}
             </p>
 
             {/* Barra: dove sei rispetto alla soglia */}
@@ -38,7 +39,7 @@ export default function TestFailedCard({ accuracy, onRetry, onClose }: TestFaile
             </div>
 
             <p className="mt-4 text-brand-muted font-semibold">
-              Se quiseres, repete primeiro a sessão “Produção”: é o melhor treino para o teste.
+              {ui.testFailed.hint}
             </p>
           </div>
         </main>
@@ -53,7 +54,7 @@ export default function TestFailedCard({ accuracy, onRetry, onClose }: TestFaile
               }}
               className="btn-3d btn-ghost px-5 py-4 text-lg"
             >
-              Voltar
+              {ui.common.back}
             </button>
             <button
               type="button"
@@ -64,7 +65,7 @@ export default function TestFailedCard({ accuracy, onRetry, onClose }: TestFaile
               }}
               className="btn-3d btn-primary flex-1 py-4 text-lg"
             >
-              Tentar de novo
+              {ui.feedbackSheet.tryAgain}
             </button>
           </div>
         </div>

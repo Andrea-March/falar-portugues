@@ -1,14 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import ItalianNote from '@/components/common/ItalianNote';
+import LearnerNote from '@/components/common/LearnerNote';
 import { Flag, Sparkles, Volume2 } from 'lucide-react';
 import type { ExerciseReport } from '@/utils/feedback';
 import ReportDialog from '@/components/feedback/ReportDialog';
 import { COMBO_BADGE_FROM } from '@/utils/sound';
-import { speakPortuguese } from '@/utils/textToSpeech';
+import { speakTarget } from '@/utils/textToSpeech';
 import Mascot from '@/components/common/Mascot';
 import type { Feedback } from './PracticeSession';
+import { ui } from '@/content';
 
 interface FeedbackSheetProps {
   mode: 'choice' | 'typing';
@@ -19,7 +20,7 @@ interface FeedbackSheetProps {
   correctAnswer: string;
   sentence: string;
   /** Nota per italiani, mostrata dopo un errore o con la soluzione */
-  italianNote?: string;
+  learnerNote?: string;
   /** Dati per "Reportar": l'utente segnala un problema nell'esercizio (traduzione, audio, risposta non accettata) */
   report?: ExerciseReport;
   onCheck: () => void;
@@ -39,8 +40,8 @@ function ReportLink({ report, tone }: { report?: ExerciseReport; tone: string })
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Reportar um problema neste exercício"
-        title="Segnala un problema in questo esercizio"
+        aria-label={ui.feedbackSheet.report}
+        title={ui.feedbackSheet.reportHint}
         className={`self-start shrink-0 inline-flex items-center gap-1 text-sm font-bold opacity-70 hover:opacity-100 cursor-pointer ${tone}`}
       >
         <Flag size={15} strokeWidth={2.6} />
@@ -50,13 +51,13 @@ function ReportLink({ report, tone }: { report?: ExerciseReport; tone: string })
   );
 }
 
-const PRAISE = ['Muito bem!', 'Excelente!', 'Perfeito!', 'Boa!', 'Isso mesmo!'];
+const PRAISE = ui.feedbackSheet.praise;
 
 function SentenceButton({ sentence, tone }: { sentence: string; tone: string }) {
   return (
     <button
       type="button"
-      onClick={() => speakPortuguese(sentence)}
+      onClick={() => speakTarget(sentence)}
       className={`mt-1 inline-flex items-start gap-1.5 font-bold text-[15px] text-left hover:underline cursor-pointer ${tone}`}
     >
       <Volume2 size={18} strokeWidth={2.5} className="mt-0.5 shrink-0" /> {sentence}
@@ -71,7 +72,7 @@ export default function FeedbackSheet({
   canCheck,
   correctAnswer,
   sentence,
-  italianNote,
+  learnerNote,
   report,
   onCheck,
   onDontKnow,
@@ -86,7 +87,7 @@ export default function FeedbackSheet({
     if (mode === 'choice') {
       return (
         <div className="border-t-2 border-brand-border">
-          <p className="max-w-2xl mx-auto px-5 sm:px-6 py-6 text-center text-brand-muted font-bold">Toca na resposta certa</p>
+          <p className="max-w-2xl mx-auto px-5 sm:px-6 py-6 text-center text-brand-muted font-bold">{ui.feedbackSheet.tapCorrect}</p>
         </div>
       );
     }
@@ -94,7 +95,7 @@ export default function FeedbackSheet({
       <div className="border-t-2 border-brand-border">
         <div className="max-w-2xl mx-auto px-5 sm:px-6 py-5 flex gap-3">
           <button type="button" onClick={onDontKnow} className="btn-3d btn-ghost px-5 py-4 text-lg">
-            Não sei
+            {ui.answer.dontKnow}
           </button>
           <button type="button" onClick={onCheck} disabled={!canCheck} className="btn-3d btn-primary flex-1 py-4 text-lg">
             Verificar
@@ -117,10 +118,10 @@ export default function FeedbackSheet({
                 {combo >= COMBO_BADGE_FROM && (
                   <span
                     className="inline-flex items-center gap-1 rounded-full bg-brand-accent text-brand-accentDark border-b-[3px] border-brand-accentHover px-3 py-0.5 font-display text-lg font-extrabold animate-pop"
-                    aria-label={`${combo} respostas certas seguidas`}
+                    aria-label={ui.feedbackSheet.comboLabel(combo)}
                   >
                     <Sparkles size={18} strokeWidth={2.6} />
-                    {combo} seguidas!
+                    {ui.feedbackSheet.combo(combo)}
                   </span>
                 )}
               </div>
@@ -145,13 +146,13 @@ export default function FeedbackSheet({
             <Mascot mood="think" size={64} />
             <div className="flex-1 min-w-0">
               <p className="font-display text-2xl font-extrabold leading-tight text-azulejo-dark">
-                A resposta certa é “{correctAnswer}”
+                {ui.feedbackSheet.correctIs(correctAnswer)}
               </p>
               <SentenceButton sentence={sentence} tone="text-azulejo-dark" />
             </div>
             <ReportLink report={report} tone="text-azulejo-dark" />
           </div>
-          {italianNote && <ItalianNote text={italianNote} />}
+          {learnerNote && <LearnerNote text={learnerNote} />}
           <button
             type="button"
             autoFocus
@@ -172,20 +173,20 @@ export default function FeedbackSheet({
         <div className="flex items-center gap-3">
           <Mascot mood="sad" size={64} />
           <div className="flex-1 min-w-0">
-            <p className="font-display text-2xl font-extrabold leading-tight text-ko-dark">Ainda não</p>
+            <p className="font-display text-2xl font-extrabold leading-tight text-ko-dark">{ui.feedbackSheet.notYet}</p>
             <button
               type="button"
               onClick={onReveal}
               className="mt-1 text-ko-dark font-bold text-[15px] underline underline-offset-2 cursor-pointer"
             >
-              Ver a solução
+              {ui.feedbackSheet.showSolution}
             </button>
           </div>
           <ReportLink report={report} tone="text-ko-dark" />
         </div>
-        {italianNote && <ItalianNote text={italianNote} />}
+        {learnerNote && <LearnerNote text={learnerNote} />}
         <button type="button" autoFocus onClick={onRetry} className="btn-3d btn-ko w-full py-4 text-lg">
-          Tentar de novo
+          {ui.feedbackSheet.tryAgain}
         </button>
       </div>
     </div>

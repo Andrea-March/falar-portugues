@@ -3,34 +3,31 @@
  * I componenti non importano mai direttamente i file JSON: se un domani i contenuti
  * arriveranno da un database, cambia solo questo file.
  */
-import courseJson from './course.json';
-import { SINGULAR, PLURAL } from './schema';
 import type { Course, CourseNode, Chapter, Exercise as ContentExercise, NodeContent, Person, TheoryCard, TheoryItem, Verb, VocabItem, VocabStudyCard } from './schema';
-import { verbList, vocabSetList, nodeLoaders, vocabGroupLabels } from './registry.generated';
+import { verbList, vocabSetList, nodeLoaders, vocabGroupLabels, courseConfig, courseData } from './registry.generated';
 import type { Exercise as RuntimeExercise } from '@/types/exercise';
 
 export type { Chapter, CourseNode, NodeContent, Verb, VocabItem, Person };
 export type { Speaker } from './schema';
 
+/** Configurazione del corso scelto al build (lingue, persone, testi dell'interfaccia) */
+export { courseConfig };
+/** Testi dell'interfaccia del corso */
+export const ui = courseConfig.ui;
+
 // ---------- Corso e mappa ----------
 
-export const course = courseJson as unknown as Course;
+export const course: Course = courseData;
 export const chapters: Chapter[] = course.chapters;
 const allNodes: CourseNode[] = chapters.flatMap((c) => c.nodes);
 
 export const getCourseNode = (id: string) => allNodes.find((n) => n.id === id);
 
 /** Categoria del nodo, mostrata sopra il titolo sulla mappa */
-export const KIND_LABELS: Record<CourseNode['kind'], string> = {
-  verb: 'Verbo',
-  vocab: 'Vocabulário',
-  dialogue: 'Conversa',
-  culture: 'Cultura · opcional',
-  checkpoint: 'Desafio',
-};
+export const KIND_LABELS: Record<CourseNode['kind'], string> = ui.kinds;
 
 /** Titolo completo, per i punti dove la categoria non si vede (es. fine lezione) */
-export const fullNodeTitle = (node: CourseNode) => (node.kind === 'verb' ? `Verbo ${node.title.toLowerCase()}` : node.title);
+export const fullNodeTitle = (node: CourseNode) => (node.kind === 'verb' ? ui.verbNodeTitle(node.title.toLowerCase()) : node.title);
 
 /** Nodo successivo nel percorso (o lo stesso, se è l'ultimo) */
 /** Nodi facoltativi: si possono fare, ma non servono a sbloccare i successivi */
@@ -75,22 +72,13 @@ export const getVerb = (id: string) => verbs.find((v) => v.id === id);
 const vocabById = new Map<string, VocabItem>(vocabSetList.flatMap((s) => s.items.map((i) => [i.id, i] as const)));
 export const getVocab = (id: string) => vocabById.get(id);
 
-export const PERSON_LABELS: Record<Person, string> = {
-  eu: 'Eu',
-  tu: 'Tu',
-  ele_ela_voce: 'Ele / Ela / Você',
-  nos: 'Nós',
-  eles_elas_voces: 'Eles / Elas / Vocês',
-};
-
-export const TENSE_LABELS: Record<string, string> = {
-  presente: 'Presente do Indicativo',
-  preterito_perfeito: 'Pretérito Perfeito',
-  preterito_imperfeito: 'Pretérito Imperfeito',
-  futuro: 'Futuro do Indicativo',
-};
+export const PERSONS: readonly Person[] = courseConfig.persons;
+export const PERSON_LABELS: Record<Person, string> = courseConfig.personLabels;
+export const TENSE_LABELS: Record<string, string> = courseConfig.tenseLabels;
 /** Pronome breve letto ad alta voce insieme alla forma del verbo */
-const SPOKEN: Record<Person, string> = { eu: 'eu', tu: 'tu', ele_ela_voce: 'ele', nos: 'nós', eles_elas_voces: 'eles' };
+const SPOKEN: Record<Person, string> = courseConfig.spokenPronouns;
+const SINGULAR = courseConfig.singular;
+const PLURAL = courseConfig.plural;
 
 export const tenseLabel = (t: string) => TENSE_LABELS[t] ?? t.replace(/_/g, ' ');
 
@@ -98,7 +86,7 @@ export const tenseLabel = (t: string) => TENSE_LABELS[t] ?? t.replace(/_/g, ' ')
 export function conjugationRows(verbId: string, tense: string) {
   const forms = getVerb(verbId)?.conjugations[tense];
   if (!forms) return [];
-  return (Object.keys(PERSON_LABELS) as Person[]).map((p) => ({
+  return PERSONS.map((p) => ({
     person: p,
     pronoun: PERSON_LABELS[p],
     verb: forms[p],
@@ -135,15 +123,15 @@ function verbTarget(ex: ContentExercise) {
 
 function defaultPrompt(ex: ContentExercise, typed: boolean) {
   const target = verbTarget(ex);
-  if (target) return `Conjuga o verbo ${target.verb.infinitive} (${tenseLabel(target.tense).toLowerCase()})`;
-  return typed ? 'Completa a frase' : 'Escolhe a opção certa';
+  if (target) return ui.exercise.conjugate(target.verb.infinitive, tenseLabel(target.tense).toLowerCase());
+  return typed ? ui.exercise.complete : ui.exercise.choose;
 }
 
-/** Prima nota per italiani tra le voci di vocabolario allenate dall'esercizio */
-function italianNoteFromTrains(trains: string[]): string | undefined {
+/** Prima nota per chi impara tra le voci di vocabolario allenate dall'esercizio */
+function learnerNoteFromTrains(trains: string[]): string | undefined {
   for (const ref of trains) {
     if (!ref.startsWith('vocab:')) continue;
-    const note = getVocab(ref.slice('vocab:'.length))?.italianNote;
+    const note = getVocab(ref.slice('vocab:'.length))?.learnerNote;
     if (note) return note;
   }
   return undefined;
@@ -161,12 +149,12 @@ export function toRuntimeExercise(ex: ContentExercise, opts: { typed?: boolean; 
   const base = {
     id: ex.id,
     prompt: ex.prompt ?? defaultPrompt(ex, typed),
-    translationIt: ex.it,
+    translation: ex.translation,
     context: ex.context,
-    contextIt: ex.contextIt,
+    contextTranslation: ex.contextTranslation,
     alternatives: ex.accept,
     trains: ex.trains,
-    italianNote: ex.italianNote ?? italianNoteFromTrains(ex.trains),
+    learnerNote: ex.learnerNote ?? learnerNoteFromTrains(ex.trains),
   };
 
   if (typed) {
@@ -213,14 +201,14 @@ export interface ResolvedTheoryCard {
   title: string;
   text: string;
   conjugation?: { pronoun: string; verb: string; spoken: string }[];
-  examples?: { pt: string; it: string; note?: string; italianNote?: string }[];
+  examples?: { text: string; translation: string; note?: string; learnerNote?: string }[];
 }
 
 export function resolveTheory(card: TheoryCard): ResolvedTheoryCard {
   const vocabExamples = (card.vocab ?? [])
     .map(getVocab)
     .filter((v): v is VocabItem => Boolean(v))
-    .map((v) => ({ pt: v.pt, it: v.it, note: v.note, italianNote: v.italianNote }));
+    .map((v) => ({ text: v.text, translation: v.translation, note: v.note, learnerNote: v.learnerNote }));
   const examples = [...vocabExamples, ...(card.examples ?? [])];
 
   return {
@@ -258,9 +246,9 @@ export interface ParadigmStep {
 // ---------- Studio guidato del vocabolario ----------
 
 /** Separa la punteggiatura finale, che si mostra ma non si digita: "Tudo bem?" → "Tudo bem" + "?" */
-export function splitTrailingPunctuation(pt: string) {
-  const m = pt.trim().match(/^(.*?[\p{L}\p{N}])([^\p{L}\p{N}]*)$/u);
-  return m ? { form: m[1], after: m[2] } : { form: pt.trim(), after: '' };
+export function splitTrailingPunctuation(text: string) {
+  const m = text.trim().match(/^(.*?[\p{L}\p{N}])([^\p{L}\p{N}]*)$/u);
+  return m ? { form: m[1], after: m[2] } : { form: text.trim(), after: '' };
 }
 
 export interface VocabPresentStep {
@@ -276,7 +264,7 @@ export interface VocabPresentStep {
 
 export interface VocabRecallStep {
   kind: 'vocab-recall';
-  rows: { id: string; situation: string; form: string; after: string; pt: string }[];
+  rows: { id: string; situation: string; form: string; after: string; text: string }[];
 }
 
 function vocabStudySteps(card: VocabStudyCard['vocabStudy']): (VocabPresentStep | VocabRecallStep)[] {
@@ -288,13 +276,13 @@ function vocabStudySteps(card: VocabStudyCard['vocabStudy']): (VocabPresentStep 
       position: i + 1,
       groupSize: items.length,
       item,
-      ...splitTrailingPunctuation(item.pt),
+      ...splitTrailingPunctuation(item.text),
     }));
   });
   if (card.recall === false) return present;
   const recall: VocabRecallStep = {
     kind: 'vocab-recall',
-    rows: present.map(({ item, form, after }) => ({ id: item.id, situation: item.situation ?? item.it, form, after, pt: item.pt })),
+    rows: present.map(({ item, form, after }) => ({ id: item.id, situation: item.situation ?? item.translation, form, after, text: item.text })),
   };
   return [...present, recall];
 }
@@ -306,14 +294,14 @@ export function paradigmSteps(verbId: string, tense: string): ParadigmStep[] {
   const verb = getVerb(verbId);
   const forms = verb?.conjugations[tense];
   if (!verb || !forms) return [];
-  const rows = (persons: Person[]): ParadigmRow[] =>
+  const rows = (persons: readonly Person[]): ParadigmRow[] =>
     persons.map((p) => ({ person: p, pronoun: PERSON_LABELS[p], spoken: SPOKEN[p], form: forms[p] }));
   const base = { kind: 'paradigm' as const, verbId, infinitive: verb.infinitive, tense };
   return [
-    { ...base, mode: 'trace', label: 'Singular', rows: rows(SINGULAR) },
-    { ...base, mode: 'trace', label: 'Plural', rows: rows(PLURAL) },
-    { ...base, mode: 'trace', label: 'Todas as formas', rows: rows([...SINGULAR, ...PLURAL]) },
-    { ...base, mode: 'recall', label: 'Agora de memória', rows: rows([...SINGULAR, ...PLURAL]) },
+    { ...base, mode: 'trace', label: ui.paradigm.singular, rows: rows(SINGULAR) },
+    { ...base, mode: 'trace', label: ui.paradigm.plural, rows: rows(PLURAL) },
+    { ...base, mode: 'trace', label: ui.paradigm.all, rows: rows([...SINGULAR, ...PLURAL]) },
+    { ...base, mode: 'recall', label: ui.paradigm.recall, rows: rows([...SINGULAR, ...PLURAL]) },
   ];
 }
 
@@ -335,11 +323,11 @@ export function theorySteps(items: TheoryItem[]): TheoryStep[] {
 export type SessionKind = 'discovery' | 'guided' | 'listening' | 'production' | 'test';
 
 export const SESSION_INFO: Record<SessionKind, { name: string; description: string; icon: string }> = {
-  discovery: { name: 'Descoberta', description: 'Teoria, ascolto e ricopiatura', icon: '📖' },
-  guided: { name: 'Prática', description: 'Esercizi con opzioni e aiuti', icon: '✏️' },
-  listening: { name: 'Escuta', description: 'Ascolta e scrivi', icon: '🎧' },
-  production: { name: 'Produção', description: 'Scrivi tutto da solo, senza opzioni', icon: '🖊️' },
-  test: { name: 'Teste final', description: 'Tutto mescolato: serve l’80% per superarlo', icon: '🏁' },
+  discovery: { ...ui.sessions.discovery, icon: '📖' },
+  guided: { ...ui.sessions.guided, icon: '✏️' },
+  listening: { ...ui.sessions.listening, icon: '🎧' },
+  production: { ...ui.sessions.production, icon: '🖊️' },
+  test: { ...ui.sessions.test, icon: '🏁' },
 };
 
 /** Precisione minima per superare il test finale (%) */
@@ -385,22 +373,22 @@ function partLabel(node: CourseNode, part: number) {
 export function sessionDescription(s: Session, node: CourseNode) {
   if (s.part !== undefined) {
     const label = partLabel(node, s.part);
-    const what = label ? label.toLowerCase() : 'nuove espressioni';
-    if (s.kind === 'discovery') return `Impara: ${what}`;
-    if (s.kind === 'guided') return s.part === 0 ? `Esercitati: ${what}` : `Esercitati: ${what}, più un ripasso`;
+    const what = label ? label.toLowerCase() : ui.sessions.newExpressions;
+    if (s.kind === 'discovery') return ui.sessions.learnPart(what);
+    if (s.kind === 'guided') return s.part === 0 ? ui.sessions.practicePart(what) : ui.sessions.practicePartWithReview(what);
   }
   if (s.kind === 'discovery') {
-    if (node.kind === 'verb') return 'La regola e le sue forme, da ascoltare e ricopiare';
-    if (node.kind === 'dialogue') return 'Le frasi che ti servono nella conversazione';
-    if (node.kind === 'culture') return 'Una curiosità da leggere';
+    if (node.kind === 'verb') return ui.sessions.verbDiscovery;
+    if (node.kind === 'dialogue') return ui.sessions.dialogueDiscovery;
+    if (node.kind === 'culture') return ui.sessions.cultureDiscovery;
   }
-  if (s.kind === 'guided' && node.kind === 'culture') return 'Tre domande veloci';
+  if (s.kind === 'guided' && node.kind === 'culture') return ui.sessions.cultureGuided;
   if (node.kind === 'dialogue') {
-    if (s.kind === 'guided') return 'La conversazione, con opzioni e aiuti';
-    if (s.kind === 'production') return 'La conversazione, tutta da scrivere';
-    if (s.kind === 'test') return 'La conversazione senza aiuti: serve l’80%';
+    if (s.kind === 'guided') return ui.sessions.dialogueGuided;
+    if (s.kind === 'production') return ui.sessions.dialogueProduction;
+    if (s.kind === 'test') return ui.sessions.dialogueTest;
   }
-  if (node.kind === 'checkpoint') return 'Frasi da tutto il capitolo: serve l’80%';
+  if (node.kind === 'checkpoint') return ui.sessions.checkpoint;
   return SESSION_INFO[s.kind].description;
 }
 
@@ -453,7 +441,7 @@ export function generatedExercises(theory: TheoryItem[]): RuntimeExercise[] {
         .map(getVocab)
         .filter((v): v is VocabItem => Boolean(v?.situation))
         .map((v) => {
-          const { form, after } = splitTrailingPunctuation(v.pt);
+          const { form, after } = splitTrailingPunctuation(v.text);
           return {
             id: `gen-vocab-${v.id}`,
             type: 'fill_in_the_blank' as const,
@@ -462,7 +450,7 @@ export function generatedExercises(theory: TheoryItem[]): RuntimeExercise[] {
             sentenceAfter: after,
             correctAnswer: form,
             trains: [`vocab:${v.id}`],
-            italianNote: v.italianNote,
+            learnerNote: v.learnerNote,
           };
         });
     }
@@ -474,7 +462,7 @@ export function generatedExercises(theory: TheoryItem[]): RuntimeExercise[] {
       return [...SINGULAR, ...PLURAL].map((p) => ({
         id: `gen-verb-${verbId}-${tense}-${p}`,
         type: 'fill_in_the_blank' as const,
-        prompt: `Verbo ${verb.infinitive} · ${tenseLabel(tense).toLowerCase()}`,
+        prompt: ui.exercise.verbDrill(verb.infinitive, tenseLabel(tense).toLowerCase()),
         sentenceBefore: `${PERSON_LABELS[p]} `,
         sentenceAfter: '',
         correctAnswer: forms[p],

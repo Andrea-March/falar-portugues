@@ -20,6 +20,7 @@ import {
   type CourseNode,
   type Session,
 } from '@/content';
+import { ui } from '@/content';
 
 /** Compatibilità con il codice esistente */
 export type Node = CourseNode;
@@ -292,8 +293,8 @@ export default function ChapterMap({
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-sm font-bold text-white/80">Capítulo {chapter.number}</p>
-                  <span className="text-xs font-extrabold bg-white/20 rounded-full px-2 py-0.5" aria-label={`${doneInChapter} de ${totalRows} lições feitas`}>
+                  <p className="text-sm font-bold text-white/80">{ui.map.chapter(chapter.number)}</p>
+                  <span className="text-xs font-extrabold bg-white/20 rounded-full px-2 py-0.5" aria-label={ui.map.lessonsDone(doneInChapter, totalRows)}>
                     {doneInChapter}/{totalRows}
                   </span>
                 </div>
@@ -368,7 +369,7 @@ export default function ChapterMap({
                     {isCurrent && (
                       <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-20 pointer-events-none animate-bob">
                         <span className="block whitespace-nowrap bg-white text-brand-primary border-2 border-brand-border font-extrabold text-sm px-3 py-1 rounded-xl">
-                          {done > 0 ? 'Continuar' : 'Começar'}
+                          {done > 0 ? ui.common.continue : ui.common.start}
                         </span>
                       </div>
                     )}
@@ -381,7 +382,7 @@ export default function ChapterMap({
                       type="button"
                       data-node-ui
                       aria-label={`${node.title}${
-                        isCompleted ? ' (concluída)' : node.draft ? ' (em breve)' : isLocked ? ' (bloqueada)' : total > 1 ? ` (${done} de ${total} sessões)` : ''
+                        isCompleted ? ` (${ui.map.completed})` : node.draft ? ` (${ui.map.soon})` : isLocked ? ` (${ui.map.locked})` : total > 1 ? ` (${ui.map.sessionsDone(done, total)})` : ''
                       }`}
                       aria-expanded={openNodeId === node.id}
                       onClick={() => {
@@ -423,7 +424,7 @@ export default function ChapterMap({
                         className="text-[10px] font-extrabold uppercase tracking-[0.09em] leading-tight"
                         style={{ color: isLocked ? '#a9b2c7' : kind.text }}
                       >
-                        {node.draft ? 'Em breve' : KIND_LABELS[node.kind]}
+                        {node.draft ? ui.common.soon : KIND_LABELS[node.kind]}
                       </p>
                       <p className={`font-display text-sm font-extrabold leading-tight line-clamp-2 ${isLocked ? 'text-[#9aa4bd]' : 'text-ink'}`}>
                         {node.title}
@@ -475,7 +476,7 @@ export default function ChapterMap({
                     <p className="font-semibold mt-0.5 opacity-90">{node.subtitle}</p>
                     {isLocked ? (
                       <p className="mt-3 font-bold">
-                        {isDraft ? 'Em breve: esta lição está a ser preparada.' : 'Completa as lições anteriores para desbloquear.'}
+                        {isDraft ? ui.map.draftHint : ui.map.lockedHint}
                       </p>
                     ) : (
                       <SessionList
@@ -520,7 +521,7 @@ function SessionList({
 
   return (
     <div className="mt-3 space-y-3">
-      <ol className="space-y-1.5" aria-label="Sessões">
+      <ol className="space-y-1.5" aria-label={ui.map.sessions}>
         {list.map((session, i) => {
           const info = SESSION_INFO[session.kind];
           const state = i < done ? 'done' : i === done ? 'next' : 'later';
@@ -530,7 +531,7 @@ function SessionList({
                 type="button"
                 disabled={state === 'later'}
                 onClick={() => onStart(session)}
-                aria-label={`${sessionName(session)}${state === 'done' ? ' (feita, toca para repetir)' : state === 'later' ? ' (bloqueada)' : ''}`}
+                aria-label={`${sessionName(session)}${state === 'done' ? ` (${ui.map.sessionDoneRepeat})` : state === 'later' ? ` (${ui.map.locked})` : ''}`}
                 className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2 text-left transition-colors ${
                   state === 'next'
                     ? 'bg-white/25 ring-2 ring-white/70'
@@ -551,7 +552,7 @@ function SessionList({
                   <span className="block font-extrabold leading-tight">{sessionName(session)}</span>
                   <span className="block text-sm font-semibold opacity-85 leading-snug">{sessionDescription(session, node)}</span>
                 </span>
-                {state === 'done' && <span className="text-xs font-extrabold opacity-80 shrink-0">Repetir</span>}
+                {state === 'done' && <span className="text-xs font-extrabold opacity-80 shrink-0">{ui.map.repeat}</span>}
               </button>
             </li>
           );
@@ -565,7 +566,7 @@ function SessionList({
           onClick={() => onStart(next)}
           className="btn-3d w-full py-3.5 text-lg bg-white border-brand-border text-brand-primary"
         >
-          {done === 0 ? 'Começar' : 'Continuar'}: {sessionName(next)}
+          {done === 0 ? ui.common.start : ui.common.continue}: {sessionName(next)}
         </button>
       )}
     </div>

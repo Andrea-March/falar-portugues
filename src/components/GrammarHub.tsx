@@ -14,6 +14,7 @@ import VerbStudy from './VerbStudy';
 import ParadigmReview from './theory/ParadigmReview';
 import PracticeSession, { type PracticeStats } from './exercises/PracticeSession';
 import LessonCompleteCard from './common/LessonCompleteCard';
+import { ui } from '@/content';
 
 type View =
   | { kind: 'hub' }
@@ -70,7 +71,7 @@ export default function GrammarHub() {
   if (view.kind === 'done') {
     return (
       <LessonCompleteCard
-        title={`Verbo ${view.verb.infinitive}`}
+        title={ui.verbNodeTitle(view.verb.infinitive)}
         xpEarned={view.xp}
         streakDays={progress.streak}
         accuracy={view.accuracy}
@@ -94,8 +95,8 @@ export default function GrammarHub() {
   return (
     <div className="space-y-5 animate-fade-in">
       <header>
-        <h2 className="font-display text-3xl font-extrabold text-ink leading-tight">Gramática</h2>
-        <p className="font-semibold text-brand-muted">Il quaderno di quello che hai studiato nel percorso.</p>
+        <h2 className="font-display text-3xl font-extrabold text-ink leading-tight">{ui.grammar.title}</h2>
+        <p className="font-semibold text-brand-muted">{ui.grammar.subtitle}</p>
       </header>
 
       {verbs === null ? (
@@ -106,13 +107,13 @@ export default function GrammarHub() {
         <div className="flex flex-col items-center text-center gap-3 pt-8">
           <Mascot mood="idle" size={100} />
           <p className="text-lg font-bold text-brand-muted max-w-xs">
-            Qui troverai i verbi man mano che li studi. Il primo arriva presto nel percorso!
+            {ui.grammar.empty}
           </p>
         </div>
       ) : (
         <section aria-labelledby="grammar-verbs" className="space-y-3">
           <h3 id="grammar-verbs" className="text-xs font-extrabold uppercase tracking-[0.09em] text-azulejo">
-            Verbos
+            {ui.grammar.verbs}
           </h3>
           {verbs.map((verb) => (
             <button
@@ -131,7 +132,7 @@ export default function GrammarHub() {
                 <span className="min-w-0">
                   <span className="block font-display text-xl font-extrabold text-ink leading-tight">{verb.infinitive}</span>
                   <span className="block text-sm font-semibold text-brand-muted truncate">
-                    {verb.it} · {verb.tenses.map((t) => tenseLabel(t).toLowerCase()).join(', ')}
+                    {verb.translation} · {verb.tenses.map((t) => tenseLabel(t).toLowerCase()).join(', ')}
                   </span>
                 </span>
               </span>

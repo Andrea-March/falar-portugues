@@ -5,6 +5,7 @@ import LessonShell from '@/components/common/LessonShell';
 import ParadigmStep from '@/components/theory/ParadigmStep';
 import { paradigmSteps } from '@/content';
 import { soundFX } from '@/utils/sound';
+import { ui } from '@/content';
 
 /**
  * Ripasso del paradigma dalla Gramática: le stesse quattro schermate della Descoberta
@@ -52,7 +53,7 @@ export default function ParadigmReview({ verbId, tense, onClose }: { verbId: str
               }}
               className="btn-3d flex-1 py-4 text-lg bg-azulejo border-azulejo-dark text-white hover:brightness-110"
             >
-              {isLast ? 'Concluir' : 'Continuar'}
+              {isLast ? ui.lesson.finish : ui.common.continue}
             </button>
           </div>
         </div>

@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { speakPortuguese } from '@/utils/textToSpeech';
+import { speakTarget } from '@/utils/textToSpeech';
+import { ui } from '@/content';
 
 interface AudioButtonProps {
   textToSpeak: string;
@@ -14,9 +15,9 @@ export default function AudioButton({ textToSpeak, className = '' }: AudioButton
       type="button"
       onClick={(e) => {
         e.stopPropagation();
-        speakPortuguese(textToSpeak);
+        speakTarget(textToSpeak);
       }}
-      title="Ouvir pronúncia"
+      title={ui.audio.pronunciation}
       className={`p-2 bg-orange-100 hover:bg-orange-200 text-stone-700 rounded-full transition-all active:scale-90 flex items-center justify-center shrink-0 shadow-sm ${className}`}
     >
       🔊

@@ -9,6 +9,7 @@ import { linkGoogle, useAccount } from '@/progress/account';
 import { useSyncStatus, type SyncStatus } from '@/progress/sync';
 import { setAudioEnabled, useAudioEnabled } from '@/utils/audioSettings';
 import { soundFX } from '@/utils/sound';
+import { courseConfig, ui } from '@/content';
 
 /**
  * Menu in alto a destra: audio, feedback, privacy, cancellazione dell'account, versione e stato del salvataggio.
@@ -17,11 +18,11 @@ import { soundFX } from '@/utils/sound';
 /** Dove sono salvati i progressi, detto in breve (niente se il cloud non è configurato) */
 const SYNC_LABEL: Record<SyncStatus, string | null> = {
   off: null,
-  connecting: 'Collegamento al cloud…',
-  pending: 'Salvataggio nel cloud…',
-  synced: 'Progressi salvati nel cloud',
-  offline: 'Offline: progressi salvati sul telefono',
-  error: 'Cloud non raggiungibile: progressi salvati sul telefono',
+  connecting: ui.menu.sync.connecting,
+  pending: ui.menu.sync.pending,
+  synced: ui.menu.sync.synced,
+  offline: ui.menu.sync.offline,
+  error: ui.menu.sync.error,
 };
 
 export default function AppMenu() {
@@ -63,7 +64,7 @@ export default function AppMenu() {
       {deleteOpen && <DeleteAccountDialog onClose={() => setDeleteOpen(false)} />}
       <button
         type="button"
-        aria-label={open ? 'Fechar o menu' : 'Abrir o menu'}
+        aria-label={open ? ui.menu.close : ui.menu.open}
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={() => {
@@ -84,9 +85,9 @@ export default function AppMenu() {
             <button role="menuitem" type="button" disabled={linking === 'opening'} onClick={() => void saveWithGoogle()} className={row}>
               <CloudUpload size={22} strokeWidth={2.4} className="text-azulejo" />
               <span className="min-w-0">
-                <span className="block">{linking === 'opening' ? 'A abrir o Google…' : 'Guardar progresso'}</span>
+                <span className="block">{linking === 'opening' ? ui.menu.opening : ui.menu.save}</span>
                 <span className={`block text-sm font-semibold ${linking === 'error' ? 'text-ko-dark' : 'text-brand-muted'}`}>
-                  {linking === 'error' ? 'Non è andata: riprova tra poco' : 'Con Google li ritrovi anche su un altro telefono'}
+                  {linking === 'error' ? ui.menu.saveError : ui.menu.saveHint}
                 </span>
               </span>
             </button>
@@ -95,15 +96,15 @@ export default function AppMenu() {
             <div className="flex items-center gap-3 px-3 py-2.5 font-extrabold text-ink">
               <CloudCheck size={22} strokeWidth={2.4} className="text-ok-dark" />
               <span className="min-w-0">
-                <span className="block">Conta Google</span>
-                <span className="block text-sm font-semibold text-brand-muted truncate">{account.email ?? 'Progressi al sicuro'}</span>
+                <span className="block">{ui.menu.googleAccount}</span>
+                <span className="block text-sm font-semibold text-brand-muted truncate">{account.email ?? ui.menu.safe}</span>
               </span>
             </div>
           )}
 
           <button role="menuitemcheckbox" aria-checked={audio} type="button" onClick={() => setAudioEnabled(!audio)} className={row}>
             {audio ? <Volume2 size={22} strokeWidth={2.4} className="text-azulejo" /> : <VolumeX size={22} strokeWidth={2.4} className="text-brand-primary" />}
-            <span className="flex-1">Som</span>
+            <span className="flex-1">{ui.menu.sound}</span>
             <span
               aria-hidden="true"
               className={`w-10 h-6 rounded-full p-0.5 transition-colors ${audio ? 'bg-azulejo' : 'bg-brand-border'}`}
@@ -123,14 +124,14 @@ export default function AppMenu() {
           >
             <MessageCircleHeart size={22} strokeWidth={2.4} className="text-brand-primary" />
             <span className="min-w-0">
-              <span className="block">Enviar feedback</span>
-              <span className="block text-sm font-semibold text-brand-muted">Scrivici cosa ne pensi</span>
+              <span className="block">{ui.menu.feedback}</span>
+              <span className="block text-sm font-semibold text-brand-muted">{ui.menu.feedbackHint}</span>
             </span>
           </button>
 
           <a role="menuitem" href={PRIVACY_URL} className={row}>
             <ShieldCheck size={22} strokeWidth={2.4} className="text-ok-dark" />
-            Privacidade
+            {ui.menu.privacy}
           </a>
 
           <button
@@ -144,13 +145,13 @@ export default function AppMenu() {
           >
             <Trash2 size={22} strokeWidth={2.4} className="text-ko" />
             <span className="min-w-0">
-              <span className="block">Apagar conta</span>
-              <span className="block text-sm font-semibold text-brand-muted">Cancella account e progressi</span>
+              <span className="block">{ui.menu.deleteAccount}</span>
+              <span className="block text-sm font-semibold text-brand-muted">{ui.menu.deleteAccountHint}</span>
             </span>
           </button>
 
           <p className="px-3 pt-2 pb-1 text-xs font-bold text-brand-muted">
-            Falaluso · versão {APP_VERSION}
+            {courseConfig.appName} · {ui.menu.version} {APP_VERSION}
             {syncLabel && <span className="block font-semibold">{syncLabel}</span>}
           </p>
         </div>

@@ -1,7 +1,8 @@
 'use client';
 
 import { Turtle } from 'lucide-react';
-import { speakPortuguese, type VoiceKey } from '@/utils/textToSpeech';
+import { speakTarget, type VoiceKey } from '@/utils/textToSpeech';
+import { ui } from '@/content';
 
 /** 🐢 Riascolta più lentamente */
 export default function SlowButton({ text, voice, size = 'md', className = '' }: { text: string; voice?: VoiceKey; size?: 'sm' | 'md' | 'lg'; className?: string }) {
@@ -10,9 +11,9 @@ export default function SlowButton({ text, voice, size = 'md', className = '' }:
   return (
     <button
       type="button"
-      onClick={() => speakPortuguese(text, undefined, { voice, slow: true })}
-      aria-label="Ouvir devagar"
-      title="Ouvir devagar"
+      onClick={() => speakTarget(text, undefined, { voice, slow: true })}
+      aria-label={ui.common.listenSlow}
+      title={ui.common.listenSlow}
       className={`btn-3d ${dim} flex items-center justify-center bg-white border-brand-border text-azulejo-dark !border-b-4 shrink-0 ${className}`}
     >
       <Turtle size={icon} strokeWidth={2.4} aria-hidden="true" />

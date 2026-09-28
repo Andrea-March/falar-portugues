@@ -14,6 +14,7 @@ import LessonScreen from '@/components/LessonScreen';
 import ReviewScreen from '@/components/ReviewScreen';
 import { dueRefs } from '@/content/review';
 import { RotateCcw } from 'lucide-react';
+import { ui } from '@/content';
 
 export default function Home() {
   const { progress, completeSession, completeOnboarding, isLoaded } = useUser();
@@ -115,9 +116,9 @@ function ReviewButton({ review, onStart }: { review: Record<string, unknown>; on
         <RotateCcw size={22} strokeWidth={2.8} aria-hidden="true" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block font-extrabold leading-tight">Revisão</span>
+        <span className="block font-extrabold leading-tight">{ui.review.title}</span>
         <span className="block text-sm font-semibold opacity-85 leading-snug">
-          {due > 0 ? `${due} ${due === 1 ? 'cosa da rinfrescare' : 'cose da rinfrescare'}` : 'Tutto ripassato: puoi allenarti comunque'}
+          {due > 0 ? ui.review.due(due) : ui.review.allDone}
         </span>
       </span>
     </button>

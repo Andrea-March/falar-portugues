@@ -9,7 +9,7 @@ import type { Exercise as RuntimeExercise } from '@/types/exercise';
 export interface StudiedVerb {
   verbId: string;
   infinitive: string;
-  it: string;
+  translation: string;
   /** Tempi studiati nel percorso, nell'ordine in cui compaiono */
   tenses: string[];
 }
@@ -47,7 +47,7 @@ export async function studiedVerbs(sessionProgress: Record<string, number>, comp
       const { verb: verbId, tense } = item.paradigm;
       const verb = getVerb(verbId);
       if (!verb) continue;
-      const entry = out.get(verbId) ?? { verbId, infinitive: verb.infinitive, it: verb.it, tenses: [] };
+      const entry = out.get(verbId) ?? { verbId, infinitive: verb.infinitive, translation: verb.translation, tenses: [] as string[] };
       if (!entry.tenses.includes(tense)) entry.tenses.push(tense);
       out.set(verbId, entry);
     }

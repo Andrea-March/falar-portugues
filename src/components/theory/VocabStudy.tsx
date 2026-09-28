@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import ItalianNote from '@/components/common/ItalianNote';
+import LearnerNote from '@/components/common/LearnerNote';
 import SlowButton from '@/components/common/SlowButton';
 import { Volume2 } from 'lucide-react';
 import type { VocabPresentStep as PresentStep, VocabRecallStep as RecallStep } from '@/content';
-import { speakPortuguese } from '@/utils/textToSpeech';
+import { speakTarget } from '@/utils/textToSpeech';
 import TraceRows from './TraceRows';
+import { ui } from '@/content';
 
 interface StepProps<S> {
   step: S;
@@ -22,9 +23,9 @@ export function VocabPresentStep({ step, initiallyDone, onDone }: StepProps<Pres
   // L'espressione si sente appena compare la schermata (non quando si torna indietro)
   useEffect(() => {
     if (initiallyDone) return;
-    const t = setTimeout(() => speakPortuguese(item.pt), 350);
+    const t = setTimeout(() => speakTarget(item.text), 350);
     return () => clearTimeout(t);
-  }, [item.pt, initiallyDone]);
+  }, [item.text, initiallyDone]);
 
   return (
     <div className="space-y-5 animate-fade-in">
@@ -47,35 +48,35 @@ export function VocabPresentStep({ step, initiallyDone, onDone }: StepProps<Pres
           </span>
         )}
         <div className="flex-1 min-w-0 space-y-1.5">
-          <h2 className="text-2xl font-extrabold text-ink leading-tight break-words">{item.it}</h2>
+          <h2 className="text-2xl font-extrabold text-ink leading-tight break-words">{item.translation}</h2>
           {/* Sotto il titolo, non accanto: sul telefono titolo e due pulsanti in una riga non ci stanno */}
           <div className="flex items-center gap-2 pt-1">
             <button
               type="button"
-              onClick={() => speakPortuguese(item.pt)}
-              aria-label={`Ouvir ${item.pt}`}
+              onClick={() => speakTarget(item.text)}
+              aria-label={ui.lesson.listenTo(item.text)}
               className="btn-3d w-11 h-11 flex items-center justify-center bg-azulejo border-azulejo-dark text-white !border-b-4 shrink-0"
             >
               <Volume2 size={20} strokeWidth={2.5} />
             </button>
-            <SlowButton text={item.pt} />
+            <SlowButton text={item.text} />
           </div>
           {item.usage && <p className="text-ink/80 font-semibold leading-snug">{item.usage}</p>}
           {item.note && (
             <span className="inline-block rounded-full bg-white text-azulejo-dark text-sm font-extrabold px-2.5 py-0.5">{item.note}</span>
           )}
-          {item.italianNote && <ItalianNote text={item.italianNote} />}
+          {item.learnerNote && <LearnerNote text={item.learnerNote} />}
         </div>
       </div>
 
-      <p className="text-brand-muted font-semibold">Ouve e escreve por cima do modelo.</p>
+      <p className="text-brand-muted font-semibold">{ui.vocabStudy.traceHint}</p>
 
       <TraceRows
         idPrefix={`vocab-${item.id}`}
         mode="trace"
         initiallyDone={initiallyDone}
         onDone={onDone}
-        rows={[{ key: item.id, label: 'Em português', form: step.form, after: step.after, spoken: item.pt }]}
+        rows={[{ key: item.id, label: ui.vocabStudy.inTarget, form: step.form, after: step.after, spoken: item.text }]}
       />
     </div>
   );
@@ -86,9 +87,9 @@ export function VocabRecallStep({ step, initiallyDone, onDone }: StepProps<Recal
   return (
     <div className="space-y-5 animate-fade-in">
       <header className="space-y-1">
-        <p className="font-bold text-azulejo">Revisão</p>
-        <h2 className="text-3xl font-extrabold text-ink leading-tight">Agora de memória</h2>
-        <p className="text-brand-muted font-semibold">O que dizes em cada situação? Os erros aqui não contam.</p>
+        <p className="font-bold text-azulejo">{ui.review.title}</p>
+        <h2 className="text-3xl font-extrabold text-ink leading-tight">{ui.paradigm.recall}</h2>
+        <p className="text-brand-muted font-semibold">{ui.vocabStudy.recallHint}</p>
       </header>
 
       <TraceRows
@@ -97,7 +98,7 @@ export function VocabRecallStep({ step, initiallyDone, onDone }: StepProps<Recal
         longLabels
         initiallyDone={initiallyDone}
         onDone={onDone}
-        rows={step.rows.map((r) => ({ key: r.id, label: r.situation, form: r.form, after: r.after, spoken: r.pt }))}
+        rows={step.rows.map((r) => ({ key: r.id, label: r.situation, form: r.form, after: r.after, spoken: r.text }))}
       />
     </div>
   );

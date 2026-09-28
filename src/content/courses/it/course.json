@@ -1,0 +1,24 @@
+{
+  "chapters": [
+    {
+      "id": "chapter_1",
+      "number": 1,
+      "title": "Primi passi",
+      "description": "Cumprimentar, apresentar-se e o verbo essere.",
+      "icon": "👋",
+      "nodes": [
+        { "id": "node_1_1", "kind": "vocab", "title": "Saluti", "subtitle": "Cumprimentar a qualquer hora do dia", "icon": "🗣️" },
+        { "id": "node_1_2", "kind": "verb", "title": "Essere", "subtitle": "Quem és e de onde vens", "icon": "📖" },
+        {
+          "id": "node_1_checkpoint",
+          "kind": "checkpoint",
+          "title": "Test finale",
+          "subtitle": "Põe à prova todo o capítulo",
+          "icon": "🏆",
+          "requires": ["node_1_1", "node_1_2"],
+          "draft": true
+        }
+      ]
+    }
+  ]
+}

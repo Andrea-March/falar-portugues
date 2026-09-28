@@ -2,6 +2,7 @@
 
 import { Flame, Target, Zap } from 'lucide-react';
 import AppMenu from '@/components/AppMenu';
+import { ui } from '@/content';
 
 interface HeaderProps {
   streak: number;
@@ -33,7 +34,7 @@ export default function Header({ streak, xp, today, goal }: HeaderProps) {
           <Stat
             icon={<Flame size={18} strokeWidth={2.5} className="fill-brand-accent text-brand-accentHover" />}
             value={streak}
-            label="Dias seguidos"
+            label={ui.header.streak}
             tone="bg-brand-accentLight text-brand-accentDark"
           />
           <Stat
@@ -45,7 +46,7 @@ export default function Header({ streak, xp, today, goal }: HeaderProps) {
           <Stat
             icon={<Target size={17} strokeWidth={2.6} className={met ? 'text-white' : 'text-brand-accentDark'} />}
             value={`${Math.min(today, goal)}/${goal}`}
-            label="XP di oggi / obiettivo"
+            label={ui.header.xpToday}
             tone={met ? 'bg-brand-accentHover text-white' : 'bg-brand-accentLight text-brand-accentDark'}
           />
           {/* Audio, feedback, privacy: nel menu, per non affollare l'header */}

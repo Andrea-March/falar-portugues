@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { ui } from '@/content';
 
 export type MascotMood = 'idle' | 'happy' | 'sad' | 'cheer' | 'think';
 
@@ -41,7 +42,7 @@ export default function Mascot({
       height={size}
       viewBox="0 0 120 120"
       role="img"
-      aria-label="Galo, a mascote"
+      aria-label={ui.mascot}
       className={`shrink-0 overflow-visible ${motion}`}
     >
       {/* coda */}

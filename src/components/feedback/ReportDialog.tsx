@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { REPORT_REASONS, type ReportReason } from '@/utils/feedbackSchema';
 import { exerciseReportUrl, type ExerciseReport } from '@/utils/feedback';
 import FeedbackDialog, { TrapField, useSendFeedback } from './FeedbackDialog';
+import { ui } from '@/content';
 
 /** Segnalazione di un esercizio: modulo chiuso (un motivo) con una nota facoltativa */
 export default function ReportDialog({ report, onClose }: { report: ExerciseReport; onClose: () => void }) {
@@ -34,14 +35,14 @@ export default function ReportDialog({ report, onClose }: { report: ExerciseRepo
 
   return (
     <FeedbackDialog
-      title="Qual è il problema?"
-      subtitle="Scegli quello che descrive meglio cosa non va."
+      title={ui.report.title}
+      subtitle={ui.report.subtitle}
       status={status}
       onClose={onClose}
       onRetry={submit}
       fallbackMailto={exerciseReportUrl(report)}
     >
-      <div role="radiogroup" aria-label="Motivo" className="grid gap-2">
+      <div role="radiogroup" aria-label={ui.report.reason} className="grid gap-2">
         {REPORT_REASONS.map((r) => {
           const selected = reason === r.id;
           return (
@@ -64,7 +65,7 @@ export default function ReportDialog({ report, onClose }: { report: ExerciseRepo
                 >
                   {selected && <span className="w-2 h-2 rounded-full bg-white" />}
                 </span>
-                {r.label}
+                {ui.report.reasons[r.id]}
               </span>
             </button>
           );
@@ -72,13 +73,13 @@ export default function ReportDialog({ report, onClose }: { report: ExerciseRepo
       </div>
 
       <label className="block mt-4">
-        <span className="font-bold text-ink">{needsNote ? 'Raccontaci cosa non va' : 'Vuoi aggiungere qualcosa? (facoltativo)'}</span>
+        <span className="font-bold text-ink">{needsNote ? ui.report.noteRequired : ui.report.noteOptional}</span>
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
           maxLength={1000}
           rows={3}
-          placeholder={reason === 'not_accepted' ? 'Es. ho scritto «Olá» e dovrebbe andare bene' : ''}
+          placeholder={reason === 'not_accepted' ? ui.report.notAcceptedExample : ''}
           className="mt-1.5 w-full rounded-2xl border-2 border-brand-border bg-white px-4 py-3 text-ink font-semibold focus:outline-none focus:border-azulejo resize-none"
         />
       </label>
@@ -89,7 +90,7 @@ export default function ReportDialog({ report, onClose }: { report: ExerciseRepo
       </p>
 
       <button type="button" disabled={!canSend} onClick={submit} className="btn-3d btn-primary w-full py-3.5 text-lg mt-4">
-        {status === 'sending' ? 'A enviar…' : 'Enviar'}
+        {status === 'sending' ? ui.common.sending : ui.common.send}
       </button>
     </FeedbackDialog>
   );

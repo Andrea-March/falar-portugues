@@ -1,6 +1,6 @@
 /**
- * Genera gli audio pregenerati del corso (voce pt-PT), con il servizio scelto in
- * src/content/audio.config.json ("provider"):
+ * Genera gli audio pregenerati del corso (COURSE, predefinito "pt"), con il servizio scelto in
+ * src/content/courses/<corso>/audio.config.json ("provider"):
  * - piper: open source, gira sul computer, gratis. Requisiti: Python e  pip install piper-tts lameenc
  * - azure: voci neurali Azure Speech. Serve AZURE_SPEECH_KEY e AZURE_SPEECH_REGION in .env.local
  *
@@ -16,7 +16,7 @@ import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { createInterface } from 'node:readline';
 import { join, resolve } from 'node:path';
-import audioConfig from '../src/content/audio.config.json';
+import { audioConfig, courseConfig } from '../src/content/registry.generated';
 import { allSpeech } from '../src/content/speech';
 import { activeProvider, audioPath, providerConfig, speechText, voiceName } from '../src/utils/speechKey';
 
@@ -116,7 +116,7 @@ const escapeXml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').
 
 async function azureSynthesize(text: string, voice: string): Promise<Buffer> {
   const ssml =
-    `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="pt-PT">` +
+    `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${courseConfig.targetLang}">` +
     `<voice name="${voice}"><prosody rate="${azureCfg.rate}">${escapeXml(text)}</prosody></voice></speak>`;
   for (let attempt = 1; ; attempt++) {
     const res = await fetch(`${BASE}/cognitiveservices/v1`, {
@@ -169,14 +169,14 @@ async function samples() {
     requireAzureKey();
     const res = await fetch(`${BASE}/cognitiveservices/voices/list`, { headers: { 'Ocp-Apim-Subscription-Key': KEY! } });
     if (!res.ok) throw new Error(`Azure ${res.status}: elenco voci non disponibile`);
-    voices = ((await res.json()) as { ShortName: string; Locale: string }[]).filter((v) => v.Locale === 'pt-PT').map((v) => v.ShortName);
+    voices = ((await res.json()) as { ShortName: string; Locale: string }[]).filter((v) => v.Locale === courseConfig.targetLang).map((v) => v.ShortName);
   } else {
     voices = [...new Set(Object.values(providerConfig.voices))];
   }
   const jobs = voices.map((v) => ({ text: SAMPLE_TEXT, voice: v, out: join(SAMPLES, `${activeProvider}-${v}.${audioConfig.extension}`) }));
   mkdirSync(SAMPLES, { recursive: true });
   await generators[activeProvider](jobs, (j) => console.log(`✓ ${j.voice} → audio-samples/${activeProvider}-${j.voice}.${audioConfig.extension}`));
-  console.log('\nAscoltali; la voce scelta va in src/content/audio.config.json.');
+  console.log(`\nAscoltali; la voce scelta va in src/content/courses/${courseConfig.id}/audio.config.json.`);
 }
 
 // ---------- Generazione ----------

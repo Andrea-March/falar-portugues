@@ -1,0 +1,107 @@
+{
+  "id": "node_1_1",
+  "theory": [
+    {
+      "title": "Cumprimentar em Itália",
+      "text": "Em Itália cumprimenta-se sempre, também ao entrar numa loja ou num café, e o cumprimento muda com a hora do dia. Vamos ver as expressões uma de cada vez: ouve-as e copia-as, depois vais revê-las de memória."
+    },
+    {
+      "vocabStudy": {
+        "groups": [
+          {
+            "label": "Cumprimentos do dia",
+            "items": [
+              "buongiorno",
+              "buonasera",
+              "arrivederci"
+            ]
+          },
+          {
+            "label": "Apresentar-se",
+            "items": [
+              "ciao",
+              "mi-chiamo",
+              "piacere"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "exercises": [
+    {
+      "id": "it_1_1_1",
+      "type": "choose",
+      "text": "{Buongiorno}, signora Rossi!",
+      "translation": "Bom dia, senhora Rossi!",
+      "prompt": "É de manhã: cumprimenta a vizinha",
+      "trains": [
+        "vocab:buongiorno"
+      ],
+      "wrong": [
+        "Buonasera",
+        "Arrivederci"
+      ]
+    },
+    {
+      "id": "it_1_1_2",
+      "type": "write",
+      "text": "{Buonasera} a tutti!",
+      "translation": "Boa noite a todos!",
+      "trains": [
+        "vocab:buonasera"
+      ]
+    },
+    {
+      "id": "it_1_1_3",
+      "type": "choose",
+      "text": "{Arrivederci}, a domani!",
+      "translation": "Adeus, até amanhã!",
+      "prompt": "Sais do escritório: despede-te do colega",
+      "trains": [
+        "vocab:arrivederci"
+      ],
+      "wrong": [
+        "Piacere",
+        "Buongiorno"
+      ]
+    },
+    {
+      "id": "it_1_1_4",
+      "type": "choose",
+      "text": "{Ciao} Marco, come va?",
+      "translation": "Olá Marco, como estás?",
+      "prompt": "Encontras um amigo",
+      "trains": [
+        "vocab:ciao"
+      ],
+      "wrong": [
+        "Arrivederci",
+        "Piacere"
+      ]
+    },
+    {
+      "id": "it_1_1_5",
+      "type": "write",
+      "text": "{Mi chiamo} Ines, e tu?",
+      "translation": "Chamo-me Ines, e tu?",
+      "trains": [
+        "vocab:mi-chiamo"
+      ]
+    },
+    {
+      "id": "it_1_1_6",
+      "type": "choose",
+      "text": "{Piacere}, io sono Luca.",
+      "translation": "Muito prazer, eu sou o Luca.",
+      "prompt": "Acabaste de conhecer o Luca",
+      "trains": [
+        "vocab:piacere"
+      ],
+      "wrong": [
+        "Arrivederci",
+        "Buonasera"
+      ]
+    }
+  ]
+}

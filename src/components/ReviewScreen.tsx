@@ -11,6 +11,7 @@ import { exerciseSentence } from '@/content';
 import type { Exercise } from '@/types/exercise';
 import { dueRefs } from '@/content/review';
 import { reviewXp } from '@/content/rewards';
+import { ui } from '@/content';
 
 /** Sessione di ripasso: esercizi sulle cose sbagliate di recente o da rinfrescare */
 export default function ReviewScreen({ onClose }: { onClose: () => void }) {
@@ -46,9 +47,9 @@ export default function ReviewScreen({ onClose }: { onClose: () => void }) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-6 text-center">
         <Mascot mood="happy" size={96} />
-        <p className="font-extrabold text-lg">Ancora niente da ripassare: completa prima qualche sessione.</p>
+        <p className="font-extrabold text-lg">{ui.review.empty}</p>
         <button type="button" onClick={onClose} className="btn-3d px-6 py-3 bg-brand-primary border-brand-dark text-white">
-          Voltar
+          {ui.common.back}
         </button>
       </div>
     );
@@ -57,12 +58,12 @@ export default function ReviewScreen({ onClose }: { onClose: () => void }) {
   if (result) {
     return (
       <LessonCompleteCard
-        title="Revisão concluída"
+        title={ui.review.done}
         xpEarned={result.xp}
         streakDays={progress.streak}
         accuracy={result.accuracy}
         bestCombo={result.bestCombo}
-        note="Le espressioni sbagliate torneranno presto, quelle giuste più avanti."
+        note={ui.review.doneNote}
         onContinue={onClose}
       />
     );

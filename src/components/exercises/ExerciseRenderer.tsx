@@ -3,12 +3,13 @@
 import React from 'react';
 import { Volume2 } from 'lucide-react';
 import { exerciseSentence } from '@/content';
-import { canListenTo, speakPortuguese } from '@/utils/textToSpeech';
+import { canListenTo, speakTarget } from '@/utils/textToSpeech';
 import SlowButton from '@/components/common/SlowButton';
 import { Exercise } from '@/types/exercise';
 import MultipleChoice from './MultipleChoice';
 import FillInBlank from './FillInBlank';
 import type { Feedback } from './PracticeSession';
+import { ui } from '@/content';
 
 export interface ExerciseViewProps<E extends Exercise = Exercise> {
   exercise: E;
@@ -86,14 +87,14 @@ export function useListening(exercise: Exercise) {
     canListenTo(sentence).then((ok) => {
       if (!alive || !ok) return;
       setActive(true);
-      t = setTimeout(() => speakPortuguese(sentence), 350);
+      t = setTimeout(() => speakTarget(sentence), 350);
     });
     return () => {
       alive = false;
       if (t) clearTimeout(t);
     };
   }, [exercise.listening, sentence]);
-  return { active, sentence, play: () => speakPortuguese(sentence) };
+  return { active, sentence, play: () => speakTarget(sentence) };
 }
 
 /** Grande pulsante per riascoltare la frase negli esercizi di ascolto */
@@ -103,7 +104,7 @@ export function ListenButton({ onPlay, sentence }: { onPlay: () => void; sentenc
       <button
         type="button"
         onClick={onPlay}
-        aria-label="Ouvir outra vez"
+        aria-label={ui.answer.listenAgain}
         className="btn-3d flex items-center justify-center w-20 h-20 rounded-3xl bg-azulejo border-azulejo-dark text-white"
       >
         <Volume2 size={36} strokeWidth={2.6} aria-hidden="true" />

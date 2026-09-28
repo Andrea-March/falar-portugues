@@ -1,8 +1,10 @@
 /**
- * Controlla tutti i contenuti del corso e genera src/content/registry.generated.ts.
+ * Controlla tutti i contenuti del corso scelto (COURSE, predefinito "pt") e genera
+ * src/content/registry.generated.ts, l'unico punto da cui l'app prende il corso.
  *
- *   npm run content         → valida + rigenera il registro
- *   npm run content:check   → solo validazione (non scrive nulla)
+ *   npm run content             → valida + rigenera il registro
+ *   npm run content:check       → solo validazione (non scrive nulla)
+ *   COURSE=it npm run content   → lo stesso, per un altro corso
  *
  * Gira in automatico prima di `npm run dev` e `npm run build`:
  * un errore nei contenuti blocca il build invece di rompere una lezione a runtime.
@@ -10,11 +12,15 @@
 import { readFileSync, readdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join, basename, relative } from 'node:path';
 import type { z } from 'zod';
-import { Course, NodeContent, Verb, VocabSet, Exercise, PERSONS } from '../src/content/schema';
-import audioConfig from '../src/content/audio.config.json';
+import { Course, NodeContent, Verb, VocabSet, Exercise } from '../src/content/schema';
+import type { CourseConfig } from '../src/content/course-config';
+import { COURSE, COURSE_DIR as DIR, CONTENT_DIR, ROOT } from './course';
 
-const ROOT = join(__dirname, '..');
-const DIR = join(ROOT, 'src', 'content');
+const courseConfig = require(join(DIR, 'config.ts')).default as CourseConfig;
+const PERSONS = courseConfig.persons;
+const audioConfig = JSON.parse(readFileSync(join(DIR, 'audio.config.json'), 'utf8')) as {
+  providers: Record<string, { voices: Record<string, string> }>;
+};
 const CHECK_ONLY = process.argv.includes('--check');
 
 const errors: string[] = [];
@@ -52,6 +58,13 @@ for (const f of jsonFiles('verbs')) {
   const v = load(f, Verb);
   if (!v) continue;
   if (v.id !== basename(f, '.json')) fail(f, `l'id "${v.id}" deve coincidere col nome del file`);
+  if (!courseConfig.verbGroups.includes(v.group)) fail(f, `gruppo "${v.group}" sconosciuto (${courseConfig.verbGroups.join(', ')})`);
+  for (const [tense, forms] of Object.entries(v.conjugations)) {
+    const missing = PERSONS.filter((p) => !(p in forms));
+    const extra = Object.keys(forms).filter((p) => !PERSONS.includes(p));
+    if (missing.length) fail(f, `${tense}: mancano le persone ${missing.join(', ')}`);
+    if (extra.length) fail(f, `${tense}: persone sconosciute ${extra.join(', ')} (il corso usa ${PERSONS.join(', ')})`);
+  }
   verbs.set(v.id, { file: f, data: v });
 }
 
@@ -91,7 +104,7 @@ function checkExercise(file: string, ex: Exercise) {
   if (prev) fail(file, `${where}: id già usato in ${prev}`);
   else exerciseIds.set(ex.id, relative(ROOT, file));
 
-  if (ex.contextIt && !ex.context) fail(file, `${where}: "contextIt" senza "context"`);
+  if (ex.contextTranslation && !ex.context) fail(file, `${where}: "contextTranslation" senza "context"`);
   if (ex.accept && ex.wrong) {
     const clash = ex.accept.filter((a) => ex.wrong!.some((w) => w.toLowerCase() === a.toLowerCase()));
     if (clash.length) fail(file, `${where}: "${clash.join('", "')}" è sia in "accept" sia in "wrong"`);
@@ -112,14 +125,14 @@ function checkExercise(file: string, ex: Exercise) {
       continue;
     }
     if (!verb.conjugations[b]) fail(file, `${where}: il verbo "${a}" non ha il tempo "${b}"`);
-    else if (!(PERSONS as readonly string[]).includes(c)) fail(file, `${where}: persona "${c}" sconosciuta (${PERSONS.join(', ')})`);
+    else if (!PERSONS.includes(c)) fail(file, `${where}: persona "${c}" sconosciuta (${PERSONS.join(', ')})`);
     else verbTargets.push({ verb, tense: b, person: c });
   }
 
   // Se l'esercizio allena una sola forma verbale, la risposta deve essere proprio quella forma
   if (verbTargets.length === 1) {
     const { verb, tense, person } = verbTargets[0];
-    const form = verb.conjugations[tense][person as keyof (typeof verb.conjugations)[string]];
+    const form = verb.conjugations[tense][person];
     if (form.toLowerCase() !== answer.toLowerCase())
       fail(file, `${where}: la risposta "${answer}" non è la forma di ${verb.infinitive} (${tense}, ${person}), che è "${form}"`);
   }
@@ -205,7 +218,7 @@ for (const { file, data } of nodes.values()) {
             continue;
           }
           const item = vocabSets.find((s) => s.data.id === ref.set)!.data.items.find((it) => it.id === id)!;
-          if (!/^[\p{L}]/u.test(item.pt)) fail(ref.file, `voce "${id}": nello studio guidato deve iniziare con una lettera (la punteggiatura iniziale non si digita)`);
+          if (!/^[\p{L}]/u.test(item.text)) fail(ref.file, `voce "${id}": nello studio guidato deve iniziare con una lettera (la punteggiatura iniziale non si digita)`);
           if (withRecall && !item.situation) fail(ref.file, `voce "${id}": serve "situation" per il ripasso a memoria di ${relative(ROOT, file)}`);
         }
       }
@@ -254,7 +267,7 @@ if (errors.length) {
   process.exit(1);
 }
 
-const count = `${nodes.size} lezioni, ${verbs.size} verbi, ${vocab.size} vocaboli, ${exerciseIds.size} esercizi`;
+const count = `corso ${COURSE}: ${nodes.size} lezioni, ${verbs.size} verbi, ${vocab.size} vocaboli, ${exerciseIds.size} esercizi`;
 
 if (CHECK_ONLY) {
   console.log(`✓ Contenuti validi (${count})`);
@@ -266,10 +279,20 @@ if (CHECK_ONLY) {
 const ident = (s: string) => s.replace(/[^a-zA-Z0-9]/g, '_');
 const verbIds = [...verbs.keys()];
 const vocabIds = vocabSets.map((s) => s.data.id);
+const C = `./courses/${COURSE}`;
 const out = `// FILE GENERATO da scripts/content.ts: non modificarlo a mano (npm run content).
-import type { NodeContent, Verb, VocabSet } from './schema';
-${verbIds.map((id) => `import verb_${ident(id)} from './verbs/${id}.json';`).join('\n')}
-${vocabIds.map((id) => `import vocab_${ident(id)} from './vocab/${id}.json';`).join('\n')}
+// Corso: ${COURSE}
+import type { Course, NodeContent, Verb, VocabSet } from './schema';
+import config from '${C}/config';
+import courseJson from '${C}/course.json';
+import audioConfigJson from '${C}/audio.config.json';
+${verbIds.map((id) => `import verb_${ident(id)} from '${C}/verbs/${id}.json';`).join('\n')}
+${vocabIds.map((id) => `import vocab_${ident(id)} from '${C}/vocab/${id}.json';`).join('\n')}
+
+/** Configurazione, struttura e voci del corso */
+export const courseConfig = config;
+export const courseData = courseJson as unknown as Course;
+export const audioConfig = audioConfigJson;
 
 /** Verbi e vocabolario: piccoli e usati ovunque, caricati subito */
 export const verbList = [${verbIds.map((id) => `verb_${ident(id)}`).join(', ')}] as unknown as Verb[];
@@ -288,10 +311,10 @@ export const vocabGroupLabels: Record<string, string[]> = ${JSON.stringify(
 
 /** Lezioni: ognuna è un file separato, scaricato solo quando la si apre */
 export const nodeLoaders: Record<string, () => Promise<NodeContent>> = {
-${[...nodes.keys()].map((id) => `  ${JSON.stringify(id)}: () => import('./nodes/${id}.json').then((m) => m.default as unknown as NodeContent),`).join('\n')}
+${[...nodes.keys()].map((id) => `  ${JSON.stringify(id)}: () => import('${C}/nodes/${id}.json').then((m) => m.default as unknown as NodeContent),`).join('\n')}
 };
 `;
-const target = join(DIR, 'registry.generated.ts');
+const target = join(CONTENT_DIR, 'registry.generated.ts');
 const previous = existsSync(target) ? readFileSync(target, 'utf8') : '';
 if (previous !== out) writeFileSync(target, out);
 console.log(`✓ Contenuti validi (${count})${previous !== out ? ', registro aggiornato' : ''}`);

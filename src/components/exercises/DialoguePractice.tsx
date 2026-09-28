@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CheckCheck, Languages, SendHorizontal, Turtle, Volume2 } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
-import { estimateSpeechMs, speakPortuguese, stopSpeaking } from '@/utils/textToSpeech';
+import { estimateSpeechMs, speakTarget, stopSpeaking } from '@/utils/textToSpeech';
 import { matchAnswerAny, accentMistakes } from '@/utils/answerCheck';
 import { useUser } from '@/context/UserContext';
 import type { Exercise, MultipleChoiceExercise } from '@/types/exercise';
@@ -13,14 +13,15 @@ import Mascot from '@/components/common/Mascot';
 import { SentenceWithGap } from './ExerciseRenderer';
 import FeedbackSheet from './FeedbackSheet';
 import type { Feedback, PracticeStats } from './PracticeSession';
+import { courseConfig, ui } from '@/content';
 
-const SPECIAL_CHARS = ['á', 'à', 'â', 'ã', 'ç', 'é', 'ê', 'í', 'ó', 'ô', 'õ', 'ú'];
+const SPECIAL_CHARS = courseConfig.specialChars;
 /** Pausa tra il suono di successo e la lettura della frase */
 const SPEAK_DELAY_MS = 450;
 /** Quanto resta visibile "sta scrivendo…" prima della battuta dell'interlocutore */
 const typingMs = (text: string) => Math.min(1600, 550 + text.length * 18);
 
-const DEFAULT_SPEAKER: Speaker = { name: 'Empregado', avatar: '🧑‍🍳' };
+const DEFAULT_SPEAKER: Speaker = { name: ui.dialogue.defaultSpeaker, avatar: '🧑‍🍳' };
 
 /**
  * typing    → l'interlocutore "sta scrivendo", poi compare la sua battuta
@@ -93,11 +94,11 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
   // "Sta scrivendo…" → compare la battuta dell'interlocutore, che viene letta subito
   useEffect(() => {
     if (phase !== 'typing' || !exercise?.context) return;
-    const { id, context, contextIt } = exercise;
+    const { id, context, contextTranslation } = exercise;
     const t = setTimeout(() => {
-      setMessages((m) => [...m, { key: `npc-${id}`, from: 'npc', text: context, translation: showTranslations ? contextIt : undefined }]);
+      setMessages((m) => [...m, { key: `npc-${id}`, from: 'npc', text: context, translation: showTranslations ? contextTranslation : undefined }]);
       setPhase('answering');
-      speakPortuguese(context, undefined, { voice: speaker.voice });
+      speakTarget(context, undefined, { voice: speaker.voice });
     }, typingMs(context));
     return () => clearTimeout(t);
   }, [phase, exercise, showTranslations, speaker.voice]);
@@ -111,8 +112,8 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
       <LessonShell progress={100} onClose={onClose}>
         <div className="flex flex-col items-center text-center gap-4 pt-16">
           <Mascot mood="think" size={120} />
-          <h2 className="text-2xl font-extrabold">Ainda não há conversa aqui</h2>
-          <p className="text-brand-muted font-semibold">Esta lição está a ser preparada.</p>
+          <h2 className="text-2xl font-extrabold">{ui.dialogue.empty}</h2>
+          <p className="text-brand-muted font-semibold">{ui.dialogue.emptyHint}</p>
           <button type="button" onClick={() => onFinish({ total: 0, errors: 0, bestCombo: 0 })} className="btn-3d btn-primary px-8 py-3.5 text-lg mt-2">
             Concluir
           </button>
@@ -150,7 +151,7 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
 
   /** La risposta diventa un messaggio inviato */
   const sendReply = (text = fullSentence) => {
-    setMessages((m) => [...m, { key: `me-${exercise.id}`, from: 'me', text, translation: exercise.translationIt }]);
+    setMessages((m) => [...m, { key: `me-${exercise.id}`, from: 'me', text, translation: exercise.translation }]);
     setPhase('sent');
   };
 
@@ -182,7 +183,7 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
       later(goNext, 250);
     };
     later(() => {
-      speakPortuguese(sentence, () => mounted.current && moveOn());
+      speakTarget(sentence, () => mounted.current && moveOn());
       later(moveOn, estimateSpeechMs(sentence));
     }, SPEAK_DELAY_MS);
   };
@@ -200,7 +201,7 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
     setAccentHint(false);
     setAnswer(exercise.correctAnswer);
     setFeedback('revealed');
-    later(() => speakPortuguese(fullSentence), SPEAK_DELAY_MS);
+    later(() => speakTarget(fullSentence), SPEAK_DELAY_MS);
   };
 
   const continueAfterReveal = () => {
@@ -264,7 +265,7 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
             canCheck={answer.trim().length > 0}
             correctAnswer={exercise.correctAnswer}
             sentence={fullSentence}
-            italianNote={exercise.italianNote}
+            learnerNote={exercise.learnerNote}
             report={{ exerciseId: exercise.id, sentence: fullSentence, correctAnswer: exercise.correctAnswer, answer }}
             onCheck={() => evaluate(answer, true)}
             onDontKnow={reveal}
@@ -337,7 +338,7 @@ function ChatHeader({ speaker, typing }: { speaker: Speaker; typing: boolean }) 
       <div className="min-w-0">
         <p className="font-extrabold text-ink leading-tight truncate">{speaker.name}</p>
         <p className={`text-sm font-bold leading-tight truncate ${typing ? 'text-ok-dark' : 'text-brand-muted'}`}>
-          {typing ? 'a escrever…' : speaker.role ?? 'online'}
+          {typing ? ui.dialogue.typing : speaker.role ?? ui.dialogue.online}
         </p>
       </div>
     </div>
@@ -367,14 +368,14 @@ function NpcBubble({ text, translation, voice }: { text: string; translation?: s
         {showIt && translation && <p className="text-sm text-brand-muted font-semibold mt-0.5 animate-fade-in">{translation}</p>}
         <div className="flex justify-end gap-3 mt-1">
           {translation && (
-            <IconButton label={showIt ? 'Esconder tradução' : 'Ver tradução'} onClick={() => setShowIt((v) => !v)}>
+            <IconButton label={showIt ? ui.dialogue.hideTranslation : ui.dialogue.showTranslation} onClick={() => setShowIt((v) => !v)}>
               <Languages size={16} strokeWidth={2.5} />
             </IconButton>
           )}
-          <IconButton label="Ouvir" onClick={() => speakPortuguese(text, undefined, { voice })}>
+          <IconButton label={ui.common.listen} onClick={() => speakTarget(text, undefined, { voice })}>
             <Volume2 size={16} strokeWidth={2.5} />
           </IconButton>
-          <IconButton label="Ouvir devagar" onClick={() => speakPortuguese(text, undefined, { voice, slow: true })}>
+          <IconButton label={ui.common.listenSlow} onClick={() => speakTarget(text, undefined, { voice, slow: true })}>
             <Turtle size={16} strokeWidth={2.5} />
           </IconButton>
         </div>
@@ -389,7 +390,7 @@ function MyBubble({ text, translation }: { text: string; translation?: string })
     <div className="flex justify-end animate-bubble-in-right">
       <button
         type="button"
-        onClick={() => speakPortuguese(text)}
+        onClick={() => speakTarget(text)}
         aria-label={`Ouvir: ${text}`}
         className="max-w-[85%] text-left bg-ok-light border-2 border-ok/25 rounded-2xl rounded-tr-md px-3.5 py-2 shadow-sm cursor-pointer"
       >
@@ -447,7 +448,7 @@ function ChoiceComposer({ exercise, disabled, onPick }: { exercise: MultipleChoi
     <div className="border-t-2 border-brand-border bg-white">
       <div
         role="group"
-        aria-label="Respostas possíveis"
+        aria-label={ui.dialogue.possibleAnswers}
         className={`max-w-2xl mx-auto px-4 sm:px-6 py-4 grid gap-2.5 transition-opacity ${oneColumn ? 'grid-cols-1' : 'grid-cols-2'} ${
           disabled ? 'opacity-45' : ''
         }`}
@@ -511,7 +512,7 @@ function WriteComposer({
       <div className={`max-w-2xl mx-auto px-4 sm:px-6 py-3 space-y-2.5 transition-opacity ${disabled ? 'opacity-45' : ''}`}>
         {accentHint && wrongLetters && (
           <div id={`dlg-hint-${exerciseId}`} role="status" className="rounded-2xl bg-brand-accentLight border-2 border-brand-accent px-4 py-2.5 text-brand-accentDark font-bold animate-pop">
-            Quase! Confere os acentos
+            {ui.answer.accentHint}
             {wrongLetters.size > 0 && (
               <span className="block text-lg font-extrabold text-ink">
                 {[...value.trim()].map((ch, i) =>
@@ -533,7 +534,7 @@ function WriteComposer({
           }}
           className="flex items-center gap-2"
         >
-          <label htmlFor={`dlg-answer-${exerciseId}`} className="sr-only">A tua resposta</label>
+          <label htmlFor={`dlg-answer-${exerciseId}`} className="sr-only">{ui.answer.yourAnswer}</label>
           <input
             ref={inputRef}
             id={`dlg-answer-${exerciseId}`}
@@ -541,7 +542,7 @@ function WriteComposer({
             value={value}
             disabled={disabled}
             onChange={(e) => onChange(e.target.value)}
-            placeholder="Escreve a palavra que falta"
+            placeholder={ui.answer.placeholder}
             autoComplete="off"
             autoCapitalize="off"
             autoCorrect="off"
@@ -554,7 +555,7 @@ function WriteComposer({
           <button
             type="submit"
             disabled={disabled || !value.trim()}
-            aria-label="Enviar"
+            aria-label={ui.common.send}
             className="btn-3d btn-ok w-12 h-12 !rounded-full !border-b-4 shrink-0 disabled:opacity-40"
           >
             <SendHorizontal size={22} strokeWidth={2.6} />
@@ -562,7 +563,7 @@ function WriteComposer({
         </form>
 
         <div className="flex items-center gap-2">
-          <div className="flex-1 flex gap-1.5 overflow-x-auto pb-0.5" aria-label="Caracteres especiais">
+          <div className="flex-1 flex gap-1.5 overflow-x-auto pb-0.5" aria-label={ui.answer.specialChars}>
             {SPECIAL_CHARS.map((char) => (
               <button
                 key={char}
@@ -582,7 +583,7 @@ function WriteComposer({
             onClick={onDontKnow}
             className="shrink-0 text-brand-muted hover:text-ink font-extrabold text-sm px-2 py-2 cursor-pointer"
           >
-            Não sei
+            {ui.answer.dontKnow}
           </button>
         </div>
       </div>

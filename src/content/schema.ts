@@ -1,5 +1,5 @@
 /**
- * Regole dei file di contenuto (src/content/**).
+ * Regole dei file di contenuto (src/content/courses/<corso>/**).
  * Lo script `npm run content` controlla ogni file con questi schemi e con alcune
  * verifiche incrociate (riferimenti esistenti, ID unici, forme verbali corrette).
  * I tipi TypeScript usati dall'app derivano da qui: schema e codice non possono divergere.
@@ -8,9 +8,11 @@ import { z } from 'zod';
 
 // ---------- Mattoni ----------
 
-/** Persone grammaticali (in PT-PT "você" si coniuga come ele/ela) */
-export const PERSONS = ['eu', 'tu', 'ele_ela_voce', 'nos', 'eles_elas_voces'] as const;
-export const Person = z.enum(PERSONS);
+/**
+ * Persona grammaticale, es. "eu" o "ele_ela_voce". Quali esistono lo decide il corso
+ * (persons in courses/<id>/config.ts); lo script dei contenuti controlla che coincidano.
+ */
+export const Person = z.string().regex(/^[a-z_]+$/, 'solo minuscole e "_"');
 export type Person = z.infer<typeof Person>;
 
 const Slug = z.string().regex(/^[a-z0-9]+(?:[-_][a-z0-9]+)*$/, 'solo minuscole, cifre, "-" o "_"');
@@ -18,10 +20,10 @@ const Tense = z.string().regex(/^[a-z_]+$/, 'es. "presente", "preterito_perfeito
 const NonEmpty = z.string().trim().min(1);
 
 /**
- * Nota per chi parla italiano: dove un italiano sbaglia davvero (pronuncia, falsi amici,
- * cortesia, forme brasiliane). Al massimo 2 frasi brevi; va confermata da una madrelingua.
+ * Nota per chi impara, nella sua lingua: dove sbaglia davvero (pronuncia, falsi amici,
+ * cortesia, varianti da evitare). Al massimo 2 frasi brevi; va confermata da una madrelingua.
  */
-const ItalianNote = NonEmpty.max(240, 'al massimo 2 frasi brevi');
+const LearnerNote = NonEmpty.max(240, 'al massimo 2 frasi brevi');
 
 /**
  * Frase con la risposta tra graffe: "Eu {sou} de Roma."
@@ -46,21 +48,21 @@ const ExerciseBase = {
   id: Slug,
   /** Frase con la risposta tra graffe */
   text: AnswerText,
-  /** Traduzione italiana della frase */
-  it: NonEmpty.optional(),
+  /** Traduzione della frase nella lingua di chi impara */
+  translation: NonEmpty.optional(),
   /** Consegna personalizzata; se manca la genera l'app */
   prompt: NonEmpty.optional(),
   /** Battuta dell'altra persona prima di questa risposta (nodi "dialogue"): mostrata come bolla di chat */
   context: NonEmpty.optional(),
-  /** Traduzione italiana della battuta in "context" (si mostra toccando la bolla) */
-  contextIt: NonEmpty.optional(),
+  /** Traduzione della battuta in "context" (si mostra toccando la bolla) */
+  contextTranslation: NonEmpty.optional(),
   /**
    * Altre risposte giuste quando si scrive (es. "Obrigada" accanto a "Obrigado").
    * Servono perché nelle sessioni "Produção" e "Teste" anche le scelte multiple si scrivono.
    */
   accept: z.array(NonEmpty).min(1).optional(),
-  /** Nota per italiani, mostrata dopo un errore (se manca, si usa quella della voce allenata) */
-  italianNote: ItalianNote.optional(),
+  /** Nota per chi impara, mostrata dopo un errore (se manca, si usa quella della voce allenata) */
+  learnerNote: LearnerNote.optional(),
   trains: z.array(TrainsRef).min(1, 'indica almeno una cosa allenata (verb:… o vocab:…)'),
 };
 
@@ -101,14 +103,14 @@ export type Exercise = z.infer<typeof Exercise>;
 
 export const TheoryCard = z.strictObject({
   title: NonEmpty,
-  /** Testo; **grassetto** evidenzia una parola o frase in PORTOGHESE, che si ascolta toccandola (mai usarlo per l'italiano) */
+  /** Testo; **grassetto** evidenzia una parola o frase nella lingua che si impara, che si ascolta toccandola (mai per la lingua di chi impara) */
   text: NonEmpty,
   /** Mostra la tabella di coniugazione presa dal file del verbo */
   verb: z.strictObject({ verb: Slug, tense: Tense }).optional(),
   /** Mostra queste voci del vocabolario (per id) */
   vocab: z.array(Slug).min(1).optional(),
   /** Esempi liberi */
-  examples: z.array(z.strictObject({ pt: NonEmpty, it: NonEmpty, italianNote: ItalianNote.optional() })).min(1).optional(),
+  examples: z.array(z.strictObject({ text: NonEmpty, translation: NonEmpty, learnerNote: LearnerNote.optional() })).min(1).optional(),
 });
 export type TheoryCard = z.infer<typeof TheoryCard>;
 
@@ -143,10 +145,7 @@ export type VocabStudyCard = z.infer<typeof VocabStudyCard>;
 export const TheoryItem = z.union([TheoryCard, ParadigmCard, VocabStudyCard]);
 export type TheoryItem = z.infer<typeof TheoryItem>;
 
-export const SINGULAR: Person[] = ['eu', 'tu', 'ele_ela_voce'];
-export const PLURAL: Person[] = ['nos', 'eles_elas_voces'];
-
-// ---------- File: una lezione (src/content/nodes/<id>.json) ----------
+// ---------- File: una lezione (courses/<corso>/nodes/<id>.json) ----------
 
 /** Interlocutore di un nodo "dialogue": nome e avatar in cima alla chat */
 export const Speaker = z.strictObject({
@@ -190,26 +189,31 @@ export const NodeContent = z.strictObject({
 });
 export type NodeContent = z.infer<typeof NodeContent>;
 
-// ---------- File: un verbo (src/content/verbs/<id>.json) ----------
+// ---------- File: un verbo (courses/<corso>/verbs/<id>.json) ----------
 
 export const Verb = z.strictObject({
   id: Slug,
   infinitive: NonEmpty,
-  it: NonEmpty,
+  /** Traduzione dell'infinito nella lingua di chi impara */
+  translation: NonEmpty,
   regular: z.boolean(),
-  group: z.enum(['ar', 'er', 'ir']),
-  conjugations: z.record(Tense, z.strictObject(Object.fromEntries(PERSONS.map((p) => [p, NonEmpty])) as Record<Person, typeof NonEmpty>)),
+  /** Coniugazione, es. "ar" (i valori ammessi li decide il corso: verbGroups) */
+  group: z.string().regex(/^[a-z]+$/),
+  /** Per ogni tempo, la forma di ogni persona del corso */
+  conjugations: z.record(Tense, z.record(Person, NonEmpty)),
   /** Frasi d'esempio/esercizi per la pratica del verbo (sezione Gramática) */
   exercises: z.array(Exercise),
 });
 export type Verb = z.infer<typeof Verb>;
 
-// ---------- File: un gruppo di vocaboli (src/content/vocab/<id>.json) ----------
+// ---------- File: un gruppo di vocaboli (courses/<corso>/vocab/<id>.json) ----------
 
 export const VocabItem = z.strictObject({
   id: Slug,
-  pt: NonEmpty,
-  it: NonEmpty,
+  /** L'espressione nella lingua che si impara */
+  text: NonEmpty,
+  /** Il significato nella lingua di chi impara */
+  translation: NonEmpty,
   /** Nota d'uso, es. "informale", "detto da un uomo" */
   note: NonEmpty.optional(),
   /** Un'emoji che accompagna la voce nello studio guidato, es. "☀️" */
@@ -218,8 +222,8 @@ export const VocabItem = z.strictObject({
   usage: NonEmpty.optional(),
   /** Situazione per il ripasso a memoria: deve portare a questa espressione e non a un'altra */
   situation: NonEmpty.optional(),
-  /** Nota per italiani: nello studio guidato, negli esempi e dopo un errore collegato */
-  italianNote: ItalianNote.optional(),
+  /** Nota per chi impara: nello studio guidato, negli esempi e dopo un errore collegato */
+  learnerNote: LearnerNote.optional(),
 });
 export type VocabItem = z.infer<typeof VocabItem>;
 
@@ -230,7 +234,7 @@ export const VocabSet = z.strictObject({
 });
 export type VocabSet = z.infer<typeof VocabSet>;
 
-// ---------- File: il corso (src/content/course.json) ----------
+// ---------- File: il corso (courses/<corso>/course.json) ----------
 
 /** "culture": scheda breve + poche domande leggere; è facoltativo e non blocca il percorso */
 export const NodeKind = z.enum(['verb', 'vocab', 'dialogue', 'culture', 'checkpoint']);

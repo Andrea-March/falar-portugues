@@ -1,0 +1,52 @@
+{
+  "id": "cafe",
+  "title": "No café",
+  "items": [
+    {
+      "id": "um-cafe",
+      "text": "Um café",
+      "translation": "Un caffè (espresso)"
+    },
+    {
+      "id": "bica",
+      "text": "uma bica",
+      "translation": "un espresso (a Lisbona)",
+      "note": "a Porto si dice «cimbalino»"
+    },
+    {
+      "id": "galao",
+      "text": "Um galão",
+      "translation": "Un caffellatte (in bicchiere alto)",
+      "icon": "🥛",
+      "usage": "Tanto latte e poco caffè, servito in un bicchiere alto: tipico della colazione."
+    },
+    {
+      "id": "por-favor",
+      "text": "por favor",
+      "translation": "per favore"
+    },
+    {
+      "id": "queria",
+      "text": "Queria…",
+      "translation": "Vorrei…",
+      "note": "modo cortese per ordinare",
+      "learnerNote": "Sembra un «volevo», ma in portoghese è il modo normale e cortese di chiedere, come il nostro «vorrei»."
+    },
+    {
+      "id": "pastel-de-nata",
+      "text": "pastel de nata",
+      "translation": "pastel de nata (pasticcino alla crema)"
+    },
+    {
+      "id": "quanto-e",
+      "text": "Quanto é?",
+      "translation": "Quanto costa?"
+    },
+    {
+      "id": "obrigado",
+      "text": "Obrigado / Obrigada",
+      "translation": "Grazie",
+      "note": "«obrigado» se chi parla è un uomo, «obrigada» se è una donna"
+    }
+  ]
+}

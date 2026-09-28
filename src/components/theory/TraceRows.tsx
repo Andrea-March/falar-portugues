@@ -3,9 +3,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Check, Volume2, HelpCircle } from 'lucide-react';
 import { matchAnswer, normalizeAnswer } from '@/utils/answerCheck';
-import { speakPortuguese } from '@/utils/textToSpeech';
+import { speakTarget } from '@/utils/textToSpeech';
 import { soundFX } from '@/utils/sound';
 import { applyTrace, baseLetter as base, chars } from '@/utils/traceInput';
+import { ui } from '@/content';
 
 type RowStatus = 'open' | 'done' | 'revealed';
 
@@ -76,7 +77,7 @@ export default function TraceRows({ rows, mode, initiallyDone, onDone, idPrefix,
     setTyped(nextTyped);
     setAccentKey(null);
     setRowHint(null);
-    speakPortuguese(rows[i].spoken);
+    speakTarget(rows[i].spoken);
 
     const nextOpen = nextStatus.findIndex((s, j) => j > i && s === 'open');
     const anyOpen = nextStatus.findIndex((s) => s === 'open');
@@ -111,13 +112,13 @@ export default function TraceRows({ rows, mode, initiallyDone, onDone, idPrefix,
     const value = typed[i];
     if (!value.trim()) return;
     const result = matchAnswer(value, rows[i].form);
-    if (result === 'accents') return setRowHint({ row: i, text: 'Quase! Confere os acentos.' });
+    if (result === 'accents') return setRowHint({ row: i, text: ui.trace.accents });
     if (result === 'exact') return;
     const other = rows.find((r, j) => j !== i && normalizeAnswer(r.form) === normalizeAnswer(value));
     if (other) {
-      setRowHint({ row: i, text: `«${other.form}» existe, mas aqui há uma expressão mais adequada.` });
+      setRowHint({ row: i, text: ui.trace.otherExpression(other.form) });
     } else {
-      setRowHint({ row: i, text: 'Ainda não. Tenta outra vez ou carrega em “Não sei”.' });
+      setRowHint({ row: i, text: ui.trace.notYet });
     }
     bump(i);
   };
@@ -173,8 +174,8 @@ export default function TraceRows({ rows, mode, initiallyDone, onDone, idPrefix,
                 {st !== 'open' ? (
                   <button
                     type="button"
-                    onClick={() => speakPortuguese(row.spoken)}
-                    aria-label={`Ouvir ${row.spoken}`}
+                    onClick={() => speakTarget(row.spoken)}
+                    aria-label={ui.lesson.listenTo(row.spoken)}
                     className={`p-1 rounded-lg cursor-pointer shrink-0 ${st === 'done' ? 'text-ok-dark' : 'text-azulejo-dark'}`}
                   >
                     <Volume2 size={20} strokeWidth={2.5} />
@@ -239,7 +240,7 @@ export default function TraceRows({ rows, mode, initiallyDone, onDone, idPrefix,
                     autoCapitalize="off"
                     spellCheck={false}
                     enterKeyHint={trace ? 'next' : 'done'}
-                    aria-label={`${row.label}: ${trace ? `escreve ${row.form}` : 'escreve a resposta'}`}
+                    aria-label={`${row.label}: ${trace ? ui.trace.writeForm(row.form) : ui.trace.writeAnswer}`}
                     className={`${wordClass} absolute inset-0 w-full bg-transparent py-1 outline-none text-transparent caret-azulejo`}
                   />
                 )}
@@ -256,7 +257,7 @@ export default function TraceRows({ rows, mode, initiallyDone, onDone, idPrefix,
       </ol>
 
       {accentChars.length > 0 && !allDone && (
-        <div className="flex flex-wrap items-center gap-2" aria-label="Letras com acento">
+        <div className="flex flex-wrap items-center gap-2" aria-label={ui.trace.accentLetters}>
           {accentChars.map((c) => (
             <button
               key={c}
@@ -272,7 +273,7 @@ export default function TraceRows({ rows, mode, initiallyDone, onDone, idPrefix,
           ))}
           {accentKey && (
             <span role="status" className="font-bold text-brand-accentDark animate-fade-in">
-              Falta o acento: {accentKey}
+              {ui.trace.missingAccent(accentKey)}
             </span>
           )}
         </div>

@@ -5,6 +5,7 @@ import { X, Heart } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
 import FullscreenPortal from './FullscreenPortal';
 import AudioToggle from './AudioToggle';
+import { ui } from '@/content';
 
 interface LessonShellProps {
   /** 0–100 */
@@ -28,7 +29,7 @@ export default function LessonShell({ progress, hearts, onClose, footer, childre
       <div className="w-full max-w-2xl mx-auto flex items-center gap-4 px-4 sm:px-6 py-4">
         <button
           type="button"
-          aria-label="Sair da lição"
+          aria-label={ui.lesson.exit}
           onClick={() => {
             soundFX.playClick();
             onClose();

@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import { ArrowLeft, Volume2 } from 'lucide-react';
 import { conjugationRows, tenseLabel } from '@/content';
 import type { StudiedVerb } from '@/content/grammar';
-import { speakPortuguese } from '@/utils/textToSpeech';
+import { speakTarget } from '@/utils/textToSpeech';
 import { soundFX } from '@/utils/sound';
+import { ui } from '@/content';
 
 interface VerbStudyProps {
   verb: StudiedVerb;
@@ -36,14 +37,14 @@ export default function VerbStudy({ verb, onBack, onStudy, onPractice }: VerbStu
       <div className="rounded-3xl border-2 border-b-[6px] border-brand-border bg-white p-5 space-y-4">
         <header className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.09em] text-azulejo">Verbo</p>
+            <p className="text-xs font-extrabold uppercase tracking-[0.09em] text-azulejo">{ui.kinds.verb}</p>
             <h2 className="font-display text-3xl font-extrabold text-ink leading-tight">{verb.infinitive}</h2>
-            <p className="font-semibold text-brand-muted">{verb.it}</p>
+            <p className="font-semibold text-brand-muted">{verb.translation}</p>
           </div>
           <button
             type="button"
-            onClick={() => speakPortuguese(verb.infinitive)}
-            aria-label={`Ouvir «${verb.infinitive}»`}
+            onClick={() => speakTarget(verb.infinitive)}
+            aria-label={ui.lesson.listenTo(verb.infinitive)}
             className="btn-3d btn-ghost w-12 h-12 !p-0 text-azulejo"
           >
             <Volume2 size={22} strokeWidth={2.6} />
@@ -51,7 +52,7 @@ export default function VerbStudy({ verb, onBack, onStudy, onPractice }: VerbStu
         </header>
 
         {verb.tenses.length > 1 ? (
-          <div className="flex gap-2" role="tablist" aria-label="Tempo verbal">
+          <div className="flex gap-2" role="tablist" aria-label={ui.grammar.tense}>
             {verb.tenses.map((t) => (
               <button
                 key={t}
@@ -81,8 +82,8 @@ export default function VerbStudy({ verb, onBack, onStudy, onPractice }: VerbStu
               <button
                 key={row.person}
                 type="button"
-                onClick={() => speakPortuguese(row.spoken)}
-                aria-label={`Ouvir «${row.pronoun} ${row.verb}»`}
+                onClick={() => speakTarget(row.spoken)}
+                aria-label={ui.lesson.listenTo(`${row.pronoun} ${row.verb}`)}
                 className="btn-3d !justify-between bg-white border-2 border-azulejo/20 !border-b-4 px-4 py-3 text-left"
               >
                 <span className="text-brand-muted font-bold">{row.pronoun}</span>

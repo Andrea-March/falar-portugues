@@ -4,17 +4,17 @@ export interface BaseExercise {
   id: string;
   type: ExerciseType;
   prompt?: string;
-  translationIt?: string;
+  translation?: string;
   /** Battuta dell'altra persona prima di questa risposta (nodi "dialogue") */
   context?: string;
-  /** Traduzione italiana di "context" */
-  contextIt?: string;
+  /** Traduzione di "context" nella lingua di chi impara */
+  contextTranslation?: string;
   /** Altre risposte giuste (es. "Obrigada" accanto a "Obrigado") */
   alternatives?: string[];
   /** Cosa allena (es. "verb:ser:presente:eu"), per il ripasso */
   trains?: string[];
-  /** Nota per chi parla italiano, mostrata dopo un errore */
-  italianNote?: string;
+  /** Nota per chi impara, mostrata dopo un errore */
+  learnerNote?: string;
   /** Esercizio di ascolto: la frase si sente, la traduzione è nascosta (se l'audio pt-PT c'è) */
   listening?: boolean;
 }

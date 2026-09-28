@@ -1,10 +1,11 @@
 import type { MetadataRoute } from 'next';
+import { courseConfig } from '@/content';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'FalaLuso - Aprender Português',
-    short_name: 'FalaLuso',
-    description: 'Aprende português europeu de forma prática',
+    name: courseConfig.appTitle,
+    short_name: courseConfig.appShortName,
+    description: courseConfig.appDescription,
     start_url: '/',
     display: 'standalone',
     background_color: '#f3f6fc',

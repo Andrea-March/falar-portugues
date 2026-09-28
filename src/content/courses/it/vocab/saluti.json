@@ -1,0 +1,56 @@
+{
+  "id": "saluti",
+  "title": "Saluti",
+  "items": [
+    {
+      "id": "buongiorno",
+      "text": "Buongiorno",
+      "translation": "Bom dia",
+      "icon": "☀️",
+      "usage": "De manhã e até ao início da tarde, com qualquer pessoa.",
+      "situation": "Entras num café às nove da manhã"
+    },
+    {
+      "id": "buonasera",
+      "text": "Buonasera",
+      "translation": "Boa tarde / Boa noite (ao chegar)",
+      "icon": "🌆",
+      "usage": "A partir do meio da tarde, ao chegar a um sítio.",
+      "situation": "Chegas a um restaurante às oito da noite",
+      "learnerNote": "Em Itália o «buonasera» começa cedo, por volta das quatro ou cinco da tarde: não há um «boa tarde» separado."
+    },
+    {
+      "id": "arrivederci",
+      "text": "Arrivederci",
+      "translation": "Adeus / Até à próxima",
+      "icon": "👋",
+      "usage": "Para te despedires de quem não conheces bem.",
+      "situation": "Sais de uma loja e despedes-te do empregado"
+    },
+    {
+      "id": "ciao",
+      "text": "Ciao",
+      "translation": "Olá / Tchau",
+      "icon": "🙂",
+      "usage": "Com amigos e família, tanto ao chegar como ao sair.",
+      "situation": "Encontras uma amiga na rua",
+      "learnerNote": "Serve para chegar e para sair, mas só com quem tratas por tu: com desconhecidos soa demasiado informal."
+    },
+    {
+      "id": "mi-chiamo",
+      "text": "Mi chiamo…",
+      "translation": "Chamo-me…",
+      "icon": "🪪",
+      "usage": "Para dizer o teu nome.",
+      "situation": "Dizes o teu nome a alguém"
+    },
+    {
+      "id": "piacere",
+      "text": "Piacere!",
+      "translation": "Muito prazer!",
+      "icon": "🤝",
+      "usage": "Quando conheces alguém pela primeira vez.",
+      "situation": "Acabaram de te apresentar uma pessoa nova"
+    }
+  ]
+}

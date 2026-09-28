@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { generalFeedbackUrl } from '@/utils/feedback';
 import FeedbackDialog, { TrapField, useSendFeedback } from './FeedbackDialog';
+import { ui } from '@/content';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -24,15 +25,15 @@ export default function GeneralFeedbackDialog({ onClose }: { onClose: () => void
 
   return (
     <FeedbackDialog
-      title="Enviar feedback"
-      subtitle="Cosa ti piace, cosa manca, cosa non funziona: tutto è utile."
+      title={ui.menu.feedback}
+      subtitle={ui.feedback.generalSubtitle}
       status={status}
       onClose={onClose}
       onRetry={submit}
       fallbackMailto={generalFeedbackUrl()}
     >
       <label className="block">
-        <span className="font-bold text-ink">Il tuo messaggio</span>
+        <span className="font-bold text-ink">{ui.feedback.message}</span>
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -44,7 +45,7 @@ export default function GeneralFeedbackDialog({ onClose }: { onClose: () => void
       </label>
 
       <label className="block mt-4">
-        <span className="font-bold text-ink">La tua email (facoltativa)</span>
+        <span className="font-bold text-ink">{ui.feedback.email}</span>
         <input
           type="email"
           inputMode="email"
@@ -56,13 +57,13 @@ export default function GeneralFeedbackDialog({ onClose }: { onClose: () => void
           className={`${field} ${emailOk ? '' : '!border-ko'}`}
         />
         <span className="block mt-1 text-sm font-semibold text-brand-muted">
-          {emailOk ? 'Solo se vuoi una risposta. La usiamo solo per risponderti.' : 'Controlla l’indirizzo email.'}
+          {emailOk ? ui.feedback.emailHint : ui.feedback.emailInvalid}
         </span>
       </label>
       <TrapField value={trap} onChange={setTrap} />
 
       <button type="button" disabled={!canSend} onClick={submit} className="btn-3d btn-primary w-full py-3.5 text-lg mt-5">
-        {status === 'sending' ? 'A enviar…' : 'Enviar'}
+        {status === 'sending' ? ui.common.sending : ui.common.send}
       </button>
     </FeedbackDialog>
   );

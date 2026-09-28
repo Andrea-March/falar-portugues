@@ -2,9 +2,10 @@
 
 import { isAudioEnabled } from './audioSettings';
 import { audioPath, speechText } from './speechKey';
+import { courseConfig } from '../content/registry.generated';
 
 /**
- * Lettura ad alta voce in pt-PT.
+ * Lettura ad alta voce nella lingua del corso (es. pt-PT).
  * 1. Prima si cerca l'audio pregenerato (public/audio/<voce>/<impronta>.mp3, vedi scripts/audio.ts):
  *    voce neurale pt-PT garantita, uguale su tutti i dispositivi.
  * 2. Se il file non c'è (frase nuova non ancora generata, rete assente), si usa la voce del browser.
@@ -67,18 +68,22 @@ export function cacheSpeechForOffline(items: { text: string; voice?: VoiceKey }[
 
 let cachedVoice: SpeechSynthesisVoice | null | undefined;
 
+/** Lingua della voce: quella che si impara (es. "pt-PT"), dalla configurazione del corso */
+const TARGET_LANG = courseConfig.targetLang;
+
 /**
- * Sceglie una voce di portoghese europeo. Se il dispositivo non ne ha,
- * usiamo comunque lang="pt-PT" (evitando di selezionare esplicitamente una voce pt-BR).
+ * Sceglie una voce esattamente della lingua del corso (es. portoghese europeo). Se il dispositivo
+ * non ne ha, usiamo comunque lang=TARGET_LANG (evitando di selezionare una variante, es. pt-BR).
  */
-function europeanVoice(): SpeechSynthesisVoice | null {
+function targetVoice(): SpeechSynthesisVoice | null {
   if (cachedVoice !== undefined) return cachedVoice;
   const list = window.speechSynthesis.getVoices();
   if (list.length === 0) return null; // lista non ancora pronta: riproveremo
   const norm = (l: string) => l.replace('_', '-').toLowerCase();
+  const want = norm(TARGET_LANG);
   cachedVoice =
-    list.find((v) => norm(v.lang) === 'pt-pt' && /natural|neural|premium|enhanced/i.test(v.name)) ??
-    list.find((v) => norm(v.lang) === 'pt-pt') ??
+    list.find((v) => norm(v.lang) === want && /natural|neural|premium|enhanced/i.test(v.name)) ??
+    list.find((v) => norm(v.lang) === want) ??
     null;
   return cachedVoice;
 }
@@ -101,9 +106,9 @@ export const SLOW_RATE = 0.7;
 function browserSpeak(clean: string, onEnd: () => void, slow = false) {
   if (!('speechSynthesis' in window)) return onEnd();
   const utterance = new SpeechSynthesisUtterance(clean);
-  utterance.lang = 'pt-PT';
+  utterance.lang = TARGET_LANG;
   utterance.rate = slow ? SLOW_RATE : 1;
-  const voice = europeanVoice();
+  const voice = targetVoice();
   if (voice) utterance.voice = voice;
   utterance.onend = onEnd;
   utterance.onerror = onEnd;
@@ -143,7 +148,7 @@ function silence() {
  * se la lettura viene interrotta o sostituita, o dopo una breve pausa se l'audio è disattivato.
  * `voice` sceglie una delle voci di audio.config.json (es. l'interlocutore di un dialogo).
  */
-export function speakPortuguese(text: string, onEnd?: () => void, opts: { voice?: VoiceKey; slow?: boolean } = {}) {
+export function speakTarget(text: string, onEnd?: () => void, opts: { voice?: VoiceKey; slow?: boolean } = {}) {
   if (typeof window === 'undefined' || !isAudioEnabled()) {
     // Audio spento: una piccola pausa, così il ritmo resta naturale
     if (onEnd) setTimeout(onEnd, 450);
@@ -206,5 +211,5 @@ export function stopSpeaking() {
 export async function canListenTo(text: string, voice?: VoiceKey): Promise<boolean> {
   if (typeof window === 'undefined' || !isAudioEnabled()) return false;
   if (await resolveAudio(text, voice)) return true;
-  return 'speechSynthesis' in window && europeanVoice() !== null;
+  return 'speechSynthesis' in window && targetVoice() !== null;
 }

@@ -59,11 +59,11 @@ function exerciseRow(ex: Exercise, where: Row): Row {
     ...where,
     Tipo: ex.type === 'choose' ? `Esercizio a scelta (risposta: ${answer(ex.text)})` : `Esercizio da scrivere (risposta: ${answer(ex.text)})`,
     Portoghese: full(ex.text),
-    Italiano: ex.it,
-    'Battuta prima': ex.context ? `${ex.context}  →  ${ex.contextIt ?? ''}` : undefined,
+    Italiano: ex.translation,
+    'Battuta prima': ex.context ? `${ex.context}  →  ${ex.contextTranslation ?? ''}` : undefined,
     'Opzioni sbagliate': wrong,
     'Altre risposte accettate': ex.accept?.join(' | '),
-    'Nota per italiani': ex.italianNote,
+    'Nota per italiani': ex.learnerNote,
     'Altro testo (istruzioni, uso)': ex.prompt,
     ID: ex.id,
   };
@@ -72,7 +72,7 @@ function exerciseRow(ex: Exercise, where: Row): Row {
 function theoryRows(theory: TheoryItem[], where: Row, id: string): Row[] {
   return theory.flatMap((card, i): Row[] => {
     if (!('text' in card) && !('examples' in card)) return []; // paradigmi e studio del vocabolario: righe a parte
-    const c = card as { title?: string; text?: string; examples?: { pt: string; it: string; italianNote?: string }[] };
+    const c = card as { title?: string; text?: string; examples?: { text: string; translation: string; learnerNote?: string }[] };
     const rows: Row[] = [];
     if (c.text) {
       rows.push({
@@ -84,7 +84,7 @@ function theoryRows(theory: TheoryItem[], where: Row, id: string): Row[] {
       });
     }
     c.examples?.forEach((e, k) =>
-      rows.push({ ...where, Tipo: 'Esempio', Portoghese: e.pt, Italiano: e.it, 'Nota per italiani': e.italianNote, ID: `${id}:teoria${i}:es${k}` })
+      rows.push({ ...where, Tipo: 'Esempio', Portoghese: e.text, Italiano: e.translation, 'Nota per italiani': e.learnerNote, ID: `${id}:teoria${i}:es${k}` })
     );
     return rows;
   });
@@ -111,9 +111,9 @@ async function collectRows(): Promise<Row[]> {
         Capitolo: 'Vocabolario',
         Lezione: set.title,
         Tipo: 'Espressione',
-        Portoghese: v.pt,
-        Italiano: v.it,
-        'Nota per italiani': v.italianNote,
+        Portoghese: v.text,
+        Italiano: v.translation,
+        'Nota per italiani': v.learnerNote,
         'Altro testo (istruzioni, uso)': [v.note, v.usage, v.situation].filter(Boolean).join(' · '),
         ID: `vocab:${v.id}`,
       });
@@ -127,7 +127,7 @@ async function collectRows(): Promise<Row[]> {
         Lezione: verb.infinitive,
         Tipo: `Coniugazione (${tense})`,
         Portoghese: Object.values(forms).join(', '),
-        Italiano: verb.it,
+        Italiano: verb.translation,
         ID: `verb:${verb.id}:${tense}`,
       });
     }

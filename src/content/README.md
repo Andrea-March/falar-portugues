@@ -1,6 +1,18 @@
-# Contenuti del corso
+# Contenuti dei corsi
 
-Tutto il materiale didattico vive qui. L'app lo legge solo tramite `index.ts`.
+Ogni corso ha la sua cartella in `courses/<corso>/` (oggi `pt`, il portoghese per italiani, e `it`,
+l'italiano per chi parla portoghese). L'app ne contiene uno solo, scelto al build con la variabile
+`COURSE` (predefinito `pt`): `COURSE=it npm run dev`, oppure `COURSE=it` nelle variabili di Vercel.
+L'app legge i contenuti solo tramite `index.ts`; i percorsi qui sotto sono dentro la cartella del corso.
+
+```
+config.ts            lingue, persone grammaticali, tempi, accenti, nome dell'app
+ui.ts                testi dell'interfaccia (stesse chiavi in ogni corso)
+audio.config.json    servizio e voci dell'audio pregenerato
+```
+
+Nei file i campi sono neutri: `text` è nella lingua che si impara, `translation` e `learnerNote`
+nella lingua di chi impara.
 
 ```
 course.json          ordine di capitoli e lezioni + titolo, descrizione, icona di ogni lezione
@@ -27,7 +39,7 @@ Una lezione non ancora scritta può stare sulla mappa con `"draft": true` (mostr
 La risposta va tra graffe dentro la frase. Lo stesso formato vale per tutti i tipi.
 
 ```json
-{ "id": "ser_eu_roma", "type": "write",  "text": "Eu {sou} de Roma.", "it": "Io sono di Roma.",
+{ "id": "ser_eu_roma", "type": "write",  "text": "Eu {sou} de Roma.", "translation": "Io sono di Roma.",
   "trains": ["verb:ser:presente:eu"] }
 
 { "id": "bom_dia_1", "type": "choose", "text": "{Bom dia}! Tudo bem?",
@@ -56,7 +68,7 @@ deve essere proprio quella forma (`"Ela {és}"` con `ele_ela_voce` viene segnala
 { "title": "Il verbo ser", "text": "Si usa per **caratteristiche permanenti**.",
   "verb": { "verb": "ser", "tense": "presente" },
   "vocab": ["bom-dia", "boa-tarde"],
-  "examples": [{ "pt": "Eu sou italiano.", "it": "Io sono italiano." }] }
+  "examples": [{ "text": "Eu sou italiano.", "translation": "Io sono italiano." }] }
 ```
 
 `verb` mostra la tabella presa da `verbs/`, `vocab` mostra le voci prese da `vocab/`:
@@ -80,7 +92,7 @@ a una sola espressione del gruppo: se l'utente scrive quella di un'altra riga, l
 gli dice che esiste ma che ce n'è una più adatta.
 
 ```json
-{ "id": "bom-dia", "pt": "Bom dia!", "it": "Buongiorno!", "icon": "☀️",
+{ "id": "bom-dia", "text": "Bom dia!", "translation": "Buongiorno!", "icon": "☀️",
   "usage": "Dal mattino fino all'ora di pranzo.",
   "situation": "☀️ Sono le 9 del mattino ed entri al bar: saluti il barista." }
 ```

@@ -39,14 +39,14 @@ export function sessionSpeech(session: Session, node: CourseNode, content: NodeC
       if (step.kind === 'info') {
         // Le parole in grassetto del testo si ascoltano toccandole
         for (const m of step.text.matchAll(/\*\*(.*?)\*\*/g)) out.push({ text: m[1].replace(/…/g, '') });
-        step.examples?.forEach((e) => out.push({ text: e.pt }));
+        step.examples?.forEach((e) => out.push({ text: e.text }));
         step.conjugation?.forEach((c) => out.push({ text: c.spoken }));
       } else if (step.kind === 'paradigm') {
         step.rows.forEach((r) => out.push({ text: `${r.spoken} ${r.form}` }));
       } else if (step.kind === 'vocab-present') {
-        out.push({ text: step.item.pt });
+        out.push({ text: step.item.text });
       } else if (step.kind === 'vocab-recall') {
-        step.rows.forEach((r) => out.push({ text: r.pt }));
+        step.rows.forEach((r) => out.push({ text: r.text }));
       }
     }
     // Assaggio di conversazione alla fine della prima Descoberta

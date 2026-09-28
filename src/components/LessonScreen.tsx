@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { sessionXp } from '@/content/rewards';
-import ItalianNote from '@/components/common/ItalianNote';
+import LearnerNote from '@/components/common/LearnerNote';
 import confetti from 'canvas-confetti';
 import { soundFX } from '@/utils/sound';
 import { useUser } from '@/context/UserContext';
@@ -13,7 +13,7 @@ import LessonShell from '@/components/common/LessonShell';
 import type { PracticeStats } from '@/components/exercises/PracticeSession';
 import Mascot from '@/components/common/Mascot';
 import { Volume2 } from 'lucide-react';
-import { preloadSpeech, speakPortuguese } from '@/utils/textToSpeech';
+import { preloadSpeech, speakTarget } from '@/utils/textToSpeech';
 import { sessionSpeech } from '@/content/speech';
 import LessonCompleteCard from '@/components/common/LessonCompleteCard';
 import TestFailedCard from '@/components/common/TestFailedCard';
@@ -38,6 +38,7 @@ import {
 } from '@/content';
 import ParadigmStep from '@/components/theory/ParadigmStep';
 import { VocabPresentStep, VocabRecallStep } from '@/components/theory/VocabStudy';
+import { ui } from '@/content';
 
 type ChapterContents = Awaited<ReturnType<typeof loadCheckpointSources>>;
 
@@ -50,7 +51,7 @@ interface LessonScreenProps {
   onCompleteSession: () => void;
 }
 
-const speakPt = speakPortuguese;
+const speakPt = speakTarget;
 
 /**
  * Testo della teoria: le parti tra **…** sono sempre portoghese (vedi schema.ts)
@@ -65,7 +66,7 @@ const renderFormattedText = (text: string) =>
         key={index}
         type="button"
         onClick={() => speakPt(pt.replace(/…/g, ''))}
-        aria-label={`Ouvir «${pt}»`}
+        aria-label={ui.lesson.listenTo(pt)}
         className="inline font-extrabold text-azulejo-dark bg-azulejo-light px-1.5 rounded-md underline decoration-dotted decoration-azulejo/60 underline-offset-4 cursor-pointer hover:brightness-95 active:scale-95 transition-transform"
       >
         {pt}
@@ -114,7 +115,7 @@ export default function LessonScreen(props: LessonScreenProps) {
   if (!loaded || loaded.id !== props.nodeId) {
     return (
       <LessonShell progress={0} onClose={props.onClose}>
-        <div className="flex justify-center pt-24" aria-busy="true" aria-label="A carregar a lição">
+        <div className="flex justify-center pt-24" aria-busy="true" aria-label={ui.lesson.loading}>
           <Mascot mood="think" size={96} />
         </div>
       </LessonShell>
@@ -128,16 +129,16 @@ export default function LessonScreen(props: LessonScreenProps) {
           <Mascot mood="sad" size={120} />
           {typeof navigator !== 'undefined' && !navigator.onLine ? (
             <>
-              <h2 className="text-2xl font-extrabold">Sem ligação</h2>
+              <h2 className="text-2xl font-extrabold">{ui.common.offline}</h2>
               <p className="text-lg font-semibold text-brand-muted max-w-xs">
-                Questa lezione non è ancora salvata sul telefono. Aprila quando torna la rete.
+                {ui.lesson.notSaved}
               </p>
             </>
           ) : (
-            <h2 className="text-2xl font-extrabold">Não encontrámos esta lição</h2>
+            <h2 className="text-2xl font-extrabold">{ui.lesson.notFound}</h2>
           )}
           <button type="button" onClick={() => { soundFX.playClick(); props.onClose(); }} className="btn-3d btn-primary px-8 py-3.5 text-lg">
-            Voltar ao percurso
+            {ui.lesson.backToMap}
           </button>
         </div>
       </LessonShell>
@@ -191,10 +192,10 @@ function LessonFlow({
     const list = sessionsFor(node);
     const next = list[list.findIndex((s) => sameSession(s, session)) + 1];
     if (next) {
-      const unlocked = session.kind === 'guided' && node.kind !== 'culture' ? ' · A próxima lição já está desbloqueada!' : '';
-      return `A seguir: ${SESSION_INFO[next.kind].icon} ${sessionName(next)}${unlocked}`;
+      const unlocked = session.kind === 'guided' && node.kind !== 'culture' ? ` · ${ui.lesson.nextUnlocked}` : '';
+      return `${ui.lesson.upNext}: ${SESSION_INFO[next.kind].icon} ${sessionName(next)}${unlocked}`;
     }
-    return session.kind === 'test' ? 'Lição concluída! A próxima já está desbloqueada.' : undefined;
+    return session.kind === 'test' ? ui.lesson.lessonDone : undefined;
   })();
 
   const [step, setStep] = useState<'theory' | 'warmup' | 'practice' | 'complete' | 'failed'>(isDiscovery ? 'theory' : 'practice');
@@ -282,7 +283,7 @@ function LessonFlow({
                 }}
                 className="btn-3d flex-1 py-4 text-lg bg-azulejo border-azulejo-dark text-white hover:brightness-110"
               >
-                {isLast ? 'Concluir' : 'Continuar'}
+                {isLast ? ui.lesson.finish : ui.common.continue}
               </button>
             </div>
           </div>
@@ -296,7 +297,7 @@ function LessonFlow({
           <VocabRecallStep key={theoryIndex} step={card} initiallyDone={doneSteps.has(theoryIndex)} onDone={markDone} />
         ) : (
           <div key={theoryIndex} className="space-y-6 animate-fade-in">
-            {theoryIndex === 0 && <Mascot mood="happy" size={72} say="Primeiro, um pouco de teoria!" />}
+            {theoryIndex === 0 && <Mascot mood="happy" size={72} say={ui.lesson.theoryFirst} />}
 
             {/* Niente audio sul titolo: è in italiano. L'audio resta solo sui testi in portoghese */}
             <h2 className="text-3xl font-extrabold text-ink leading-tight">{card.title}</h2>
@@ -322,18 +323,18 @@ function LessonFlow({
 
           {card.examples && (
             <div className="space-y-3">
-              <h3 className="text-xl font-extrabold text-ink">Exemplos</h3>
+              <h3 className="text-xl font-extrabold text-ink">{ui.lesson.examples}</h3>
               {card.examples.map((ex) => (
-                <div key={ex.pt} className="flex items-center gap-3 rounded-2xl border-2 border-brand-border p-4">
+                <div key={ex.text} className="flex items-center gap-3 rounded-2xl border-2 border-brand-border p-4">
                   <div className="flex-1 min-w-0">
-                    <p className="text-lg font-bold text-ink">{renderFormattedText(ex.pt)}</p>
+                    <p className="text-lg font-bold text-ink">{renderFormattedText(ex.text)}</p>
                     <p className="text-brand-muted font-semibold">
-                      {ex.it}
+                      {ex.translation}
                       {ex.note && <span className="text-brand-muted/80 font-semibold italic"> · {ex.note}</span>}
                     </p>
-                    {ex.italianNote && <ItalianNote text={ex.italianNote} compact />}
+                    {ex.learnerNote && <LearnerNote text={ex.learnerNote} compact />}
                   </div>
-                  <SpeakButton text={ex.pt.replace(/\*\*/g, '')} label="Ouvir a frase" />
+                  <SpeakButton text={ex.text.replace(/\*\*/g, '')} label={ui.lesson.listenSentence} />
                 </div>
               ))}
             </div>

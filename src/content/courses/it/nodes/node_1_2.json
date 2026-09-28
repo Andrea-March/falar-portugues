@@ -1,0 +1,89 @@
+{
+  "id": "node_1_2",
+  "theory": [
+    {
+      "title": "Um verbo só para «ser» e «estar»",
+      "text": "O italiano tem um só verbo onde o português tem dois: **essere** serve tanto para «ser» (**Sono portoghese**) como para «estar» (**Sono a Roma**). Atenção também à pessoa **voi**: em italiano usa-se todos os dias, é o «vocês» quando falas com um grupo.",
+      "examples": [
+        {
+          "text": "Ciao, mi chiamo Ines. Sono di Lisbona.",
+          "translation": "Olá, chamo-me Ines. Sou de Lisboa."
+        },
+        {
+          "text": "Lei è medico.",
+          "translation": "Ela é médica."
+        },
+        {
+          "text": "Siete stanchi?",
+          "translation": "Vocês estão cansados?",
+          "learnerNote": "«Stanco» quer dizer «cansado»: nada a ver com «estanque»."
+        }
+      ]
+    },
+    {
+      "paradigm": {
+        "verb": "essere",
+        "tense": "presente"
+      }
+    }
+  ],
+  "exercises": [
+    {
+      "id": "it_1_2_1",
+      "type": "write",
+      "text": "Io {sono} portoghese.",
+      "translation": "Eu sou portuguesa.",
+      "trains": [
+        "verb:essere:presente:io"
+      ]
+    },
+    {
+      "id": "it_1_2_2",
+      "type": "choose",
+      "text": "Tu {sei} di Lisbona?",
+      "translation": "És de Lisboa?",
+      "trains": [
+        "verb:essere:presente:tu"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "it_1_2_3",
+      "type": "choose",
+      "text": "Marco {è} a casa.",
+      "translation": "O Marco está em casa.",
+      "trains": [
+        "verb:essere:presente:lui_lei"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "it_1_2_4",
+      "type": "write",
+      "text": "Noi {siamo} amici.",
+      "translation": "Nós somos amigos.",
+      "trains": [
+        "verb:essere:presente:noi"
+      ]
+    },
+    {
+      "id": "it_1_2_5",
+      "type": "choose",
+      "text": "Voi {siete} italiani?",
+      "translation": "Vocês são italianos?",
+      "trains": [
+        "verb:essere:presente:voi"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "it_1_2_6",
+      "type": "write",
+      "text": "Loro {sono} di Roma.",
+      "translation": "Eles são de Roma.",
+      "trains": [
+        "verb:essere:presente:loro"
+      ]
+    }
+  ]
+}
