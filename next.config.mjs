@@ -4,8 +4,14 @@ import pkg from './package.json' with { type: 'json' };
 const nextConfig = {
   /* config options here */
   reactCompiler: true,
-  // Versione mostrata nel menu e allegata ai feedback
-  env: { NEXT_PUBLIC_APP_VERSION: pkg.version },
+  env: {
+    // Versione mostrata nel menu e allegata ai feedback
+    NEXT_PUBLIC_APP_VERSION: pkg.version,
+    // Supabase per il browser: URL e publishable key sono pubblici per natura (a proteggere i dati è RLS).
+    // La secret key (SUPABASE_SECRET_KEY) non va MAI aggiunta qui: finirebbe nel codice scaricato dagli utenti.
+    NEXT_PUBLIC_SUPABASE_URL: process.env.SUPABASE_URL ?? '',
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY ?? '',
+  },
   // Gli audio hanno il nome ricavato dal testo: non cambiano mai, il browser può tenerli per sempre
   async headers() {
     return [

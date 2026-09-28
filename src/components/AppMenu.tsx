@@ -1,19 +1,33 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Menu, MessageCircleHeart, ShieldCheck, Volume2, VolumeX, X } from 'lucide-react';
+import { Menu, MessageCircleHeart, ShieldCheck, Trash2, Volume2, VolumeX, X } from 'lucide-react';
 import { APP_VERSION, PRIVACY_URL } from '@/config';
+import DeleteAccountDialog from '@/components/account/DeleteAccountDialog';
 import GeneralFeedbackDialog from '@/components/feedback/GeneralFeedbackDialog';
+import { useSyncStatus, type SyncStatus } from '@/progress/sync';
 import { setAudioEnabled, useAudioEnabled } from '@/utils/audioSettings';
 import { soundFX } from '@/utils/sound';
 
 /**
- * Menu in alto a destra: audio, feedback, privacy e versione.
+ * Menu in alto a destra: audio, feedback, privacy, cancellazione dell'account, versione e stato del salvataggio.
  * Raccoglie in un'icona sola quello che non serve di continuo, così l'header resta leggibile anche sui telefoni stretti.
  */
+/** Dove sono salvati i progressi, detto in breve (niente se il cloud non è configurato) */
+const SYNC_LABEL: Record<SyncStatus, string | null> = {
+  off: null,
+  connecting: 'Collegamento al cloud…',
+  pending: 'Salvataggio nel cloud…',
+  synced: 'Progressi salvati nel cloud',
+  offline: 'Offline: progressi salvati sul telefono',
+  error: 'Cloud non raggiungibile: progressi salvati sul telefono',
+};
+
 export default function AppMenu() {
   const [open, setOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const syncLabel = SYNC_LABEL[useSyncStatus()];
   const audio = useAudioEnabled();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -37,6 +51,7 @@ export default function AppMenu() {
   return (
     <div ref={ref} className="relative">
       {feedbackOpen && <GeneralFeedbackDialog onClose={() => setFeedbackOpen(false)} />}
+      {deleteOpen && <DeleteAccountDialog onClose={() => setDeleteOpen(false)} />}
       <button
         type="button"
         aria-label={open ? 'Fechar o menu' : 'Abrir o menu'}
@@ -88,7 +103,26 @@ export default function AppMenu() {
             Privacidade
           </a>
 
-          <p className="px-3 pt-2 pb-1 text-xs font-bold text-brand-muted">Falaluso · versão {APP_VERSION}</p>
+          <button
+            role="menuitem"
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              setDeleteOpen(true);
+            }}
+            className={row}
+          >
+            <Trash2 size={22} strokeWidth={2.4} className="text-ko" />
+            <span className="min-w-0">
+              <span className="block">Apagar conta</span>
+              <span className="block text-sm font-semibold text-brand-muted">Cancella account e progressi</span>
+            </span>
+          </button>
+
+          <p className="px-3 pt-2 pb-1 text-xs font-bold text-brand-muted">
+            Falaluso · versão {APP_VERSION}
+            {syncLabel && <span className="block font-semibold">{syncLabel}</span>}
+          </p>
         </div>
       )}
     </div>

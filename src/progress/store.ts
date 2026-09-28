@@ -1,7 +1,7 @@
 /**
  * Store dei progressi: un unico punto che tiene lo stato, lo salva e avvisa chi ascolta.
- * React lo legge con useSyncExternalStore (vedi UserContext). Oggi salva sul dispositivo;
- * la sincronizzazione con il cloud si aggancerà qui, usando mergeProgress.
+ * React lo legge con useSyncExternalStore (vedi UserContext). Salva sempre prima sul dispositivo;
+ * la copia nel cloud la gestisce sync.ts, che si iscrive qui come chiunque altro.
  */
 import { DEFAULT_PROGRESS, mergeProgress, normalizeProgress, type UserProgress } from './model';
 
@@ -55,11 +55,29 @@ export function updateProgress(update: (prev: UserProgress) => UserProgress) {
 }
 
 /**
- * Unisce una copia arrivata da fuori (un'altra scheda, e poi il cloud).
- * Non salva: il risultato viene scritto alla prossima modifica, così due schede non si rimbalzano la scrittura.
+ * Unisce una copia arrivata da fuori: un'altra scheda o il cloud.
+ * Dal cloud il risultato si salva subito (save = true). Da un'altra scheda no: verrà scritto
+ * alla prossima modifica, così due schede non si rimbalzano la scrittura.
+ * Restituisce true se lo stato è cambiato.
  */
-export function mergeIncoming(incoming: UserProgress) {
-  state = mergeProgress(getProgress(), incoming);
+export function mergeIncoming(incoming: UserProgress, save = false): boolean {
+  const prev = getProgress();
+  const next = mergeProgress(prev, incoming);
+  if (JSON.stringify(next) === JSON.stringify(prev)) return false;
+  state = next;
+  if (save) write(next);
+  notify();
+  return true;
+}
+
+/** Cancella i progressi (dopo la cancellazione dell'account): si riparte da zero */
+export function resetProgress() {
+  state = DEFAULT_PROGRESS;
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // storage non disponibile: basta lo stato in memoria
+  }
   notify();
 }
 

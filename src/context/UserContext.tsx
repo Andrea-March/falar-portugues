@@ -5,6 +5,7 @@ import { updateReview } from '@/content/review';
 import { dayKey, nextStreak } from '@/content/rewards';
 import { DEFAULT_PROGRESS, type UserProgress } from '@/progress/model';
 import { getProgress, getServerProgress, subscribeProgress, updateProgress } from '@/progress/store';
+import { startSync } from '@/progress/sync';
 
 export type { UserProgress } from '@/progress/model';
 
@@ -35,7 +36,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const progress = loaded ?? DEFAULT_PROGRESS;
   const isLoaded = loaded !== null;
 
-  // I progressi stanno solo sul dispositivo: chiediamo al browser di non cancellarli
+  // Copia nel cloud: parte da sola se Supabase è configurato, altrimenti non fa niente
+  useEffect(() => {
+    startSync();
+  }, []);
+
+  // La copia sul dispositivo resta la principale: chiediamo al browser di non cancellarla
   // quando serve spazio (o, su Safari, dopo giorni senza visite). Se rifiuta, cambia nulla.
   useEffect(() => {
     const storage = typeof navigator !== 'undefined' ? navigator.storage : undefined;
