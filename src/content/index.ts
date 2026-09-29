@@ -44,6 +44,15 @@ export function nextNodeId(id: string): string {
   return next ? next.id : id;
 }
 
+/** Il nodo che viene dopo questo nello stesso capitolo è già aperto insieme a lui ("openWithPrevious") */
+export function nextOpensTogether(id: string) {
+  for (const ch of chapters) {
+    const i = ch.nodes.findIndex((n) => n.id === id);
+    if (i !== -1) return Boolean(ch.nodes[i + 1]?.openWithPrevious);
+  }
+  return false;
+}
+
 // ---------- Lezioni (caricate su richiesta) ----------
 
 const nodeCache = new Map<string, Promise<NodeContent | null>>();

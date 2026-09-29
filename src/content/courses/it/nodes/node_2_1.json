@@ -47,25 +47,26 @@
           "vocab:sto-bene"
         ],
         "wrong": [
-          "Piacere",
-          "Dov'è"
+          "Come stai",
+          "Piacere"
         ]
       },
       {
         "id": "warm_it_2_1_2",
         "type": "choose",
-        "context": "Bene, bene. Cerca qualcosa?",
-        "contextTranslation": "Bem, bem. Procura alguma coisa?",
-        "prompt": "Pergunta onde fica a farmácia",
-        "text": "Sì, {dov'è} la farmacia?",
-        "translation": "Sim, onde fica a farmácia?",
+        "context": "Bene, grazie! Ecco mio nipote, Marco.",
+        "contextTranslation": "Bem, obrigada! Aqui está o meu neto, o Marco.",
+        "prompt": "O Marco é um rapaz: pergunta-lhe como está",
+        "text": "Ciao Marco, {come stai}?",
+        "translation": "Olá Marco, como estás?",
         "trains": [
-          "vocab:dove-e"
+          "vocab:come-stai"
         ],
         "wrong": [
           "come sta",
-          "è qui"
-        ]
+          "sto bene"
+        ],
+        "learnerNote": "Com um rapaz usas o «tu»: «come stai?». Com a senhora Rossi era «come sta?»."
       }
     ]
   },

@@ -7,6 +7,7 @@ import { speakTarget } from '@/utils/textToSpeech';
 import { soundFX } from '@/utils/sound';
 import { applyTrace, baseLetter as base, chars } from '@/utils/traceInput';
 import { ui } from '@/content';
+import { isTouchDevice } from '@/utils/device';
 
 type RowStatus = 'open' | 'done' | 'revealed';
 
@@ -54,8 +55,10 @@ export default function TraceRows({ rows, mode, initiallyDone, onDone, idPrefix,
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
   const rowsRef = useRef<(HTMLLIElement | null)[]>([]);
 
+  // Su telefono niente focus all'apertura: la tastiera coprirebbe la schermata prima che la si legga.
+  // Il primo campo resta evidenziato; dopo il primo tocco si passa da una riga all'altra da soli.
   useEffect(() => {
-    if (!initiallyDone) inputs.current[0]?.focus();
+    if (!initiallyDone && !isTouchDevice()) inputs.current[0]?.focus();
   }, [initiallyDone]);
 
   // Tasti con gli accenti presenti in questa schermata (es. é, ã): solo quelli utili

@@ -225,7 +225,12 @@ export default function ChapterMap({
       return node.requires.every((reqId) => completedNodeIds.includes(reqId));
     }
 
-    // 3. È il primo nodo di un capitolo
+    // 3. Si apre insieme al nodo precedente (es. i primi nodi del capitolo 1, aperti tutti subito)
+    if (node.openWithPrevious && nodeIndex > 0) {
+      return checkIsUnlocked(chaptersList[chapterIndex].nodes[nodeIndex - 1], nodeIndex - 1, chapterIndex, chaptersList);
+    }
+
+    // 4. È il primo nodo di un capitolo
     if (nodeIndex === 0) {
       if (chapterIndex === 0) return true; // Capitolo 1 è sempre aperto
       
@@ -235,7 +240,7 @@ export default function ChapterMap({
       return !lastNodeOfPrev || opened(lastNodeOfPrev);
     }
 
-    // 4. Nodi standard: il nodo obbligatorio precedente deve aver fatto almeno Prática
+    // 5. Nodi standard: il nodo obbligatorio precedente deve aver fatto almeno Prática
     //    (un nodo facoltativo, come la cultura, non blocca quelli dopo)
     const previousNode = lastRequiredBefore(chaptersList[chapterIndex].nodes, nodeIndex);
     return !previousNode || opened(previousNode);

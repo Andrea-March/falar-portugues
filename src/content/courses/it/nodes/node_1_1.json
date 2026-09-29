@@ -39,32 +39,32 @@
       {
         "id": "warm_it_1_1_1",
         "type": "choose",
-        "context": "Buongiorno! Lei è la nuova vicina?",
-        "contextTranslation": "Bom dia! A senhora é a nova vizinha?",
-        "prompt": "É de manhã: responde ao cumprimento",
-        "text": "{Buongiorno}, signora!",
-        "translation": "Bom dia, minha senhora!",
+        "context": "Buonasera! Lei è la nuova vicina?",
+        "contextTranslation": "Boa noite! A senhora é a nova vizinha?",
+        "prompt": "São sete da tarde: responde ao cumprimento",
+        "text": "{Buonasera}, signora!",
+        "translation": "Boa noite, minha senhora!",
         "trains": [
-          "vocab:buongiorno"
+          "vocab:buonasera"
         ],
         "wrong": [
-          "Buonanotte",
-          "Ciao"
+          "Buongiorno",
+          "Buonanotte"
         ]
       },
       {
         "id": "warm_it_1_1_2",
         "type": "choose",
-        "context": "Io mi chiamo Maria Rossi.",
-        "contextTranslation": "Eu chamo-me Maria Rossi.",
-        "prompt": "Ela apresentou-se: responde",
-        "text": "{Piacere}, signora Rossi!",
-        "translation": "Muito prazer, senhora Rossi!",
+        "context": "Sì? Benvenuta! Ora vado a dormire. Buonanotte!",
+        "contextTranslation": "Sim? Bem-vinda! Agora vou dormir. Boa noite!",
+        "prompt": "Ela vai dormir: despede-te",
+        "text": "{Buonanotte}, signora!",
+        "translation": "Boa noite, minha senhora!",
         "trains": [
-          "vocab:piacere"
+          "vocab:buonanotte"
         ],
         "wrong": [
-          "Arrivederci",
+          "Buongiorno",
           "Buonasera"
         ]
       }

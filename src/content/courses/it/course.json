@@ -19,14 +19,16 @@
           "kind": "verb",
           "title": "Essere",
           "subtitle": "Quem és e de onde és",
-          "icon": "📖"
+          "icon": "📖",
+          "openWithPrevious": true
         },
         {
           "id": "node_1_3",
           "kind": "dialogue",
           "title": "Al bar",
           "subtitle": "Pede o teu primeiro café em Florença",
-          "icon": "☕"
+          "icon": "☕",
+          "openWithPrevious": true
         },
         {
           "id": "node_1_cultura",

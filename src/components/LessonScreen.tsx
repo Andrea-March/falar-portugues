@@ -19,6 +19,7 @@ import LessonCompleteCard from '@/components/common/LessonCompleteCard';
 import TestFailedCard from '@/components/common/TestFailedCard';
 import {
   dialogueSpeaker,
+  nextOpensTogether,
   fullNodeTitle,
   getCourseNode,
   loadNode,
@@ -192,7 +193,7 @@ function LessonFlow({
     const list = sessionsFor(node);
     const next = list[list.findIndex((s) => sameSession(s, session)) + 1];
     if (next) {
-      const unlocked = session.kind === 'guided' && node.kind !== 'culture' ? ` · ${ui.lesson.nextUnlocked}` : '';
+      const unlocked = session.kind === 'guided' && node.kind !== 'culture' && !nextOpensTogether(node.id) ? ` · ${ui.lesson.nextUnlocked}` : '';
       return `${ui.lesson.upNext}: ${SESSION_INFO[next.kind].icon} ${sessionName(next)}${unlocked}`;
     }
     return session.kind === 'test' ? ui.lesson.lessonDone : undefined;

@@ -34,6 +34,9 @@ Se qualcosa non va, lo script dice file, esercizio e problema.
 
 Una lezione non ancora scritta può stare sulla mappa con `"draft": true` (mostra "Em breve").
 
+Di norma un nodo si sblocca dopo la Prática del precedente. Con `"openWithPrevious": true` si apre
+insieme al precedente: così, per esempio, i primi tre nodi del capitolo 1 sono aperti fin dall'inizio.
+
 ## Esercizi
 
 La risposta va tra graffe dentro la frase. Lo stesso formato vale per tutti i tipi.

@@ -14,6 +14,7 @@ import { SentenceWithGap } from './ExerciseRenderer';
 import FeedbackSheet from './FeedbackSheet';
 import type { Feedback, PracticeStats } from './PracticeSession';
 import { courseConfig, ui } from '@/content';
+import { isTouchDevice } from '@/utils/device';
 
 const SPECIAL_CHARS = courseConfig.specialChars;
 /** Pausa tra il suono di successo e la lettura della frase */
@@ -490,9 +491,10 @@ function WriteComposer({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Quando tocca all'utente, il cursore è già nel campo
+  // Quando tocca all'utente, il cursore è già nel campo. Su telefono no: la tastiera
+  // coprirebbe la battuta appena arrivata, quindi si legge con calma e poi si tocca il campo.
   useEffect(() => {
-    if (!disabled) inputRef.current?.focus();
+    if (!disabled && !isTouchDevice()) inputRef.current?.focus();
   }, [disabled]);
 
   const insert = (char: string) => {

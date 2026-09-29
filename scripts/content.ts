@@ -68,7 +68,7 @@ for (const f of jsonFiles('verbs')) {
   verbs.set(v.id, { file: f, data: v });
 }
 
-const vocab = new Map<string, { file: string; set: string }>();
+const vocab = new Map<string, { file: string; set: string; text: string }>();
 const vocabSets: { file: string; data: VocabSet }[] = [];
 for (const f of jsonFiles('vocab')) {
   const s = load(f, VocabSet);
@@ -78,7 +78,7 @@ for (const f of jsonFiles('vocab')) {
   for (const item of s.items) {
     const dup = vocab.get(item.id);
     if (dup) fail(f, `voce "${item.id}" già definita in ${relative(ROOT, dup.file)}`);
-    else vocab.set(item.id, { file: f, set: s.id });
+    else vocab.set(item.id, { file: f, set: s.id, text: item.text });
   }
 }
 
@@ -166,6 +166,23 @@ for (const { file, data } of nodes.values()) {
   data.exercises.forEach((e) => checkExercise(file, e));
   if (data.warmup) {
     data.warmup.exercises.forEach((e) => checkExercise(file, e));
+    // Il warmup chiude la prima Descoberta: nei nodi divisi in due parti non deve usare
+    // (né come risposta né come opzione) le espressioni che si studiano solo nella seconda
+    const groups = data.theory?.flatMap((t) => ('vocabStudy' in t ? t.vocabStudy.groups : [])) ?? [];
+    if (groups.length > 1) {
+      const clean = (t: string) => t.toLowerCase().replace(/[^\p{L}\s']/gu, '').trim();
+      const later = new Map(groups.slice(1).flatMap((g) => g.items).map((id) => [clean(vocab.get(id)?.text ?? id), id]));
+      for (const e of data.warmup.exercises) {
+        for (const ref of e.trains) {
+          const [kind, id] = ref.split(':');
+          if (kind === 'vocab' && [...later.values()].includes(id))
+            fail(file, `warmup "${e.id}": allena "${id}", che si studia solo nella seconda parte della Descoberta`);
+        }
+        for (const w of e.wrong ?? []) {
+          if (later.has(clean(w))) fail(file, `warmup "${e.id}": l'opzione "${w}" si studia solo nella seconda parte della Descoberta`);
+        }
+      }
+    }
     const wv = data.warmup.speaker.voice;
     for (const [name, provider] of Object.entries(audioConfig.providers)) {
       if (wv && !(wv in provider.voices)) fail(file, `warmup.speaker.voice "${wv}" non esiste in audio.config.json per "${name}"`);
@@ -248,6 +265,8 @@ if (course) {
     for (const n of ch.nodes) {
       if (!n.draft && !nodeFiles.has(n.id)) fail(courseFile, `nodo "${n.id}": manca il file nodes/${n.id}.json (oppure segnalo "draft": true)`);
       if (n.draft && nodeFiles.has(n.id)) fail(courseFile, `nodo "${n.id}": è segnato "draft" ma il file esiste già: togli "draft"`);
+      if (n.openWithPrevious && ch.nodes[0] === n) fail(courseFile, `nodo "${n.id}": "openWithPrevious" non vale per il primo nodo del capitolo`);
+      if (n.openWithPrevious && n.requires) fail(courseFile, `nodo "${n.id}": usa "openWithPrevious" oppure "requires", non entrambi`);
       n.requires?.forEach((r) => {
         if (!seen.has(r)) fail(courseFile, `nodo "${n.id}": richiede "${r}", che non esiste`);
       });

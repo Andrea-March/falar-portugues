@@ -247,6 +247,8 @@ export const CourseNode = z.strictObject({
   icon: NonEmpty,
   /** Nodi da completare prima (se manca: basta il precedente) */
   requires: z.array(Slug).optional(),
+  /** Si sblocca insieme al nodo precedente, senza doverlo prima fare (non vale per il primo del capitolo) */
+  openWithPrevious: z.boolean().optional(),
   /** Lezione non ancora scritta: compare sulla mappa ma non si può aprire */
   draft: z.boolean().optional(),
 });
