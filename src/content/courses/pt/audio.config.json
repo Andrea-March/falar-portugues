@@ -23,7 +23,7 @@
     },
     "elevenlabs": {
       "$comment": "ElevenLabs. Serve ELEVENLABS_API_KEY in .env.local. Le voci sono ID (Voice Library → la voce → 'Copy voice ID'). Multilingual v2 costa 1 credito a carattere, Flash/Turbo mezzo. Il piano gratuito non dà la licenza commerciale.",
-      "model": "eleven_multilingual_v2",
+      "model": "eleven_v4",
       "format": "mp3_44100_64",
       "seed": 42,
       "voiceSettings": {
@@ -33,7 +33,7 @@
         "speed": 0.92
       },
       "voices": {
-        "default": "bBNhdwrIjl4fcVYiRbT2",
+        "default": "JGnWZj684pcXmK2SxYIv",
         "homem": "aLFUti4k8YKvtQGXv0UO"
       }
     }
