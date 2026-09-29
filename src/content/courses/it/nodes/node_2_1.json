@@ -1,0 +1,243 @@
+{
+  "id": "node_2_1",
+  "theory": [
+    {
+      "title": "Come stai? Dov'è?",
+      "text": "Em Itália, depois do cumprimento pergunta-se quase sempre como estás. E na cidade vais precisar de perguntar onde ficam as coisas. Primeiro as expressões para perguntar como está alguém, depois as que servem para perguntar e indicar um sítio."
+    },
+    {
+      "vocabStudy": {
+        "groups": [
+          {
+            "label": "Como estás",
+            "items": [
+              "come-stai",
+              "come-sta",
+              "sto-bene"
+            ]
+          },
+          {
+            "label": "Onde fica",
+            "items": [
+              "dove-e",
+              "e-qui",
+              "e-li"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "warmup": {
+    "speaker": {
+      "name": "Signora Rossi",
+      "role": "Vicina di casa · Firenze",
+      "avatar": "👵🏻"
+    },
+    "exercises": [
+      {
+        "id": "warm_it_2_1_1",
+        "type": "choose",
+        "context": "Buongiorno, Ines! Come sta?",
+        "contextTranslation": "Bom dia, Ines! Como está?",
+        "prompt": "Responde que estás bem",
+        "text": "{Sto bene}, grazie! E lei?",
+        "translation": "Estou bem, obrigada! E a senhora?",
+        "trains": [
+          "vocab:sto-bene"
+        ],
+        "wrong": [
+          "Piacere",
+          "Dov'è"
+        ]
+      },
+      {
+        "id": "warm_it_2_1_2",
+        "type": "choose",
+        "context": "Bene, bene. Cerca qualcosa?",
+        "contextTranslation": "Bem, bem. Procura alguma coisa?",
+        "prompt": "Pergunta onde fica a farmácia",
+        "text": "Sì, {dov'è} la farmacia?",
+        "translation": "Sim, onde fica a farmácia?",
+        "trains": [
+          "vocab:dove-e"
+        ],
+        "wrong": [
+          "come sta",
+          "è qui"
+        ]
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "it_2_1_1",
+      "type": "choose",
+      "text": "Ciao Giulia! {Come stai}?",
+      "translation": "Olá Giulia! Como estás?",
+      "prompt": "Pergunta a uma amiga como está",
+      "trains": [
+        "vocab:come-stai"
+      ],
+      "wrong": [
+        "Come sta",
+        "Dov'è",
+        "Sto bene"
+      ]
+    },
+    {
+      "id": "it_2_1_2",
+      "type": "write",
+      "text": "Ciao Marco, {come stai}?",
+      "translation": "Olá Marco, como estás?",
+      "trains": [
+        "vocab:come-stai"
+      ]
+    },
+    {
+      "id": "it_2_1_3",
+      "type": "choose",
+      "text": "Buongiorno, signora! {Come sta}?",
+      "translation": "Bom dia, minha senhora! Como está?",
+      "prompt": "Pergunta com cortesia a uma senhora como está",
+      "trains": [
+        "vocab:come-sta"
+      ],
+      "wrong": [
+        "Come stai",
+        "Dov'è",
+        "Piacere"
+      ],
+      "learnerNote": "Com «Lei» o verbo vai para a terceira pessoa: «come sta?», como o vosso «como está?»."
+    },
+    {
+      "id": "it_2_1_4",
+      "type": "write",
+      "text": "Buonasera, dottore, {come sta}?",
+      "translation": "Boa noite, senhor doutor, como está?",
+      "trains": [
+        "vocab:come-sta"
+      ]
+    },
+    {
+      "id": "it_2_1_5",
+      "type": "choose",
+      "text": "{Sto bene}, grazie! E tu?",
+      "translation": "Estou bem, obrigada! E tu?",
+      "prompt": "Responde que estás bem",
+      "trains": [
+        "vocab:sto-bene"
+      ],
+      "wrong": [
+        "Come stai",
+        "È qui",
+        "Piacere"
+      ]
+    },
+    {
+      "id": "it_2_1_6",
+      "type": "write",
+      "text": "{Sto bene}, grazie, e lei?",
+      "translation": "Estou bem, obrigada, e o senhor?",
+      "trains": [
+        "vocab:sto-bene"
+      ]
+    },
+    {
+      "id": "it_2_1_7",
+      "type": "choose",
+      "text": "Scusi, {dov'è} la stazione?",
+      "translation": "Desculpe, onde fica a estação?",
+      "prompt": "Pergunta onde fica a estação",
+      "trains": [
+        "vocab:dove-e"
+      ],
+      "wrong": [
+        "è qui",
+        "come sta",
+        "è lì"
+      ]
+    },
+    {
+      "id": "it_2_1_8",
+      "type": "write",
+      "text": "{Dov'è} il bagno, per favore?",
+      "translation": "Onde é a casa de banho, por favor?",
+      "trains": [
+        "vocab:dove-e"
+      ]
+    },
+    {
+      "id": "it_2_1_9",
+      "type": "choose",
+      "text": "La farmacia? {È qui}, a destra.",
+      "translation": "A farmácia? É aqui, à direita.",
+      "prompt": "A farmácia fica mesmo ao teu lado: diz-lho",
+      "trains": [
+        "vocab:e-qui"
+      ],
+      "wrong": [
+        "È lì",
+        "Dov'è",
+        "Sto bene"
+      ]
+    },
+    {
+      "id": "it_2_1_10",
+      "type": "write",
+      "text": "Il bar del signor Paolo? {È qui}!",
+      "translation": "O café do senhor Paolo? É aqui!",
+      "trains": [
+        "vocab:e-qui"
+      ]
+    },
+    {
+      "id": "it_2_1_11",
+      "type": "choose",
+      "text": "La fermata? {È lì}, davanti alla chiesa.",
+      "translation": "A paragem? É ali, em frente à igreja.",
+      "prompt": "Aponta para a paragem do outro lado da praça",
+      "trains": [
+        "vocab:e-li"
+      ],
+      "wrong": [
+        "È qui",
+        "Dov'è",
+        "Come stai"
+      ]
+    },
+    {
+      "id": "it_2_1_12",
+      "type": "write",
+      "text": "Il Duomo? {È lì}, vicino.",
+      "translation": "O Duomo? É ali, perto.",
+      "trains": [
+        "vocab:e-li"
+      ]
+    },
+    {
+      "id": "it_2_1_13",
+      "type": "write",
+      "text": "Ciao! Io {sto bene}, e tu?",
+      "translation": "Olá! Eu estou bem, e tu?",
+      "trains": [
+        "vocab:sto-bene"
+      ]
+    },
+    {
+      "id": "it_2_1_14",
+      "type": "choose",
+      "text": "Scusi, signora, {dov'è} via Roma?",
+      "translation": "Desculpe, minha senhora, onde fica a via Roma?",
+      "prompt": "Pergunta onde fica uma rua",
+      "trains": [
+        "vocab:dove-e"
+      ],
+      "wrong": [
+        "come sta",
+        "è lì",
+        "sto bene"
+      ]
+    }
+  ]
+}

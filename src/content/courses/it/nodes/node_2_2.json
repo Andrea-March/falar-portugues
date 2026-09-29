@@ -1,0 +1,183 @@
+{
+  "id": "node_2_2",
+  "theory": [
+    {
+      "title": "Stare não é «estar»",
+      "text": "**Stare** parece o vosso «estar», mas usa-se muito menos. Serve sobretudo para dizer **como estás** («sto bene») e para **ficar** num sítio («oggi sto a casa»). Para dizer onde estás, o italiano usa **essere**: «sono al bar» = «estou no café».",
+      "examples": [
+        {
+          "text": "Come stai? – Sto bene, grazie.",
+          "translation": "Como estás? – Estou bem, obrigada."
+        },
+        {
+          "text": "Oggi stiamo a casa.",
+          "translation": "Hoje ficamos em casa."
+        },
+        {
+          "text": "Dove sei? – Sono al bar.",
+          "translation": "Onde estás? – Estou no café.",
+          "learnerNote": "Aqui o «estar» português torna-se «essere»: nada de «sto al bar»."
+        }
+      ]
+    },
+    {
+      "paradigm": {
+        "verb": "stare",
+        "tense": "presente"
+      }
+    }
+  ],
+  "exercises": [
+    {
+      "id": "it_2_2_1",
+      "type": "choose",
+      "text": "Ciao Luca! Io {sto} bene, e tu?",
+      "translation": "Olá Luca! Eu estou bem, e tu?",
+      "prompt": "Diz que estás bem",
+      "wrongFrom": "verb-forms",
+      "trains": [
+        "verb:stare:presente:io"
+      ]
+    },
+    {
+      "id": "it_2_2_2",
+      "type": "write",
+      "text": "Oggi {sto} a casa, sono stanca.",
+      "translation": "Hoje fico em casa, estou cansada.",
+      "prompt": "Diz que hoje ficas em casa",
+      "learnerNote": "Na mesma frase: «sto a casa» (fico em casa) e «sono stanca» (estou cansada). O cansaço vai com «essere».",
+      "trains": [
+        "verb:stare:presente:io"
+      ]
+    },
+    {
+      "id": "it_2_2_3",
+      "type": "write",
+      "text": "{Sto} molto bene, grazie!",
+      "translation": "Estou muito bem, obrigada!",
+      "trains": [
+        "verb:stare:presente:io"
+      ]
+    },
+    {
+      "id": "it_2_2_4",
+      "type": "choose",
+      "text": "Ciao Giulia, come {stai}?",
+      "translation": "Olá Giulia, como estás?",
+      "prompt": "Pergunta a uma amiga como está",
+      "wrongFrom": "verb-forms",
+      "trains": [
+        "verb:stare:presente:tu"
+      ]
+    },
+    {
+      "id": "it_2_2_5",
+      "type": "write",
+      "text": "Marco, {stai} meglio oggi?",
+      "translation": "Marco, estás melhor hoje?",
+      "trains": [
+        "verb:stare:presente:tu"
+      ]
+    },
+    {
+      "id": "it_2_2_6",
+      "type": "choose",
+      "text": "Buongiorno, signor Paolo! Come {sta}?",
+      "translation": "Bom dia, senhor Paolo! Como está?",
+      "prompt": "Pergunta com cortesia ao barista como está",
+      "wrongFrom": "verb-forms",
+      "trains": [
+        "verb:stare:presente:lui_lei"
+      ]
+    },
+    {
+      "id": "it_2_2_7",
+      "type": "write",
+      "text": "La nonna {sta} bene, grazie.",
+      "translation": "A avó está bem, obrigada.",
+      "trains": [
+        "verb:stare:presente:lui_lei"
+      ]
+    },
+    {
+      "id": "it_2_2_8",
+      "type": "write",
+      "text": "Giulia {sta} a casa oggi.",
+      "translation": "A Giulia fica em casa hoje.",
+      "trains": [
+        "verb:stare:presente:lui_lei"
+      ]
+    },
+    {
+      "id": "it_2_2_9",
+      "type": "choose",
+      "text": "Noi {stiamo} bene, grazie!",
+      "translation": "Nós estamos bem, obrigado!",
+      "prompt": "Diz que tu e o Marco estão bem",
+      "wrongFrom": "verb-forms",
+      "trains": [
+        "verb:stare:presente:noi"
+      ]
+    },
+    {
+      "id": "it_2_2_10",
+      "type": "write",
+      "text": "Stasera {stiamo} a casa.",
+      "translation": "Esta noite ficamos em casa.",
+      "trains": [
+        "verb:stare:presente:noi"
+      ]
+    },
+    {
+      "id": "it_2_2_11",
+      "type": "choose",
+      "text": "Ciao ragazzi, come {state}?",
+      "translation": "Olá pessoal, como estão?",
+      "prompt": "Pergunta a um grupo de amigos como estão",
+      "wrongFrom": "verb-forms",
+      "trains": [
+        "verb:stare:presente:voi"
+      ]
+    },
+    {
+      "id": "it_2_2_12",
+      "type": "write",
+      "text": "{State} bene?",
+      "translation": "Vocês estão bem?",
+      "trains": [
+        "verb:stare:presente:voi"
+      ]
+    },
+    {
+      "id": "it_2_2_13",
+      "type": "choose",
+      "text": "I bambini {stanno} bene.",
+      "translation": "Os miúdos estão bem.",
+      "prompt": "Diz que as crianças estão bem",
+      "wrongFrom": "verb-forms",
+      "trains": [
+        "verb:stare:presente:loro"
+      ]
+    },
+    {
+      "id": "it_2_2_14",
+      "type": "write",
+      "text": "I miei genitori {stanno} a Lisbona per una settimana.",
+      "translation": "Os meus pais ficam em Lisboa durante uma semana.",
+      "prompt": "Diz que os teus pais ficam uma semana em Lisboa",
+      "learnerNote": "Aqui «stare» é «ficar» por um tempo, não «estar»: é o uso mais típico fora do «come stai».",
+      "trains": [
+        "verb:stare:presente:loro"
+      ]
+    },
+    {
+      "id": "it_2_2_15",
+      "type": "write",
+      "text": "Anna e Sara {stanno} bene.",
+      "translation": "A Anna e a Sara estão bem.",
+      "trains": [
+        "verb:stare:presente:loro"
+      ]
+    }
+  ]
+}

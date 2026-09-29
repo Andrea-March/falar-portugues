@@ -1,0 +1,66 @@
+{
+  "id": "node_1_cultura",
+  "theory": [
+    {
+      "title": "Il caffè in Italia",
+      "text": "Em Itália o café bebe-se de pé, ao balcão (**al banco**), e custa menos do que sentado à mesa. Se pedes **un caffè** chega um expresso. O **cappuccino** é coisa da manhã, ao pequeno-almoço com um **cornetto**: depois do almoço os italianos quase só bebem expresso. Em muitos bares primeiro pagas na caixa (**cassa**) e depois mostras o talão (**scontrino**) ao balcão.",
+      "vocab": [
+        "un-caffe",
+        "cappuccino",
+        "cornetto"
+      ],
+      "examples": [
+        {
+          "text": "Un cappuccino e un cornetto, per favore.",
+          "translation": "Um cappuccino e um croissant, por favor."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "it_1_cult_1",
+      "type": "choose",
+      "text": "Il cappuccino si beve {la mattina}.",
+      "translation": "O cappuccino bebe-se de manhã.",
+      "prompt": "Quando é que os italianos bebem cappuccino?",
+      "trains": [
+        "vocab:cappuccino"
+      ],
+      "wrong": [
+        "dopo cena",
+        "a pranzo",
+        "la sera"
+      ]
+    },
+    {
+      "id": "it_1_cult_2",
+      "type": "choose",
+      "text": "Al banco il caffè costa {meno}.",
+      "translation": "Ao balcão o café custa menos.",
+      "prompt": "Onde é que o café fica mais barato?",
+      "trains": [
+        "vocab:un-caffe"
+      ],
+      "wrong": [
+        "di più",
+        "uguale"
+      ]
+    },
+    {
+      "id": "it_1_cult_3",
+      "type": "choose",
+      "text": "A colazione: un cappuccino e un {cornetto}.",
+      "translation": "Ao pequeno-almoço: um cappuccino e um croissant.",
+      "prompt": "O que se come com o cappuccino de manhã?",
+      "trains": [
+        "vocab:cornetto"
+      ],
+      "wrong": [
+        "caffè",
+        "scontrino",
+        "banco"
+      ]
+    }
+  ]
+}

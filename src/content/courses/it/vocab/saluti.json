@@ -4,53 +4,64 @@
   "items": [
     {
       "id": "buongiorno",
-      "text": "Buongiorno",
-      "translation": "Bom dia",
+      "text": "Buongiorno!",
+      "translation": "Bom dia!",
       "icon": "☀️",
       "usage": "De manhã e até ao início da tarde, com qualquer pessoa.",
-      "situation": "Entras num café às nove da manhã"
+      "situation": "☀️ São nove da manhã e entras num café: cumprimentas o empregado."
     },
     {
       "id": "buonasera",
-      "text": "Buonasera",
+      "text": "Buonasera!",
       "translation": "Boa tarde / Boa noite (ao chegar)",
       "icon": "🌆",
-      "usage": "A partir do meio da tarde, ao chegar a um sítio.",
-      "situation": "Chegas a um restaurante às oito da noite",
-      "learnerNote": "Em Itália o «buonasera» começa cedo, por volta das quatro ou cinco da tarde: não há um «boa tarde» separado."
+      "usage": "A partir das quatro ou cinco da tarde, para cumprimentar ao chegar.",
+      "situation": "🌆 São oito da noite e chegas a um restaurante: cumprimentas.",
+      "learnerNote": "Em Itália não há um «boa tarde» separado: o «buonasera» começa cedo, a meio da tarde."
     },
     {
-      "id": "arrivederci",
-      "text": "Arrivederci",
-      "translation": "Adeus / Até à próxima",
-      "icon": "👋",
-      "usage": "Para te despedires de quem não conheces bem.",
-      "situation": "Sais de uma loja e despedes-te do empregado"
+      "id": "buonanotte",
+      "text": "Buonanotte!",
+      "translation": "Boa noite (antes de dormir)",
+      "icon": "🌙",
+      "usage": "Só para te despedires à noite, quando alguém vai dormir.",
+      "situation": "🌙 É meia-noite e vais para a cama: despedes-te de quem fica.",
+      "learnerNote": "Cuidado: não se diz «buonanotte» ao chegar a um sítio, mesmo tarde. Ao chegar diz-se sempre «buonasera»."
     },
     {
       "id": "ciao",
-      "text": "Ciao",
-      "translation": "Olá / Tchau",
-      "icon": "🙂",
+      "text": "Ciao!",
+      "translation": "Olá! / Adeus!",
+      "icon": "👋",
+      "note": "informal",
       "usage": "Com amigos e família, tanto ao chegar como ao sair.",
-      "situation": "Encontras uma amiga na rua",
+      "situation": "👋 Encontras uma amiga na rua e cumprimentas.",
       "learnerNote": "Serve para chegar e para sair, mas só com quem tratas por tu: com desconhecidos soa demasiado informal."
     },
     {
       "id": "mi-chiamo",
       "text": "Mi chiamo…",
       "translation": "Chamo-me…",
-      "icon": "🪪",
-      "usage": "Para dizer o teu nome.",
-      "situation": "Dizes o teu nome a alguém"
+      "icon": "🙋",
+      "note": "completa-se com o nome: «Mi chiamo Ines»",
+      "usage": "Para dizer o teu nome quando te apresentas.",
+      "situation": "🙋 Apresentas-te a alguém pela primeira vez: dizes o teu nome."
     },
     {
       "id": "piacere",
       "text": "Piacere!",
       "translation": "Muito prazer!",
       "icon": "🤝",
-      "usage": "Quando conheces alguém pela primeira vez.",
-      "situation": "Acabaram de te apresentar uma pessoa nova"
+      "usage": "Diz-se logo depois de se apresentarem um ao outro.",
+      "situation": "🤝 Acabaste de saber o nome de alguém: respondes com simpatia."
+    },
+    {
+      "id": "arrivederci",
+      "text": "Arrivederci!",
+      "translation": "Adeus! / Até à próxima!",
+      "icon": "🚪",
+      "usage": "Para te despedires de quem não conheces bem: numa loja, num café, num escritório.",
+      "situation": "🚪 Sais de uma loja e despedes-te do empregado, que não conheces."
     }
   ]
 }

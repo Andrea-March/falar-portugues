@@ -1,0 +1,53 @@
+{
+  "id": "bar",
+  "title": "Al bar",
+  "items": [
+    {
+      "id": "vorrei",
+      "text": "Vorrei…",
+      "translation": "Queria…",
+      "note": "forma cortês para pedir",
+      "learnerNote": "Corresponde exatamente ao vosso «queria». «Voglio» («quero») soa brusco."
+    },
+    {
+      "id": "un-caffe",
+      "text": "un caffè",
+      "translation": "um café (uma bica)",
+      "note": "em Itália «caffè» é sempre um expresso"
+    },
+    {
+      "id": "cappuccino",
+      "text": "un cappuccino",
+      "translation": "um cappuccino (café com leite espumoso)",
+      "icon": "☕"
+    },
+    {
+      "id": "cornetto",
+      "text": "un cornetto",
+      "translation": "um croissant",
+      "note": "no norte de Itália diz-se «brioche»"
+    },
+    {
+      "id": "per-favore",
+      "text": "per favore",
+      "translation": "por favor"
+    },
+    {
+      "id": "quant-e",
+      "text": "Quant'è?",
+      "translation": "Quanto é?"
+    },
+    {
+      "id": "grazie",
+      "text": "Grazie!",
+      "translation": "Obrigado! / Obrigada!",
+      "note": "igual para homens e mulheres"
+    },
+    {
+      "id": "prego",
+      "text": "Prego!",
+      "translation": "De nada! / Faça favor!",
+      "learnerNote": "Responde a «grazie», mas o empregado também o diz para te convidar a pedir: «Prego?» = «Diga?»."
+    }
+  ]
+}

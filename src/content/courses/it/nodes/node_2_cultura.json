@@ -1,0 +1,67 @@
+{
+  "id": "node_2_cultura",
+  "theory": [
+    {
+      "title": "L'autobus",
+      "text": "Em Itália o bilhete de **autobus** compra-se quase sempre antes de entrar: na **tabaccheria** (a loja com o «T»), numa máquina ou numa app. Lá dentro tens de o validar na maquinazinha: um **biglietto** não validado vale como se não o tivesses, e a multa chega depressa.",
+      "vocab": [
+        "autobus",
+        "biglietto",
+        "tabaccheria"
+      ],
+      "examples": [
+        {
+          "text": "Scusi, dov'è la tabaccheria? Vorrei un biglietto dell'autobus.",
+          "translation": "Desculpe, onde é a tabacaria? Queria um bilhete de autocarro."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "it_2_cult_1",
+      "type": "choose",
+      "text": "Il biglietto si compra in {tabaccheria}.",
+      "translation": "O bilhete compra-se na tabacaria.",
+      "prompt": "Onde se compra o bilhete do autocarro?",
+      "trains": [
+        "vocab:tabaccheria"
+      ],
+      "wrong": [
+        "farmacia",
+        "stazione di polizia",
+        "chiesa"
+      ]
+    },
+    {
+      "id": "it_2_cult_2",
+      "type": "choose",
+      "text": "Sull'autobus il {biglietto} va convalidato.",
+      "translation": "No autocarro o bilhete tem de ser validado.",
+      "prompt": "O que se valida ao entrar no autocarro?",
+      "trains": [
+        "vocab:biglietto"
+      ],
+      "wrong": [
+        "cornetto",
+        "caffè",
+        "passaporto"
+      ]
+    },
+    {
+      "id": "it_2_cult_3",
+      "type": "choose",
+      "text": "Aspetto l'{autobus} alla fermata.",
+      "translation": "Espero o autocarro na paragem.",
+      "prompt": "Como se diz «autocarro» em italiano?",
+      "trains": [
+        "vocab:autobus"
+      ],
+      "wrong": [
+        "autocarro",
+        "treno",
+        "tram"
+      ]
+    }
+  ]
+}

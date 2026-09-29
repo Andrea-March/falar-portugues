@@ -1,0 +1,197 @@
+{
+  "id": "node_1_3",
+  "speaker": {
+    "name": "Signor Paolo",
+    "role": "Barista · Bar in centro, Firenze",
+    "avatar": "👨🏻",
+    "voice": "uomo"
+  },
+  "theory": [
+    {
+      "title": "No café em Florença",
+      "text": "Em Itália **un caffè** é um expresso, como a vossa bica. Para pedir diz-se **vorrei…** («queria»), e para pagar chega perguntar **quant'è?**. Ao «grazie» responde-se **prego**. Daqui a pouco és tu a falar com o signor Paolo.",
+      "vocab": [
+        "vorrei",
+        "un-caffe",
+        "cornetto",
+        "quant-e",
+        "grazie",
+        "prego"
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "it_1_3_1",
+      "type": "write",
+      "context": "Buongiorno! Prego, dica.",
+      "contextTranslation": "Bom dia! Faça favor, diga.",
+      "prompt": "Pede um café com cortesia",
+      "text": "Buongiorno. {Vorrei} un caffè, per favore.",
+      "translation": "Bom dia. Queria um café, por favor.",
+      "trains": [
+        "vocab:vorrei"
+      ],
+      "wrong": [
+        "Grazie",
+        "Quant'è",
+        "Mi chiamo"
+      ]
+    },
+    {
+      "id": "it_1_3_2",
+      "type": "choose",
+      "context": "Un caffè. Altro?",
+      "contextTranslation": "Um café. Mais alguma coisa?",
+      "prompt": "Pede também um croissant",
+      "text": "Sì, anche un cornetto, {per favore}.",
+      "translation": "Sim, também um croissant, por favor.",
+      "trains": [
+        "vocab:per-favore"
+      ],
+      "wrong": [
+        "grazie",
+        "prego",
+        "piacere"
+      ]
+    },
+    {
+      "id": "it_1_3_3",
+      "type": "write",
+      "context": "Lei non è di qui, vero? Di dov'è?",
+      "contextTranslation": "Não é de cá, pois não? De onde é?",
+      "prompt": "Diz que és de Lisboa",
+      "text": "No, {sono} di Lisbona.",
+      "translation": "Não, sou de Lisboa.",
+      "trains": [
+        "verb:essere:presente:io"
+      ],
+      "wrong": [
+        "siamo",
+        "è",
+        "sei"
+      ]
+    },
+    {
+      "id": "it_1_3_4",
+      "type": "choose",
+      "context": "Ah, Lisbona, che bella! Ecco a lei: caffè e cornetto.",
+      "contextTranslation": "Ah, Lisboa, que bonita! Aqui tem: café e croissant.",
+      "prompt": "Pergunta quanto tens de pagar",
+      "text": "Perfetto. {Quant'è}?",
+      "translation": "Perfeito. Quanto é?",
+      "trains": [
+        "vocab:quant-e"
+      ],
+      "wrong": [
+        "Piacere",
+        "Prego",
+        "Mi chiamo"
+      ]
+    },
+    {
+      "id": "it_1_3_5",
+      "type": "choose",
+      "context": "Due euro e cinquanta.",
+      "contextTranslation": "Dois euros e cinquenta.",
+      "prompt": "Paga e agradece",
+      "text": "Ecco a lei. {Grazie}!",
+      "translation": "Aqui tem. Obrigada!",
+      "trains": [
+        "vocab:grazie"
+      ],
+      "wrong": [
+        "Prego",
+        "Per favore",
+        "Buonanotte"
+      ]
+    },
+    {
+      "id": "it_1_3_6",
+      "type": "write",
+      "context": "Grazie a lei! Buona giornata.",
+      "contextTranslation": "Obrigado eu! Tenha um bom dia.",
+      "prompt": "Despede-te com cortesia",
+      "text": "{Arrivederci}, a domani!",
+      "translation": "Adeus, até amanhã!",
+      "trains": [
+        "vocab:arrivederci"
+      ],
+      "wrong": [
+        "Ciao",
+        "Buonanotte",
+        "Piacere"
+      ],
+      "learnerNote": "Com o empregado, que não conheces bem, «arrivederci» é mais adequado do que «ciao»."
+    }
+  ],
+  "test": {
+    "speaker": {
+      "name": "Chiara",
+      "role": "Barista · Bar della stazione",
+      "avatar": "👩🏻"
+    },
+    "exercises": [
+      {
+        "id": "it_1_3_t1",
+        "type": "write",
+        "context": "Buonasera! Prego?",
+        "contextTranslation": "Boa tarde! Diga?",
+        "prompt": "Pede um cappuccino com cortesia",
+        "text": "Buonasera. {Vorrei} un cappuccino, per favore.",
+        "translation": "Boa tarde. Queria um cappuccino, por favor.",
+        "trains": [
+          "vocab:vorrei"
+        ]
+      },
+      {
+        "id": "it_1_3_t2",
+        "type": "write",
+        "context": "Lei è spagnola?",
+        "contextTranslation": "A senhora é espanhola?",
+        "prompt": "Diz que não, és portuguesa",
+        "text": "No, {sono} portoghese.",
+        "translation": "Não, sou portuguesa.",
+        "trains": [
+          "verb:essere:presente:io"
+        ]
+      },
+      {
+        "id": "it_1_3_t3",
+        "type": "write",
+        "context": "Io mi chiamo Chiara. E lei?",
+        "contextTranslation": "Eu chamo-me Chiara. E a senhora?",
+        "prompt": "Diz que te chamas Ines",
+        "text": "{Mi chiamo} Ines.",
+        "translation": "Chamo-me Ines.",
+        "trains": [
+          "vocab:mi-chiamo"
+        ]
+      },
+      {
+        "id": "it_1_3_t4",
+        "type": "write",
+        "context": "Ecco il cappuccino.",
+        "contextTranslation": "Aqui está o cappuccino.",
+        "prompt": "Agradece e pergunta quanto é",
+        "text": "Grazie. {Quant'è}?",
+        "translation": "Obrigada. Quanto é?",
+        "trains": [
+          "vocab:quant-e"
+        ]
+      },
+      {
+        "id": "it_1_3_t5",
+        "type": "write",
+        "context": "Un euro e ottanta. Grazie!",
+        "contextTranslation": "Um euro e oitenta. Obrigada!",
+        "prompt": "Responde ao agradecimento",
+        "text": "{Prego}! Buonasera.",
+        "translation": "De nada! Boa noite.",
+        "trains": [
+          "vocab:prego"
+        ]
+      }
+    ]
+  }
+}

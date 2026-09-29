@@ -1,0 +1,106 @@
+{
+  "id": "node_2_checkpoint",
+  "exercises": [
+    {
+      "id": "it_chk_2_1",
+      "type": "choose",
+      "text": "Ciao Luca, come {stai}?",
+      "trains": [
+        "verb:stare:presente:tu"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "it_chk_2_2",
+      "type": "choose",
+      "text": "Buongiorno, signora! {Come sta}?",
+      "prompt": "Pergunta com cortesia como está",
+      "trains": [
+        "vocab:come-sta"
+      ],
+      "wrong": [
+        "Come stai",
+        "Dov'è",
+        "Pronto"
+      ]
+    },
+    {
+      "id": "it_chk_2_3",
+      "type": "choose",
+      "text": "Dove sei? – {Sono} al bar.",
+      "prompt": "Diz onde estás",
+      "trains": [
+        "verb:essere:presente:io"
+      ],
+      "wrongFrom": "verb-forms",
+      "learnerNote": "Onde estás → «sono», não «sto»."
+    },
+    {
+      "id": "it_chk_2_4",
+      "type": "choose",
+      "text": "I miei genitori {stanno} bene.",
+      "trains": [
+        "verb:stare:presente:loro"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "it_chk_2_5",
+      "type": "choose",
+      "text": "Scusi, {dov'è} la stazione?",
+      "prompt": "Pergunta onde fica a estação",
+      "trains": [
+        "vocab:dove-e"
+      ],
+      "wrong": [
+        "come sta",
+        "è qui",
+        "sto bene"
+      ]
+    },
+    {
+      "id": "it_chk_2_6",
+      "type": "choose",
+      "text": "{Pronto}? Chi parla?",
+      "prompt": "Atende o telefone",
+      "trains": [
+        "vocab:pronto"
+      ],
+      "wrong": [
+        "Prego",
+        "Piacere",
+        "Ciao"
+      ]
+    },
+    {
+      "id": "it_chk_2_7",
+      "type": "write",
+      "text": "{Sto bene}, grazie! E tu?",
+      "translation": "Estou bem, obrigada! E tu?",
+      "prompt": "Responde que estás bem",
+      "trains": [
+        "vocab:sto-bene"
+      ]
+    },
+    {
+      "id": "it_chk_2_8",
+      "type": "write",
+      "text": "Oggi {stiamo} a casa.",
+      "translation": "Hoje ficamos em casa.",
+      "prompt": "Diz que hoje vocês ficam em casa",
+      "trains": [
+        "verb:stare:presente:noi"
+      ]
+    },
+    {
+      "id": "it_chk_2_9",
+      "type": "write",
+      "text": "Scusi, dov'è la tabaccheria? Vorrei un {biglietto}.",
+      "translation": "Desculpe, onde é a tabacaria? Queria um bilhete.",
+      "prompt": "Pede um bilhete de autocarro",
+      "trains": [
+        "vocab:biglietto"
+      ]
+    }
+  ]
+}

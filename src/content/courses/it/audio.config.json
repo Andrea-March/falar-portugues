@@ -1,6 +1,6 @@
 {
   "$comment": "Audio pregenerato (COURSE=it npm run audio). Voce Piper: derivata da lessac (licenza di sola ricerca), va bene per uso privato; per pubblicare usare Azure.",
-  "provider": "piper",
+  "provider": "elevenlabs",
   "extension": "mp3",
   "bitrateKbps": 48,
   "providers": {
@@ -8,7 +8,8 @@
       "$comment": "Open source, gira sul computer. Requisiti: pip install piper-tts lameenc.",
       "lengthScale": 1.1,
       "voices": {
-        "default": "it_IT-paola-medium"
+        "default": "it_IT-paola-medium",
+        "uomo": "it_IT-paola-medium"
       }
     },
     "azure": {
@@ -16,7 +17,8 @@
       "format": "audio-24khz-48kbitrate-mono-mp3",
       "rate": "-8%",
       "voices": {
-        "default": "it-IT-ElsaNeural"
+        "default": "it-IT-ElsaNeural",
+        "uomo": "it-IT-ElsaNeural"
       }
     },
     "elevenlabs": {
@@ -31,7 +33,8 @@
         "speed": 0.92
       },
       "voices": {
-        "default": "QITiGyM4owEZrBEf0QV8"
+        "default": "QITiGyM4owEZrBEf0QV8",
+        "uomo": "mxbgw5PwaQHOrln90mhH"
       }
     }
   }

@@ -4,19 +4,97 @@
       "id": "chapter_1",
       "number": 1,
       "title": "Primi passi",
-      "description": "Cumprimentar, apresentar-se e o verbo essere.",
+      "description": "Cumprimentar, apresentar-se e pedir um café: o verbo essere.",
       "icon": "👋",
       "nodes": [
-        { "id": "node_1_1", "kind": "vocab", "title": "Saluti", "subtitle": "Cumprimentar a qualquer hora do dia", "icon": "🗣️" },
-        { "id": "node_1_2", "kind": "verb", "title": "Essere", "subtitle": "Quem és e de onde vens", "icon": "📖" },
+        {
+          "id": "node_1_1",
+          "kind": "vocab",
+          "title": "Saluti",
+          "subtitle": "Cumprimentar a qualquer hora do dia",
+          "icon": "🗣️"
+        },
+        {
+          "id": "node_1_2",
+          "kind": "verb",
+          "title": "Essere",
+          "subtitle": "Quem és e de onde és",
+          "icon": "📖"
+        },
+        {
+          "id": "node_1_3",
+          "kind": "dialogue",
+          "title": "Al bar",
+          "subtitle": "Pede o teu primeiro café em Florença",
+          "icon": "☕"
+        },
+        {
+          "id": "node_1_cultura",
+          "kind": "culture",
+          "title": "Il caffè",
+          "subtitle": "Banco, cappuccino e cornetto",
+          "icon": "🥐"
+        },
         {
           "id": "node_1_checkpoint",
           "kind": "checkpoint",
           "title": "Test finale",
           "subtitle": "Põe à prova todo o capítulo",
           "icon": "🏆",
-          "requires": ["node_1_1", "node_1_2"],
-          "draft": true
+          "requires": [
+            "node_1_1",
+            "node_1_2",
+            "node_1_3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chapter_2",
+      "number": 2,
+      "title": "Come stai?",
+      "description": "Como estás, onde estás, onde ficam as coisas: o verbo stare.",
+      "icon": "🧭",
+      "nodes": [
+        {
+          "id": "node_2_1",
+          "kind": "vocab",
+          "title": "Come stai?",
+          "subtitle": "Perguntar como estás e onde ficam as coisas",
+          "icon": "🙂"
+        },
+        {
+          "id": "node_2_2",
+          "kind": "verb",
+          "title": "Stare",
+          "subtitle": "Como estás e onde ficas",
+          "icon": "📖"
+        },
+        {
+          "id": "node_2_3",
+          "kind": "dialogue",
+          "title": "Al telefono",
+          "subtitle": "O Marco vem ter contigo ao café",
+          "icon": "📱"
+        },
+        {
+          "id": "node_2_cultura",
+          "kind": "culture",
+          "title": "L'autobus",
+          "subtitle": "Bilhete, tabacaria e validação",
+          "icon": "🚌"
+        },
+        {
+          "id": "node_2_checkpoint",
+          "kind": "checkpoint",
+          "title": "Test finale",
+          "subtitle": "Põe à prova todo o capítulo",
+          "icon": "🏆",
+          "requires": [
+            "node_2_1",
+            "node_2_2",
+            "node_2_3"
+          ]
         }
       ]
     }

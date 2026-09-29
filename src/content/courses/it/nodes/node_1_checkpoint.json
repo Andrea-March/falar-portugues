@@ -1,0 +1,106 @@
+{
+  "id": "node_1_checkpoint",
+  "exercises": [
+    {
+      "id": "it_chk_1_1",
+      "type": "choose",
+      "text": "Lei {è} di Roma?",
+      "trains": [
+        "verb:essere:presente:lui_lei"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "it_chk_1_2",
+      "type": "choose",
+      "text": "{Buonasera}, un tavolo per due, per favore.",
+      "prompt": "Chegas a um restaurante às nove da noite",
+      "trains": [
+        "vocab:buonasera"
+      ],
+      "wrong": [
+        "Buonanotte",
+        "Buongiorno",
+        "Ciao"
+      ]
+    },
+    {
+      "id": "it_chk_1_3",
+      "type": "choose",
+      "text": "Noi {siamo} di Porto.",
+      "prompt": "Diz que tu e o teu marido são do Porto",
+      "trains": [
+        "verb:essere:presente:noi"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "it_chk_1_4",
+      "type": "choose",
+      "text": "Voi {siete} italiani?",
+      "prompt": "Pergunta a um grupo se são italianos",
+      "trains": [
+        "verb:essere:presente:voi"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "it_chk_1_5",
+      "type": "choose",
+      "text": "Grazie! – {Prego}!",
+      "prompt": "Responde a quem te agradece",
+      "trains": [
+        "vocab:prego"
+      ],
+      "wrong": [
+        "Piacere",
+        "Per favore",
+        "Grazie"
+      ]
+    },
+    {
+      "id": "it_chk_1_6",
+      "type": "choose",
+      "text": "{Vorrei} un caffè, per favore.",
+      "prompt": "Pede com cortesia",
+      "trains": [
+        "vocab:vorrei"
+      ],
+      "wrong": [
+        "Quant'è",
+        "Grazie",
+        "Prego"
+      ]
+    },
+    {
+      "id": "it_chk_1_7",
+      "type": "write",
+      "text": "Buongiorno! Mi chiamo Ines e {sono} di Lisbona.",
+      "translation": "Bom dia! Chamo-me Ines e sou de Lisboa.",
+      "prompt": "Apresenta-te",
+      "trains": [
+        "verb:essere:presente:io"
+      ]
+    },
+    {
+      "id": "it_chk_1_8",
+      "type": "write",
+      "text": "{Buonanotte}, a domani!",
+      "translation": "Boa noite, até amanhã!",
+      "prompt": "Vais dormir: despede-te",
+      "trains": [
+        "vocab:buonanotte"
+      ]
+    },
+    {
+      "id": "it_chk_1_9",
+      "type": "write",
+      "text": "Buonasera! {Vorrei} un cappuccino, per favore.",
+      "translation": "Boa tarde! Queria um cappuccino, por favor.",
+      "prompt": "Cumprimenta e pede um cappuccino",
+      "trains": [
+        "vocab:vorrei"
+      ]
+    }
+  ]
+}

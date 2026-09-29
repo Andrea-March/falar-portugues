@@ -2,8 +2,8 @@
   "id": "node_1_2",
   "theory": [
     {
-      "title": "Um verbo só para «ser» e «estar»",
-      "text": "O italiano tem um só verbo onde o português tem dois: **essere** serve tanto para «ser» (**Sono portoghese**) como para «estar» (**Sono a Roma**). Atenção também à pessoa **voi**: em italiano usa-se todos os dias, é o «vocês» quando falas com um grupo.",
+      "title": "Identidade e origem",
+      "text": "O verbo **essere** serve para dizer quem és: nome, nacionalidade, origem, profissão. Com os cumprimentos que já conheces, chega para te apresentares. Atenção: em italiano **essere** faz o trabalho do «ser» e também de grande parte do «estar».",
       "examples": [
         {
           "text": "Ciao, mi chiamo Ines. Sono di Lisbona.",
@@ -14,9 +14,13 @@
           "translation": "Ela é médica."
         },
         {
-          "text": "Siete stanchi?",
-          "translation": "Vocês estão cansados?",
-          "learnerNote": "«Stanco» quer dizer «cansado»: nada a ver com «estanque»."
+          "text": "Piacere! Siamo i nuovi vicini.",
+          "translation": "Muito prazer! Somos os novos vizinhos."
+        },
+        {
+          "text": "Oggi sono a Firenze.",
+          "translation": "Hoje estou em Florença.",
+          "learnerNote": "Para dizer onde estás também se usa «essere»: «sono a Firenze» = «estou em Florença»."
         }
       ]
     },
@@ -30,57 +34,179 @@
   "exercises": [
     {
       "id": "it_1_2_1",
-      "type": "write",
-      "text": "Io {sono} portoghese.",
-      "translation": "Eu sou portuguesa.",
+      "type": "choose",
+      "text": "Ciao, mi chiamo Ines. {Sono} di Lisbona.",
+      "translation": "Olá, chamo-me Ines. Sou de Lisboa.",
+      "prompt": "Apresenta-te e diz de onde és",
+      "wrongFrom": "verb-forms",
+      "learnerNote": "Em italiano o pronome costuma cair: «sono di Lisbona» chega, sem «io».",
       "trains": [
         "verb:essere:presente:io"
       ]
     },
     {
       "id": "it_1_2_2",
-      "type": "choose",
-      "text": "Tu {sei} di Lisbona?",
-      "translation": "És de Lisboa?",
+      "type": "write",
+      "text": "Piacere! Io {sono} Ines.",
+      "translation": "Muito prazer! Eu sou a Ines.",
       "trains": [
-        "verb:essere:presente:tu"
-      ],
-      "wrongFrom": "verb-forms"
+        "verb:essere:presente:io"
+      ]
     },
     {
       "id": "it_1_2_3",
-      "type": "choose",
-      "text": "Marco {è} a casa.",
-      "translation": "O Marco está em casa.",
+      "type": "write",
+      "text": "{Sono} portoghese, di Porto.",
+      "translation": "Sou portuguesa, do Porto.",
+      "learnerNote": "Com cidades usa-se «di», sem artigo: «di Porto», «di Lisbona».",
       "trains": [
-        "verb:essere:presente:lui_lei"
-      ],
-      "wrongFrom": "verb-forms"
+        "verb:essere:presente:io"
+      ]
     },
     {
       "id": "it_1_2_4",
+      "type": "choose",
+      "text": "Ciao Marco! Tu {sei} di Firenze?",
+      "translation": "Olá Marco! És de Florença?",
+      "prompt": "Pergunta a um amigo se é de Florença",
+      "wrongFrom": "verb-forms",
+      "trains": [
+        "verb:essere:presente:tu"
+      ]
+    },
+    {
+      "id": "it_1_2_5",
       "type": "write",
-      "text": "Noi {siamo} amici.",
-      "translation": "Nós somos amigos.",
+      "text": "Piacere! Tu {sei} il fratello di Giulia?",
+      "translation": "Muito prazer! És o irmão da Giulia?",
+      "trains": [
+        "verb:essere:presente:tu"
+      ]
+    },
+    {
+      "id": "it_1_2_6",
+      "type": "write",
+      "text": "{Sei} studentessa?",
+      "translation": "És estudante?",
+      "trains": [
+        "verb:essere:presente:tu"
+      ]
+    },
+    {
+      "id": "it_1_2_7",
+      "type": "choose",
+      "text": "Buongiorno! Lei {è} il nuovo vicino?",
+      "translation": "Bom dia! O senhor é o novo vizinho?",
+      "prompt": "Pergunta com cortesia a um senhor se é o novo vizinho",
+      "wrongFrom": "verb-forms",
+      "learnerNote": "«Lei», com o verbo na terceira pessoa, é o tratamento de cortesia: como «o senhor» / «a senhora».",
+      "trains": [
+        "verb:essere:presente:lui_lei"
+      ]
+    },
+    {
+      "id": "it_1_2_8",
+      "type": "write",
+      "text": "Giulia {è} medico a Roma.",
+      "translation": "A Giulia é médica em Roma.",
+      "trains": [
+        "verb:essere:presente:lui_lei"
+      ]
+    },
+    {
+      "id": "it_1_2_9",
+      "type": "write",
+      "text": "Il signor Paolo {è} molto simpatico.",
+      "translation": "O senhor Paolo é muito simpático.",
+      "trains": [
+        "verb:essere:presente:lui_lei"
+      ]
+    },
+    {
+      "id": "it_1_2_10",
+      "type": "choose",
+      "text": "Ciao! Noi {siamo} portoghesi.",
+      "translation": "Olá! Somos portugueses.",
+      "prompt": "Diz que tu e os teus amigos são portugueses",
+      "wrongFrom": "verb-forms",
       "trains": [
         "verb:essere:presente:noi"
       ]
     },
     {
-      "id": "it_1_2_5",
+      "id": "it_1_2_11",
+      "type": "write",
+      "text": "Piacere, {siamo} i nuovi vicini.",
+      "translation": "Muito prazer, somos os novos vizinhos.",
+      "trains": [
+        "verb:essere:presente:noi"
+      ]
+    },
+    {
+      "id": "it_1_2_12",
+      "type": "write",
+      "text": "Io e Marco {siamo} colleghi.",
+      "translation": "Eu e o Marco somos colegas.",
+      "trains": [
+        "verb:essere:presente:noi"
+      ]
+    },
+    {
+      "id": "it_1_2_13",
       "type": "choose",
-      "text": "Voi {siete} italiani?",
+      "text": "Ciao ragazzi! Voi {siete} di Milano?",
+      "translation": "Olá, pessoal! Vocês são de Milão?",
+      "prompt": "Pergunta a um grupo de amigos se são de Milão",
+      "wrongFrom": "verb-forms",
+      "learnerNote": "«Voi» é o «vocês» quando falas com várias pessoas. Em italiano tem a sua própria forma: «siete».",
+      "trains": [
+        "verb:essere:presente:voi"
+      ]
+    },
+    {
+      "id": "it_1_2_14",
+      "type": "write",
+      "text": "{Siete} italiani?",
       "translation": "Vocês são italianos?",
       "trains": [
         "verb:essere:presente:voi"
-      ],
-      "wrongFrom": "verb-forms"
+      ]
     },
     {
-      "id": "it_1_2_6",
+      "id": "it_1_2_15",
       "type": "write",
-      "text": "Loro {sono} di Roma.",
-      "translation": "Eles são de Roma.",
+      "text": "Buonasera! {Siete} i benvenuti.",
+      "translation": "Boa noite! Sejam bem-vindos.",
+      "trains": [
+        "verb:essere:presente:voi"
+      ]
+    },
+    {
+      "id": "it_1_2_16",
+      "type": "choose",
+      "text": "Buonasera! Loro {sono} di Napoli?",
+      "translation": "Boa noite! Eles são de Nápoles?",
+      "prompt": "Pergunta se aquelas pessoas são de Nápoles",
+      "wrongFrom": "verb-forms",
+      "learnerNote": "«Sono» serve para «eu sou» e para «eles são»: é o contexto que diz quem é.",
+      "trains": [
+        "verb:essere:presente:loro"
+      ]
+    },
+    {
+      "id": "it_1_2_17",
+      "type": "write",
+      "text": "Anna e Sara {sono} insegnanti.",
+      "translation": "A Anna e a Sara são professoras.",
+      "trains": [
+        "verb:essere:presente:loro"
+      ]
+    },
+    {
+      "id": "it_1_2_18",
+      "type": "write",
+      "text": "I miei amici {sono} a Firenze.",
+      "translation": "Os meus amigos estão em Florença.",
       "trains": [
         "verb:essere:presente:loro"
       ]

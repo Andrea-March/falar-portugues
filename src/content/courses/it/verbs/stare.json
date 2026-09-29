@@ -1,0 +1,38 @@
+{
+  "id": "stare",
+  "infinitive": "stare",
+  "translation": "estar (como estás) / ficar",
+  "regular": false,
+  "group": "are",
+  "conjugations": {
+    "presente": {
+      "io": "sto",
+      "tu": "stai",
+      "lui_lei": "sta",
+      "noi": "stiamo",
+      "voi": "state",
+      "loro": "stanno"
+    }
+  },
+  "exercises": [
+    {
+      "id": "it_stare_v1",
+      "type": "choose",
+      "text": "Oggi {sto} a casa, piove.",
+      "translation": "Hoje fico em casa, está a chover.",
+      "trains": [
+        "verb:stare:presente:io"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "it_stare_v2",
+      "type": "write",
+      "text": "Come {state}, ragazzi?",
+      "translation": "Como estão, pessoal?",
+      "trains": [
+        "verb:stare:presente:voi"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "id": "strada",
+  "title": "Come stai? Dov'è?",
+  "items": [
+    {
+      "id": "come-stai",
+      "text": "Come stai?",
+      "translation": "Como estás?",
+      "note": "informal",
+      "icon": "🙂",
+      "usage": "Para perguntar como está alguém que tratas por tu.",
+      "situation": "🙂 Encontras uma amiga e perguntas-lhe como está."
+    },
+    {
+      "id": "come-sta",
+      "text": "Come sta?",
+      "translation": "Como está? (o senhor / a senhora)",
+      "icon": "🎩",
+      "usage": "A mesma pergunta, com cortesia, a quem tratas por «Lei».",
+      "situation": "🎩 Encontras a tua vizinha idosa e perguntas-lhe, com cortesia, como está."
+    },
+    {
+      "id": "sto-bene",
+      "text": "Sto bene, grazie!",
+      "translation": "Estou bem, obrigado/a!",
+      "icon": "👍",
+      "usage": "A resposta mais comum. Muitas vezes continua com «e tu?».",
+      "situation": "👍 Perguntaram-te como estás: respondes que estás bem e agradeces."
+    },
+    {
+      "id": "dove-e",
+      "text": "Dov'è…?",
+      "translation": "Onde é…? / Onde fica…?",
+      "icon": "🧭",
+      "note": "completa-se com o sítio: «Dov'è la stazione?»",
+      "usage": "Para perguntar onde fica um sítio.",
+      "situation": "🧭 Estás perdida na cidade: perguntas onde fica a estação.",
+      "learnerNote": "Para lugares usa-se «essere»: «Dov'è?», nunca «dove sta?» no italiano padrão."
+    },
+    {
+      "id": "e-qui",
+      "text": "È qui.",
+      "translation": "É aqui. / Fica aqui.",
+      "icon": "📍",
+      "usage": "Para dizer que um sítio fica mesmo onde estás.",
+      "situation": "📍 Alguém procura a farmácia e ela está mesmo ao teu lado."
+    },
+    {
+      "id": "e-li",
+      "text": "È lì.",
+      "translation": "É ali. / Fica ali.",
+      "icon": "👉",
+      "usage": "Para indicar um sítio um pouco mais longe, apontando.",
+      "situation": "👉 Alguém procura a paragem e tu apontas para o outro lado da rua."
+    },
+    {
+      "id": "pronto",
+      "text": "Pronto?",
+      "translation": "Estou? / Está? (ao telefone)",
+      "icon": "📞",
+      "learnerNote": "Os italianos atendem o telefone com «Pronto?», como vocês com «Estou?»."
+    },
+    {
+      "id": "autobus",
+      "text": "l'autobus",
+      "translation": "o autocarro",
+      "icon": "🚌"
+    },
+    {
+      "id": "biglietto",
+      "text": "il biglietto",
+      "translation": "o bilhete",
+      "icon": "🎫"
+    },
+    {
+      "id": "tabaccheria",
+      "text": "la tabaccheria",
+      "translation": "a tabacaria",
+      "icon": "🚬",
+      "note": "reconhece-se pelo «T» branco em fundo azul ou preto"
+    }
+  ]
+}

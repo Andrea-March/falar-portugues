@@ -1,0 +1,196 @@
+{
+  "id": "node_2_3",
+  "speaker": {
+    "name": "Marco",
+    "role": "Amico · Firenze",
+    "avatar": "🧑🏻",
+    "voice": "uomo"
+  },
+  "theory": [
+    {
+      "title": "Ao telefone",
+      "text": "Ao telefone os italianos atendem com **pronto?**. Depois vem logo **come stai?**. E para dizer onde estás, lembra-te: **sono** al bar, não «sto». O Marco está a ligar-te para te encontrar.",
+      "vocab": [
+        "pronto",
+        "come-stai",
+        "sto-bene",
+        "dove-e",
+        "e-qui"
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "it_2_3_1",
+      "type": "choose",
+      "context": "Ciao Ines, sono Marco!",
+      "contextTranslation": "Olá Ines, é o Marco!",
+      "prompt": "Atende o telefone",
+      "text": "{Pronto}? Ciao Marco!",
+      "translation": "Estou? Olá Marco!",
+      "trains": [
+        "vocab:pronto"
+      ],
+      "wrong": [
+        "Prego",
+        "Piacere",
+        "Arrivederci"
+      ]
+    },
+    {
+      "id": "it_2_3_2",
+      "type": "write",
+      "context": "Come stai?",
+      "contextTranslation": "Como estás?",
+      "prompt": "Responde que estás bem e agradece",
+      "text": "{Sto bene}, grazie! E tu?",
+      "translation": "Estou bem, obrigada! E tu?",
+      "trains": [
+        "vocab:sto-bene"
+      ],
+      "wrong": [
+        "Come stai",
+        "Dov'è",
+        "È lì"
+      ]
+    },
+    {
+      "id": "it_2_3_3",
+      "type": "write",
+      "context": "Bene! Senti, dove sei?",
+      "contextTranslation": "Bem! Ouve, onde estás?",
+      "prompt": "Diz que estás no café do signor Paolo",
+      "text": "{Sono} al bar del signor Paolo.",
+      "translation": "Estou no café do senhor Paolo.",
+      "trains": [
+        "verb:essere:presente:io"
+      ],
+      "wrong": [
+        "Sto",
+        "Siamo",
+        "Sta"
+      ],
+      "learnerNote": "Para dizer onde estás usa-se «essere»: «sono al bar», nunca «sto al bar»."
+    },
+    {
+      "id": "it_2_3_4",
+      "type": "choose",
+      "context": "C'è anche Giulia? Come sta?",
+      "contextTranslation": "A Giulia também está aí? Como está ela?",
+      "prompt": "Diz que a Giulia está bem",
+      "text": "Sì, Giulia {sta} bene.",
+      "translation": "Sim, a Giulia está bem.",
+      "trains": [
+        "verb:stare:presente:lui_lei"
+      ],
+      "wrong": [
+        "è",
+        "sto",
+        "stanno"
+      ]
+    },
+    {
+      "id": "it_2_3_5",
+      "type": "choose",
+      "context": "Perfetto! Arrivo tra dieci minuti. Il bar dov'è, vicino al Duomo?",
+      "contextTranslation": "Perfeito! Chego daqui a dez minutos. O café fica onde, perto do Duomo?",
+      "prompt": "Diz que fica mesmo ali ao lado do Duomo",
+      "text": "Sì, {è lì}, accanto al Duomo!",
+      "translation": "Sim, é ali, ao lado do Duomo!",
+      "trains": [
+        "vocab:e-li"
+      ],
+      "wrong": [
+        "è qui",
+        "dov'è",
+        "come sta"
+      ]
+    },
+    {
+      "id": "it_2_3_6",
+      "type": "write",
+      "context": "Ok, a dopo!",
+      "contextTranslation": "Ok, até já!",
+      "prompt": "Despede-te do teu amigo",
+      "text": "{Ciao}, a dopo!",
+      "translation": "Adeus, até já!",
+      "trains": [
+        "vocab:ciao"
+      ],
+      "wrong": [
+        "Arrivederci",
+        "Buonanotte",
+        "Pronto"
+      ]
+    }
+  ],
+  "test": {
+    "speaker": {
+      "name": "Giulia",
+      "role": "Amica · Firenze",
+      "avatar": "👩🏻"
+    },
+    "exercises": [
+      {
+        "id": "it_2_3_t1",
+        "type": "write",
+        "context": "Ciao Ines, sono Giulia! Come stai?",
+        "contextTranslation": "Olá Ines, é a Giulia! Como estás?",
+        "prompt": "Atende e diz que estás bem",
+        "text": "{Pronto}, ciao! Sto bene, grazie.",
+        "translation": "Estou? Olá! Estou bem, obrigada.",
+        "trains": [
+          "vocab:pronto"
+        ]
+      },
+      {
+        "id": "it_2_3_t2",
+        "type": "write",
+        "context": "Dove sei?",
+        "contextTranslation": "Onde estás?",
+        "prompt": "Diz que estás em casa",
+        "text": "{Sono} a casa.",
+        "translation": "Estou em casa.",
+        "trains": [
+          "verb:essere:presente:io"
+        ]
+      },
+      {
+        "id": "it_2_3_t3",
+        "type": "write",
+        "context": "E Marco come sta?",
+        "contextTranslation": "E o Marco, como está?",
+        "prompt": "Diz que o Marco está bem",
+        "text": "Marco {sta} bene.",
+        "translation": "O Marco está bem.",
+        "trains": [
+          "verb:stare:presente:lui_lei"
+        ]
+      },
+      {
+        "id": "it_2_3_t4",
+        "type": "write",
+        "context": "Stasera usciamo? Io sono in centro.",
+        "contextTranslation": "Esta noite saímos? Eu estou no centro.",
+        "prompt": "Pergunta onde fica o restaurante",
+        "text": "Sì! {Dov'è} il ristorante?",
+        "translation": "Sim! Onde fica o restaurante?",
+        "trains": [
+          "vocab:dove-e"
+        ]
+      },
+      {
+        "id": "it_2_3_t5",
+        "type": "write",
+        "context": "In piazza della Signoria. A stasera!",
+        "contextTranslation": "Na piazza della Signoria. Até logo à noite!",
+        "prompt": "Despede-te",
+        "text": "{Ciao}, a stasera!",
+        "translation": "Adeus, até logo à noite!",
+        "trains": [
+          "vocab:ciao"
+        ]
+      }
+    ]
+  }
+}

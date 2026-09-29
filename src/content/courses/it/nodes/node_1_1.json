@@ -13,21 +13,63 @@
             "items": [
               "buongiorno",
               "buonasera",
-              "arrivederci"
+              "buonanotte"
             ]
           },
           {
-            "label": "Apresentar-se",
+            "label": "Apresentar-se e despedir-se",
             "items": [
               "ciao",
               "mi-chiamo",
-              "piacere"
+              "piacere",
+              "arrivederci"
             ]
           }
         ]
       }
     }
   ],
+  "warmup": {
+    "speaker": {
+      "name": "Signora Rossi",
+      "role": "Vicina di casa · Firenze",
+      "avatar": "👵🏻"
+    },
+    "exercises": [
+      {
+        "id": "warm_it_1_1_1",
+        "type": "choose",
+        "context": "Buongiorno! Lei è la nuova vicina?",
+        "contextTranslation": "Bom dia! A senhora é a nova vizinha?",
+        "prompt": "É de manhã: responde ao cumprimento",
+        "text": "{Buongiorno}, signora!",
+        "translation": "Bom dia, minha senhora!",
+        "trains": [
+          "vocab:buongiorno"
+        ],
+        "wrong": [
+          "Buonanotte",
+          "Ciao"
+        ]
+      },
+      {
+        "id": "warm_it_1_1_2",
+        "type": "choose",
+        "context": "Io mi chiamo Maria Rossi.",
+        "contextTranslation": "Eu chamo-me Maria Rossi.",
+        "prompt": "Ela apresentou-se: responde",
+        "text": "{Piacere}, signora Rossi!",
+        "translation": "Muito prazer, senhora Rossi!",
+        "trains": [
+          "vocab:piacere"
+        ],
+        "wrong": [
+          "Arrivederci",
+          "Buonasera"
+        ]
+      }
+    ]
+  },
   "exercises": [
     {
       "id": "it_1_1_1",
@@ -40,7 +82,17 @@
       ],
       "wrong": [
         "Buonasera",
+        "Buonanotte",
         "Arrivederci"
+      ]
+    },
+    {
+      "id": "it_1_1_7",
+      "type": "write",
+      "text": "{Buongiorno} a tutti!",
+      "translation": "Bom dia a todos!",
+      "trains": [
+        "vocab:buongiorno"
       ]
     },
     {
@@ -53,17 +105,58 @@
       ]
     },
     {
-      "id": "it_1_1_3",
+      "id": "it_1_1_8",
       "type": "choose",
-      "text": "{Arrivederci}, a domani!",
-      "translation": "Adeus, até amanhã!",
-      "prompt": "Sais do escritório: despede-te do colega",
+      "text": "Sono le sei di sera. Entri in un negozio: {Buonasera}!",
+      "translation": "São seis da tarde. Entras numa loja: boa tarde!",
+      "prompt": "Cumprimenta ao entrar numa loja ao fim da tarde",
       "trains": [
-        "vocab:arrivederci"
+        "vocab:buonasera"
       ],
       "wrong": [
-        "Piacere",
-        "Buongiorno"
+        "Buongiorno",
+        "Buonanotte"
+      ],
+      "learnerNote": "Às seis da tarde, em português ainda dizes «boa tarde»; em italiano já é «buonasera»."
+    },
+    {
+      "id": "it_1_1_9",
+      "type": "choose",
+      "text": "{Buonasera}, un tavolo per due, per favore.",
+      "translation": "Boa noite, uma mesa para dois, por favor.",
+      "prompt": "Chegas a um restaurante às nove da noite",
+      "trains": [
+        "vocab:buonasera"
+      ],
+      "wrong": [
+        "Buonanotte",
+        "Buongiorno",
+        "Piacere"
+      ],
+      "learnerNote": "Ao chegar, mesmo tarde, é sempre «buonasera»: «buonanotte» é só para quem vai dormir."
+    },
+    {
+      "id": "it_1_1_10",
+      "type": "choose",
+      "text": "{Buonanotte}, a domani!",
+      "translation": "Boa noite, até amanhã!",
+      "prompt": "É meia-noite e vais dormir: despede-te",
+      "trains": [
+        "vocab:buonanotte"
+      ],
+      "wrong": [
+        "Buonasera",
+        "Buongiorno",
+        "Ciao"
+      ]
+    },
+    {
+      "id": "it_1_1_11",
+      "type": "write",
+      "text": "{Buonanotte}, dormi bene.",
+      "translation": "Boa noite, dorme bem.",
+      "trains": [
+        "vocab:buonanotte"
       ]
     },
     {
@@ -77,8 +170,19 @@
       ],
       "wrong": [
         "Arrivederci",
-        "Piacere"
+        "Piacere",
+        "Buonanotte"
       ]
+    },
+    {
+      "id": "it_1_1_12",
+      "type": "write",
+      "text": "{Ciao}, io sono Giulia.",
+      "translation": "Olá, eu sou a Giulia.",
+      "trains": [
+        "vocab:ciao"
+      ],
+      "learnerNote": "Em italiano não se usa o artigo antes do nome: «sono Giulia», não «sono la Giulia»."
     },
     {
       "id": "it_1_1_5",
@@ -87,6 +191,21 @@
       "translation": "Chamo-me Ines, e tu?",
       "trains": [
         "vocab:mi-chiamo"
+      ]
+    },
+    {
+      "id": "it_1_1_13",
+      "type": "choose",
+      "text": "{Mi chiamo} Luca. E tu, come ti chiami?",
+      "translation": "Chamo-me Luca. E tu, como te chamas?",
+      "prompt": "Diz o teu nome quando te apresentas",
+      "trains": [
+        "vocab:mi-chiamo"
+      ],
+      "wrong": [
+        "Piacere",
+        "Arrivederci",
+        "Buonasera"
       ]
     },
     {
@@ -100,7 +219,50 @@
       ],
       "wrong": [
         "Arrivederci",
-        "Buonasera"
+        "Buonasera",
+        "Mi chiamo"
+      ]
+    },
+    {
+      "id": "it_1_1_14",
+      "type": "write",
+      "text": "{Piacere}, Giulia!",
+      "translation": "Muito prazer, Giulia!",
+      "trains": [
+        "vocab:piacere"
+      ]
+    },
+    {
+      "id": "it_1_1_3",
+      "type": "choose",
+      "text": "{Arrivederci}, a domani!",
+      "translation": "Adeus, até amanhã!",
+      "prompt": "Sais do escritório: despede-te do colega",
+      "trains": [
+        "vocab:arrivederci"
+      ],
+      "wrong": [
+        "Piacere",
+        "Buongiorno",
+        "Mi chiamo"
+      ]
+    },
+    {
+      "id": "it_1_1_15",
+      "type": "write",
+      "text": "Grazie, {arrivederci}!",
+      "translation": "Obrigado, adeus!",
+      "trains": [
+        "vocab:arrivederci"
+      ]
+    },
+    {
+      "id": "it_1_1_16",
+      "type": "write",
+      "text": "Ciao! {Mi chiamo} Ines. Piacere!",
+      "translation": "Olá! Chamo-me Ines. Muito prazer!",
+      "trains": [
+        "vocab:mi-chiamo"
       ]
     }
   ]
