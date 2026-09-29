@@ -3,6 +3,7 @@
  * src/content/courses/<corso>/audio.config.json ("provider"):
  * - piper: open source, gira sul computer, gratis. Requisiti: Python e  pip install piper-tts lameenc
  * - azure: voci neurali Azure Speech. Serve AZURE_SPEECH_KEY e AZURE_SPEECH_REGION in .env.local
+ * - elevenlabs: voci ElevenLabs (le voci sono ID, dalla Voice Library). Serve ELEVENLABS_API_KEY in .env.local
  *
  *   npm run audio            genera i file mancanti in public/audio/
  *   npm run audio:check      solo il resoconto: quanti file mancano, caratteri, peso
@@ -152,9 +153,98 @@ async function azureGenerate(jobs: Job[], onDone: (job: Job) => void): Promise<n
   return 0;
 }
 
+// ---------- ElevenLabs ----------
+
+const XI_KEY = process.env.ELEVENLABS_API_KEY;
+const XI_BASE = 'https://api.elevenlabs.io/v1';
+const xiCfg = providerConfig as unknown as {
+  model: string;
+  format: string;
+  seed?: number;
+  languageCode?: string;
+  voiceSettings?: Record<string, number | boolean>;
+};
+
+function requireXiKey() {
+  if (!XI_KEY) {
+    console.error("✗ Manca ELEVENLABS_API_KEY (in .env.local o nell'ambiente).");
+    process.exit(1);
+  }
+}
+
+/** Crediti per carattere: i modelli Flash e Turbo ne consumano la metà */
+const xiCreditsPerChar = () => (/flash|turbo/i.test(xiCfg.model) ? 0.5 : 1);
+
+/** Crediti rimasti nel mese, o null se non si riesce a saperlo */
+async function xiCreditsLeft(): Promise<number | null> {
+  try {
+    const res = await fetch(`${XI_BASE}/user/subscription`, { headers: { 'xi-api-key': XI_KEY! } });
+    if (!res.ok) return null;
+    const d = (await res.json()) as { character_count: number; character_limit: number };
+    return d.character_limit - d.character_count;
+  } catch {
+    return null;
+  }
+}
+
+async function xiSynthesize(text: string, voice: string): Promise<Buffer> {
+  const body: Record<string, unknown> = { text, model_id: xiCfg.model };
+  if (xiCfg.voiceSettings) body.voice_settings = xiCfg.voiceSettings;
+  // Seme fisso: rigenerando la stessa frase si ottiene (quasi sempre) lo stesso audio
+  if (xiCfg.seed !== undefined) body.seed = xiCfg.seed;
+  // Solo alcuni modelli (Flash/Turbo v2.5, v3) accettano la lingua forzata; gli altri danno errore
+  if (xiCfg.languageCode) body.language_code = xiCfg.languageCode;
+  for (let attempt = 1; ; attempt++) {
+    const res = await fetch(`${XI_BASE}/text-to-speech/${encodeURIComponent(voice)}?output_format=${xiCfg.format}`, {
+      method: 'POST',
+      headers: { 'xi-api-key': XI_KEY!, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
+      body: JSON.stringify(body),
+    });
+    if (res.ok) return Buffer.from(await res.arrayBuffer());
+    if ((res.status === 429 || res.status >= 500) && attempt < 6) {
+      const wait = Number(res.headers.get('retry-after')) * 1000 || 3000 * attempt;
+      console.log(`  … ${res.status}, riprovo tra ${Math.round(wait / 1000)} s`);
+      await sleep(wait);
+      continue;
+    }
+    throw new Error(`ElevenLabs ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  }
+}
+
+async function elevenlabsGenerate(jobs: Job[], onDone: (job: Job) => void): Promise<number> {
+  requireXiKey();
+  const bad = [...new Set(jobs.map((j) => j.voice))].filter((v) => !/^[A-Za-z0-9]{16,}$/.test(v));
+  if (bad.length) throw new Error(`Voce non valida in audio.config.json: ${bad.join(', ')} (serve l'ID della voce ElevenLabs)`);
+
+  // Controllo dei crediti prima di spendere: meglio fermarsi subito che a metà
+  const needed = Math.ceil(jobs.reduce((n, j) => n + j.text.length, 0) * xiCreditsPerChar());
+  const left = await xiCreditsLeft();
+  if (left !== null) {
+    console.log(`Crediti ElevenLabs: servono circa ${needed.toLocaleString('it-IT')}, ne restano ${left.toLocaleString('it-IT')}`);
+    if (needed > left) throw new Error('Crediti insufficienti: nessun file generato.');
+  }
+
+  let failures = 0;
+  for (const j of jobs) {
+    try {
+      mkdirSync(resolve(j.out, '..'), { recursive: true });
+      writeFileSync(j.out, await xiSynthesize(j.text, j.voice));
+      onDone(j);
+    } catch (e) {
+      failures++;
+      console.log(`  ✗ ${j.text}: ${e instanceof Error ? e.message : e}`);
+      // Chiave o voce sbagliata: inutile continuare con le altre frasi
+      if (e instanceof Error && /ElevenLabs (401|403|404)/.test(e.message)) throw e;
+    }
+    await sleep(300);
+  }
+  return failures;
+}
+
 const generators: Record<string, (jobs: Job[], onDone: (job: Job) => void) => Promise<number>> = {
   piper: piperGenerate,
   azure: azureGenerate,
+  elevenlabs: elevenlabsGenerate,
 };
 
 // ---------- Campioni per scegliere la voce ----------
@@ -184,7 +274,7 @@ async function samples() {
 async function generate() {
   const check = args.has('--check');
   const prune = args.has('--prune');
-  if (!generators[activeProvider]) throw new Error(`Servizio "${activeProvider}" sconosciuto in audio.config.json (piper o azure)`);
+  if (!generators[activeProvider]) throw new Error(`Servizio "${activeProvider}" sconosciuto in audio.config.json (piper, azure o elevenlabs)`);
 
   // Testi unici per file
   const wanted = new Map<string, { text: string; voice: string }>(); // chiave: percorso relativo del file
@@ -205,6 +295,11 @@ async function generate() {
   );
 
   if (check) {
+    if (activeProvider === 'elevenlabs' && XI_KEY) {
+      const left = await xiCreditsLeft();
+      const needed = Math.ceil(chars * xiCreditsPerChar());
+      if (left !== null) console.log(`Crediti ElevenLabs: servono circa ${needed.toLocaleString('it-IT')}, ne restano ${left.toLocaleString('it-IT')}`);
+    }
     if (missing.length) console.log('\nPer generarle: npm run audio');
     return;
   }

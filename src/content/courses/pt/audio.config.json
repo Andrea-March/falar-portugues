@@ -1,6 +1,6 @@
 {
   "$comment": "Audio pregenerato (npm run audio). Le chiavi di 'voices' (default, homem…) sono quelle usate nei contenuti. Cambiare servizio, voce o velocità fa generare i file in una cartella nuova.",
-  "provider": "piper",
+  "provider": "elevenlabs",
   "extension": "mp3",
   "bitrateKbps": 48,
   "providers": {
@@ -19,6 +19,22 @@
       "voices": {
         "default": "pt-PT-RaquelNeural",
         "homem": "pt-PT-DuarteNeural"
+      }
+    },
+    "elevenlabs": {
+      "$comment": "ElevenLabs. Serve ELEVENLABS_API_KEY in .env.local. Le voci sono ID (Voice Library → la voce → 'Copy voice ID'). Multilingual v2 costa 1 credito a carattere, Flash/Turbo mezzo. Il piano gratuito non dà la licenza commerciale.",
+      "model": "eleven_multilingual_v2",
+      "format": "mp3_44100_64",
+      "seed": 42,
+      "voiceSettings": {
+        "stability": 0.6,
+        "similarity_boost": 0.8,
+        "style": 0,
+        "speed": 0.92
+      },
+      "voices": {
+        "default": "Fcg9ByV62Oba8WIA7k11",
+        "homem": "aLFUti4k8YKvtQGXv0UO"
       }
     }
   }
