@@ -38,6 +38,16 @@ export interface CourseConfig {
   verbGroups: readonly string[];
   /** Tasti per le lettere accentate sotto il campo di risposta */
   specialChars: readonly string[];
+  /**
+   * Riconosce gli errori sulle doppie (caro/carro): nota apposta dopo l'errore e
+   * "skill:doppie" nel ripasso. Per chi impara l'italiano partendo dal portoghese.
+   */
+  doubleConsonants?: boolean;
+  /**
+   * Sessione Ascolto all'inizio dei nodi conversazione: il dialogo senza testo e
+   * domande di comprensione. Richiede "listening" nel JSON di ogni nodo dialogue.
+   */
+  listeningSession?: boolean;
   /** Bandierina delle note per chi impara, es. "🇮🇹" */
   learnerFlag: string;
   /** Nomi dei tempi verbali */

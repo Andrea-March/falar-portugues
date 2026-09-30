@@ -1,0 +1,46 @@
+{
+  "id": "doppie",
+  "title": "Le doppie",
+  "subtitle": "Caro ou carro? A consoante dupla ouve-se e muda o sentido",
+  "icon": "✌️",
+  "theory": [
+    {
+      "title": "Uma letra a mais, outra palavra",
+      "text": "O português não tem consoantes duplas que se ouçam. O italiano tem, e mudam o sentido da palavra: **sete** quer dizer «sede», mas **sette** é o número sete!",
+      "examples": [
+        { "text": "sete", "translation": "sede", "learnerNote": "Um falso amigo: o teu «sete» em italiano é «sette»." },
+        { "text": "sette", "translation": "sete (7)" },
+        { "text": "nono", "translation": "nono (9.º)" },
+        { "text": "nonno", "translation": "avô" },
+        { "text": "capello", "translation": "cabelo" },
+        { "text": "cappello", "translation": "chapéu" }
+      ]
+    },
+    {
+      "title": "Como se diz uma dupla",
+      "text": "Segura a consoante um instante, como se houvesse uma pausa minúscula no meio: **sette**, **nonno**, **palla**. Também «cq» conta como dupla: **acqua**. Se a encurtares, um italiano pode ouvir outra palavra.",
+      "examples": [
+        { "text": "pala", "translation": "pá" },
+        { "text": "palla", "translation": "bola" },
+        { "text": "fato", "translation": "destino" },
+        { "text": "fatto", "translation": "feito, facto" },
+        { "text": "carro", "translation": "carroça", "learnerNote": "O teu carro, em italiano, é «la macchina»." },
+        { "text": "caro", "translation": "caro, querido" }
+      ]
+    }
+  ],
+  "exercises": [
+    { "id": "it_sk_dop_1", "type": "choose", "listen": true, "text": "Ho detto {sette}.", "wrong": ["sete"], "learnerNote": "«sette» é o número sete; «sete» quer dizer sede.", "trains": ["skill:doppie"] },
+    { "id": "it_sk_dop_2", "type": "choose", "listen": true, "text": "Ho detto {sete}.", "wrong": ["sette"], "learnerNote": "«sete» quer dizer sede; «sette» é o número sete.", "trains": ["skill:doppie"] },
+    { "id": "it_sk_dop_3", "type": "choose", "listen": true, "text": "Ho detto {nonno}.", "wrong": ["nono"], "learnerNote": "«nonno» é o avô; «nono» é o nono.", "trains": ["skill:doppie"] },
+    { "id": "it_sk_dop_4", "type": "choose", "listen": true, "text": "Ho detto {pala}.", "wrong": ["palla"], "learnerNote": "«pala» é a pá; «palla» é a bola.", "trains": ["skill:doppie"] },
+    { "id": "it_sk_dop_5", "type": "choose", "listen": true, "text": "Ho detto {cappello}.", "wrong": ["capello"], "learnerNote": "«cappello» é o chapéu; «capello» é o cabelo.", "trains": ["skill:doppie"] },
+    { "id": "it_sk_dop_6", "type": "choose", "listen": true, "text": "Ho detto {fato}.", "wrong": ["fatto"], "learnerNote": "«fato» é o destino; «fatto» quer dizer feito.", "trains": ["skill:doppie"] },
+    { "id": "it_sk_dop_7", "type": "write", "listen": true, "text": "Ho {sete}.", "translation": "Tenho sede.", "trains": ["skill:doppie"] },
+    { "id": "it_sk_dop_8", "type": "write", "listen": true, "text": "Siamo in {sette}.", "translation": "Somos sete.", "trains": ["skill:doppie"] },
+    { "id": "it_sk_dop_9", "type": "write", "listen": true, "text": "Un bicchiere d'{acqua}, per favore.", "translation": "Um copo de água, por favor.", "trains": ["skill:doppie"] },
+    { "id": "it_sk_dop_10", "type": "write", "listen": true, "text": "Mio {nonno} è di Napoli.", "translation": "O meu avô é de Nápoles.", "trains": ["skill:doppie"] },
+    { "id": "it_sk_dop_11", "type": "write", "listen": true, "text": "Un {cappuccino} e un cornetto.", "translation": "Um cappuccino e um cornetto.", "trains": ["skill:doppie"] },
+    { "id": "it_sk_dop_12", "type": "write", "text": "Il mio {cappello} è nero.", "translation": "O meu chapéu é preto.", "trains": ["skill:doppie"] }
+  ]
+}

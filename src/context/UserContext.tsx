@@ -99,7 +99,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     if (!trains?.length) return;
     saveProgress((p) => {
       const review = { ...p.review };
-      for (const ref of trains) review[ref] = updateReview(review[ref], correct);
+      // Senza doppioni: "skill:doppie" può arrivare sia dai trains sia dalla correzione
+      for (const ref of new Set(trains)) review[ref] = updateReview(review[ref], correct);
       return { ...p, review };
     });
   };

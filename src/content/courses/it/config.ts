@@ -28,6 +28,10 @@ const config: CourseConfig = {
   verbGroups: ['are', 'ere', 'ire'],
   specialChars: ['à', 'è', 'é', 'ì', 'ò', 'ù'],
   learnerFlag: '🇵🇹',
+  // Il portoghese non ha le doppie: errore tipico, da riconoscere e allenare
+  doubleConsonants: true,
+  // Prima di leggere il dialogo lo si ascolta: capire il parlato è ciò che serve di più in Italia
+  listeningSession: true,
   tenseLabels: {
     presente: 'Presente indicativo',
     passato_prossimo: 'Passato prossimo',

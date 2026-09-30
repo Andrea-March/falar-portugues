@@ -12,7 +12,7 @@
 import { readFileSync, readdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join, basename, relative } from 'node:path';
 import type { z } from 'zod';
-import { Course, NodeContent, Verb, VocabSet, Exercise } from '../src/content/schema';
+import { Course, NodeContent, Verb, VocabSet, Exercise, Skill, Recording } from '../src/content/schema';
 import type { CourseConfig } from '../src/content/course-config';
 import { COURSE, COURSE_DIR as DIR, CONTENT_DIR, ROOT } from './course';
 
@@ -43,7 +43,7 @@ function load<S extends z.ZodType>(file: string, schema: S): z.infer<S> | null {
 }
 
 const jsonFiles = (sub: string) =>
-  readdirSync(join(DIR, sub))
+  (existsSync(join(DIR, sub)) ? readdirSync(join(DIR, sub)) : [])
     .filter((f) => f.endsWith('.json'))
     .sort()
     .map((f) => join(DIR, sub, f));
@@ -92,6 +92,32 @@ for (const f of jsonFiles('nodes')) {
   nodes.set(n.id, { file: f, data: n });
 }
 
+// Punti difficili (facoltativi: la cartella skills/ può mancare)
+const skills = new Map<string, { file: string; data: Skill }>();
+for (const f of jsonFiles('skills')) {
+  const s = load(f, Skill);
+  if (!s) continue;
+  if (s.id !== basename(f, '.json')) fail(f, `l'id "${s.id}" deve coincidere col nome del file`);
+  skills.set(s.id, { file: f, data: s });
+}
+// Registrazioni della tab Ascolto (facoltative: la cartella recordings/ può mancare)
+const recordings = new Map<string, { file: string; data: Recording }>();
+for (const f of jsonFiles('recordings')) {
+  const r = load(f, Recording);
+  if (!r) continue;
+  if (r.id !== basename(f, '.json')) fail(f, `l'id "${r.id}" deve coincidere col nome del file`);
+  const audio = join(ROOT, 'public', 'recordings', COURSE, r.file);
+  if (!r.draft && !existsSync(audio)) fail(f, `manca l'audio ${relative(ROOT, audio)} (oppure segna la registrazione come "draft": true)`);
+  const times = r.segments.map((s) => s.at);
+  const timed = times.filter((t) => t !== undefined).length;
+  if (timed > 0 && timed < times.length) fail(f, `"at" va messo in tutte le frasi o in nessuna`);
+  if (timed === times.length && times.some((t, i) => i > 0 && t! <= times[i - 1]!)) fail(f, `i tempi "at" devono crescere da una frase all'altra`);
+  recordings.set(r.id, { file: f, data: r });
+}
+
+/** Skill riconosciute dal codice anche senza file (es. "doppie", dalla correzione delle risposte) */
+const BUILTIN_SKILLS = new Set(['doppie']);
+
 // ---------- Controlli incrociati ----------
 
 const answerOf = (text: string) => text.match(/\{([^{}]+)\}/)![1];
@@ -115,6 +141,10 @@ function checkExercise(file: string, ex: Exercise) {
 
   for (const ref of ex.trains) {
     const [kind, a, b, c] = ref.split(':');
+    if (kind === 'skill') {
+      if (!skills.has(a) && !BUILTIN_SKILLS.has(a)) fail(file, `${where}: il punto difficile "${a}" non esiste in skills/`);
+      continue;
+    }
     if (kind === 'vocab') {
       if (!vocab.has(a)) fail(file, `${where}: la voce "${a}" non esiste in nessun file di vocab/`);
       continue;
@@ -156,6 +186,19 @@ function checkExercise(file: string, ex: Exercise) {
 
 for (const { file, data } of verbs.values()) data.exercises.forEach((e) => checkExercise(file, e));
 
+for (const { file, data } of skills.values()) {
+  data.exercises.forEach((e) => {
+    checkExercise(file, e);
+    if (!e.trains.includes(`skill:${data.id}`)) fail(file, `esercizio "${e.id}": deve allenare "skill:${data.id}"`);
+  });
+  data.theory.forEach((card, i) => {
+    if (card.verb) fail(file, `teoria[${i}]: nei punti difficili niente tabelle di verbi`);
+    card.vocab?.forEach((id) => {
+      if (!vocab.has(id)) fail(file, `teoria[${i}]: la voce "${id}" non esiste in vocab/`);
+    });
+  });
+}
+
 for (const { file, data } of nodes.values()) {
   const voice = data.speaker?.voice;
   for (const [name, provider] of Object.entries(audioConfig.providers)) {
@@ -164,6 +207,15 @@ for (const { file, data } of nodes.values()) {
     }
   }
   data.exercises.forEach((e) => checkExercise(file, e));
+  {
+    const kindHere = course?.chapters.flatMap((c) => c.nodes).find((n) => n.id === data.id)?.kind;
+    if (data.listening && kindHere !== 'dialogue') fail(file, `"listening" vale solo per i nodi "dialogue"`);
+    if (kindHere === 'dialogue' && courseConfig.listeningSession && !data.listening)
+      fail(file, `manca "listening": nel corso ${COURSE} i nodi conversazione iniziano con la sessione Ascolto`);
+    data.listening?.questions.forEach((q, i) => {
+      if (q.wrong.some((w) => w.toLowerCase() === q.answer.toLowerCase())) fail(file, `listening.questions[${i}]: la risposta giusta è anche tra le sbagliate`);
+    });
+  }
   if (data.warmup) {
     data.warmup.exercises.forEach((e) => checkExercise(file, e));
     // Il warmup chiude la prima Descoberta: nei nodi divisi in due parti non deve usare
@@ -291,7 +343,7 @@ if (errors.length) {
   process.exit(1);
 }
 
-const count = `corso ${COURSE}: ${nodes.size} lezioni, ${verbs.size} verbi, ${vocab.size} vocaboli, ${exerciseIds.size} esercizi`;
+const count = `corso ${COURSE}: ${nodes.size} lezioni, ${verbs.size} verbi, ${vocab.size} vocaboli, ${skills.size} punti difficili, ${recordings.size} registrazioni, ${exerciseIds.size} esercizi`;
 
 if (CHECK_ONLY) {
   console.log(`✓ Contenuti validi (${count})`);
@@ -303,15 +355,19 @@ if (CHECK_ONLY) {
 const ident = (s: string) => s.replace(/[^a-zA-Z0-9]/g, '_');
 const verbIds = [...verbs.keys()];
 const vocabIds = vocabSets.map((s) => s.data.id);
+const skillIds = [...skills.keys()];
+const recordingIds = [...recordings.keys()];
 const C = `./courses/${COURSE}`;
 const out = `// FILE GENERATO da scripts/content.ts: non modificarlo a mano (npm run content).
 // Corso: ${COURSE}
-import type { Course, NodeContent, Verb, VocabSet } from './schema';
+import type { Course, NodeContent, Recording, Skill, Verb, VocabSet } from './schema';
 import config from '${C}/config';
 import courseJson from '${C}/course.json';
 import audioConfigJson from '${C}/audio.config.json';
 ${verbIds.map((id) => `import verb_${ident(id)} from '${C}/verbs/${id}.json';`).join('\n')}
 ${vocabIds.map((id) => `import vocab_${ident(id)} from '${C}/vocab/${id}.json';`).join('\n')}
+${skillIds.map((id) => `import skill_${ident(id)} from '${C}/skills/${id}.json';`).join('\n')}
+${recordingIds.map((id) => `import recording_${ident(id)} from '${C}/recordings/${id}.json';`).join('\n')}
 
 /** Configurazione, struttura e voci del corso */
 export const courseConfig = config;
@@ -321,6 +377,10 @@ export const audioConfig = audioConfigJson;
 /** Verbi e vocabolario: piccoli e usati ovunque, caricati subito */
 export const verbList = [${verbIds.map((id) => `verb_${ident(id)}`).join(', ')}] as unknown as Verb[];
 export const vocabSetList = [${vocabIds.map((id) => `vocab_${ident(id)}`).join(', ')}] as unknown as VocabSet[];
+/** Punti difficili (tab della Grammatica) */
+export const skillList = [${skillIds.map((id) => `skill_${ident(id)}`).join(', ')}] as unknown as Skill[];
+/** Registrazioni della tab Ascolto (anche le bozze: l'app le nasconde) */
+export const recordingList = [${recordingIds.map((id) => `recording_${ident(id)}`).join(', ')}] as unknown as Recording[];
 
 /** Nomi dei gruppi dello studio del vocabolario per nodo: la mappa li mostra nelle sessioni senza caricare la lezione */
 export const vocabGroupLabels: Record<string, string[]> = ${JSON.stringify(

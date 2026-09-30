@@ -19,6 +19,36 @@
       ]
     }
   ],
+  "listening": {
+    "intro": "O telemóvel da Ines toca: é o Marco. Ouve a chamada.",
+    "questions": [
+      {
+        "question": "Onde está a Ines?",
+        "answer": "No café do senhor Paolo",
+        "wrong": [
+          "Em casa",
+          "Na estação"
+        ]
+      },
+      {
+        "question": "Como está a Giulia?",
+        "answer": "Está bem",
+        "wrong": [
+          "Está doente",
+          "Não está com a Ines"
+        ]
+      },
+      {
+        "question": "Quando chega o Marco?",
+        "answer": "Daqui a dez minutos",
+        "wrong": [
+          "Daqui a uma hora",
+          "Amanhã"
+        ],
+        "note": "«Arrivo tra dieci minuti»: «tra» + tempo é o teu «daqui a»."
+      }
+    ]
+  },
   "exercises": [
     {
       "id": "it_2_3_1",

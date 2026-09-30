@@ -1,0 +1,39 @@
+{
+  "id": "pronomi",
+  "title": "I pronomi",
+  "subtitle": "Mi chiamo, não chiamo-mi: o pronome vai antes do verbo",
+  "icon": "🔀",
+  "theory": [
+    {
+      "title": "Primeiro o pronome, depois o verbo",
+      "text": "Em Portugal diz-se «chamo-me», «vejo-o», «espero-te». Em italiano, com o verbo conjugado, o pronome vem antes e sem hífen: **mi chiamo**, **lo vedo**, **ti aspetto**.",
+      "examples": [
+        { "text": "Mi chiamo Ines.", "translation": "Chamo-me Ines." },
+        { "text": "Ti aspetto al bar.", "translation": "Espero-te no café." },
+        { "text": "Lo prendo.", "translation": "Levo-o." },
+        { "text": "La conosco.", "translation": "Conheço-a." },
+        { "text": "Ci vediamo domani.", "translation": "Vemo-nos amanhã." }
+      ]
+    },
+    {
+      "title": "Quando vai depois",
+      "text": "Com o infinitivo o pronome cola-se ao fim do verbo, numa palavra só e sem hífen: **conoscerti**, **prenderlo**. O infinitivo perde o «e» final: conoscere + ti = **conoscerti**.",
+      "examples": [
+        { "text": "Piacere di conoscerti!", "translation": "Muito prazer em conhecer-te!" },
+        { "text": "Vorrei prenderlo.", "translation": "Queria levá-lo." }
+      ]
+    }
+  ],
+  "exercises": [
+    { "id": "it_sk_pro_1", "type": "choose", "text": "{Mi chiamo} Ines.", "translation": "Chamo-me Ines.", "wrong": ["Chiamo mi", "Chiamomi"], "trains": ["skill:pronomi"] },
+    { "id": "it_sk_pro_2", "type": "choose", "text": "Come {ti chiami}?", "translation": "Como te chamas?", "wrong": ["chiami ti", "chiamiti"], "trains": ["skill:pronomi"] },
+    { "id": "it_sk_pro_3", "type": "choose", "text": "Marco? Sì, {lo conosco}.", "translation": "O Marco? Sim, conheço-o.", "wrong": ["conosco lo", "conoscolo"], "trains": ["skill:pronomi"] },
+    { "id": "it_sk_pro_4", "type": "choose", "text": "Giulia? {La vedo} domani.", "translation": "A Giulia? Vejo-a amanhã.", "wrong": ["Vedo la", "Vedola"], "trains": ["skill:pronomi"] },
+    { "id": "it_sk_pro_5", "type": "choose", "text": "Piacere di {conoscerti}!", "translation": "Muito prazer em conhecer-te!", "wrong": ["ti conoscere", "conoscere ti"], "learnerNote": "Com o infinitivo o pronome vai no fim, colado: conoscere + ti = conoscerti.", "trains": ["skill:pronomi"] },
+    { "id": "it_sk_pro_6", "type": "write", "text": "{Ci vediamo} domani!", "translation": "Vemo-nos amanhã!", "trains": ["skill:pronomi"] },
+    { "id": "it_sk_pro_7", "type": "write", "text": "{Ti aspetto} al bar.", "translation": "Espero-te no café.", "trains": ["skill:pronomi"] },
+    { "id": "it_sk_pro_8", "type": "write", "text": "Il cornetto? {Lo prendo}, grazie.", "translation": "O cornetto? Levo-o, obrigada.", "trains": ["skill:pronomi"] },
+    { "id": "it_sk_pro_9", "type": "write", "text": "Anna? {La conosco} bene.", "translation": "A Anna? Conheço-a bem.", "trains": ["skill:pronomi"] },
+    { "id": "it_sk_pro_10", "type": "write", "listen": true, "text": "{Mi chiamo} Marco.", "translation": "Chamo-me Marco.", "trains": ["skill:pronomi"] }
+  ]
+}

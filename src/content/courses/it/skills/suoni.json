@@ -1,0 +1,48 @@
+{
+  "id": "suoni",
+  "title": "C, G, CH, GH, SC",
+  "subtitle": "O «ch» italiano não é o teu «ch»",
+  "icon": "🔤",
+  "theory": [
+    {
+      "title": "C e G antes de E e I",
+      "text": "Antes de «e» e «i», o **c** soa «tch» e o **g** soa «dj»: **ciao**, **cena**, **gelato**, **giorno**. Antes de «a», «o», «u» são duros como em português: **caffè**, **gatto**.",
+      "examples": [
+        { "text": "ciao", "translation": "olá, adeus" },
+        { "text": "cinque", "translation": "cinco" },
+        { "text": "gelato", "translation": "gelado" },
+        { "text": "buongiorno", "translation": "bom dia" }
+      ]
+    },
+    {
+      "title": "CH e GH: som duro",
+      "text": "Atenção: em italiano **ch** e **gh** não são o «ch» português. Servem para manter o som duro antes de «e» e «i»: **chiesa** diz-se «kiesa», **spaghetti** diz-se «spagueti». O som do teu «ch» escreve-se **sc**: **pesce**, **sci**.",
+      "examples": [
+        { "text": "che", "translation": "que" },
+        { "text": "chiesa", "translation": "igreja" },
+        { "text": "spaghetti", "translation": "esparguete" },
+        { "text": "pesce", "translation": "peixe" }
+      ]
+    },
+    {
+      "title": "GN e GLI: já os conheces",
+      "text": "Boa notícia: **gn** é o teu «nh» (**bagno**, **gnocchi**) e **gli** é praticamente o teu «lh» (**figlia**, **famiglia**).",
+      "examples": [
+        { "text": "bagno", "translation": "casa de banho" },
+        { "text": "famiglia", "translation": "família" }
+      ]
+    }
+  ],
+  "exercises": [
+    { "id": "it_sk_suo_1", "type": "write", "listen": true, "text": "Andiamo in {chiesa}.", "translation": "Vamos à igreja.", "trains": ["skill:suoni"] },
+    { "id": "it_sk_suo_2", "type": "write", "listen": true, "text": "Un {gelato}, per favore.", "translation": "Um gelado, por favor.", "trains": ["skill:suoni"] },
+    { "id": "it_sk_suo_3", "type": "write", "listen": true, "text": "Stasera mangio il {pesce}.", "translation": "Esta noite como peixe.", "trains": ["skill:suoni"] },
+    { "id": "it_sk_suo_4", "type": "write", "listen": true, "text": "Scusi, dov'è il {bagno}?", "translation": "Desculpe, onde é a casa de banho?", "trains": ["skill:suoni"] },
+    { "id": "it_sk_suo_5", "type": "write", "listen": true, "text": "Mia {figlia} è a Lisbona.", "translation": "A minha filha está em Lisboa.", "trains": ["skill:suoni"] },
+    { "id": "it_sk_suo_6", "type": "write", "listen": true, "text": "{Cinque} caffè, per favore.", "translation": "Cinco cafés, por favor.", "trains": ["skill:suoni"] },
+    { "id": "it_sk_suo_7", "type": "choose", "text": "{Che} bello!", "translation": "Que bonito!", "wrong": ["Ke", "Ce"], "learnerNote": "«che» diz-se «ke»: o «h» mantém o «c» duro.", "trains": ["skill:suoni"] },
+    { "id": "it_sk_suo_8", "type": "choose", "text": "Mangiamo gli {spaghetti}.", "translation": "Comemos esparguete.", "wrong": ["spagetti", "spachetti"], "learnerNote": "Sem o «h», «ge» soaria «dje».", "trains": ["skill:suoni"] },
+    { "id": "it_sk_suo_9", "type": "choose", "text": "Vado a {sciare}.", "translation": "Vou esquiar.", "wrong": ["chiare", "siare"], "learnerNote": "O teu «ch» escreve-se «sc» antes de «e» e «i».", "trains": ["skill:suoni"] },
+    { "id": "it_sk_suo_10", "type": "choose", "text": "La mia {famiglia} è grande.", "translation": "A minha família é grande.", "wrong": ["familia", "famillia"], "trains": ["skill:suoni"] }
+  ]
+}
