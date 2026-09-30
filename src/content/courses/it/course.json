@@ -100,5 +100,20 @@
         }
       ]
     }
+  ],
+  "grammarPreview": [
+    {
+      "verb": "essere",
+      "tenses": [
+        "presente",
+        "imperfetto"
+      ]
+    },
+    {
+      "verb": "stare",
+      "tenses": [
+        "presente"
+      ]
+    }
   ]
 }

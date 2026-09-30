@@ -45,7 +45,7 @@ function ReportLink({ report, tone }: { report?: ExerciseReport; tone: string })
         className={`self-start shrink-0 inline-flex items-center gap-1 text-sm font-bold opacity-70 hover:opacity-100 cursor-pointer ${tone}`}
       >
         <Flag size={15} strokeWidth={2.6} />
-        Reportar
+        {ui.feedbackSheet.reportShort}
       </button>
     </>
   );
@@ -98,7 +98,7 @@ export default function FeedbackSheet({
             {ui.answer.dontKnow}
           </button>
           <button type="button" onClick={onCheck} disabled={!canCheck} className="btn-3d btn-primary flex-1 py-4 text-lg">
-            Verificar
+            {ui.common.check}
           </button>
         </div>
       </div>
@@ -130,7 +130,7 @@ export default function FeedbackSheet({
             <ReportLink report={report} tone="text-ok-dark" />
           </div>
           <button type="button" autoFocus onClick={onContinue} className="btn-3d btn-ok w-full py-4 text-lg">
-            Continuar
+            {ui.common.continue}
           </button>
         </div>
       </div>
@@ -159,7 +159,7 @@ export default function FeedbackSheet({
             onClick={onContinue}
             className="btn-3d w-full py-4 text-lg bg-azulejo border-azulejo-dark text-white hover:brightness-110"
           >
-            Continuar
+            {ui.common.continue}
           </button>
         </div>
       </div>

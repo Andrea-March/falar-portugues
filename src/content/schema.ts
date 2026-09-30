@@ -266,5 +266,10 @@ export type Chapter = z.infer<typeof Chapter>;
 
 export const Course = z.strictObject({
   chapters: z.array(Chapter).min(1),
+  /**
+   * Verbi e tempi visibili nella Grammatica fin dall'inizio, anche prima di incontrarli nel percorso
+   * (es. per un test). Gli altri compaiono man mano che si studiano.
+   */
+  grammarPreview: z.array(z.strictObject({ verb: Slug, tenses: z.array(Tense).min(1) })).optional(),
 });
 export type Course = z.infer<typeof Course>;

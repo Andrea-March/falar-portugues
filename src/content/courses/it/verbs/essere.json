@@ -12,6 +12,14 @@
       "noi": "siamo",
       "voi": "siete",
       "loro": "sono"
+    },
+    "imperfetto": {
+      "io": "ero",
+      "tu": "eri",
+      "lui_lei": "era",
+      "noi": "eravamo",
+      "voi": "eravate",
+      "loro": "erano"
     }
   },
   "exercises": [
@@ -33,6 +41,54 @@
       "trains": [
         "verb:essere:presente:tu"
       ]
+    },
+    {
+      "id": "it_essere_v3",
+      "type": "choose",
+      "text": "Da bambina {ero} molto timida.",
+      "translation": "Em criança era muito tímida.",
+      "trains": [
+        "verb:essere:imperfetto:io"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "it_essere_v4",
+      "type": "write",
+      "text": "Dove {eri} ieri sera?",
+      "translation": "Onde estavas ontem à noite?",
+      "trains": [
+        "verb:essere:imperfetto:tu"
+      ]
+    },
+    {
+      "id": "it_essere_v5",
+      "type": "choose",
+      "text": "Il museo {era} chiuso, peccato.",
+      "translation": "O museu estava fechado, que pena.",
+      "trains": [
+        "verb:essere:imperfetto:lui_lei"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "it_essere_v6",
+      "type": "write",
+      "text": "Noi {eravamo} a Roma quando ha nevicato.",
+      "translation": "Nós estávamos em Roma quando nevou.",
+      "trains": [
+        "verb:essere:imperfetto:noi"
+      ]
+    },
+    {
+      "id": "it_essere_v7",
+      "type": "choose",
+      "text": "I ragazzi {erano} stanchi dopo il viaggio.",
+      "translation": "Os rapazes estavam cansados depois da viagem.",
+      "trains": [
+        "verb:essere:imperfetto:loro"
+      ],
+      "wrongFrom": "verb-forms"
     }
   ]
 }

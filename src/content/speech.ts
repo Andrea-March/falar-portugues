@@ -6,6 +6,8 @@
  */
 import {
   chapters,
+  course,
+  getVerb,
   exerciseSentence,
   loadNode,
   PERSON_LABELS,
@@ -72,10 +74,19 @@ export function sessionSpeech(session: Session, node: CourseNode, content: NodeC
  * come nello studio del paradigma). Gli esercizi vengono dai nodi, già inclusi sopra.
  */
 function grammarSpeech(): SpeechItem[] {
-  return verbs.flatMap((v) => [
+  const rows = verbs.flatMap((v) => [
     { text: v.infinitive },
     ...Object.keys(v.conjugations).flatMap((tense) => conjugationRows(v.id, tense).map((r) => ({ text: r.spoken }))),
   ]);
+  // I tempi in anteprima si allenano con le frasi del file del verbo (vedi verbPractice)
+  const preview = (course.grammarPreview ?? []).flatMap(({ verb, tenses }) =>
+    (getVerb(verb)?.exercises ?? [])
+      .filter((ex) => tenses.some((t) => ex.trains.some((tr) => tr.startsWith(`verb:${verb}:${t}:`))))
+      .map((ex) => toRuntimeExercise(ex))
+      .flatMap((ex) => [exerciseSentence(ex), ...(ex.alternatives ?? []).map((a) => exerciseSentence(ex, a))])
+      .map((text) => ({ text }))
+  );
+  return [...rows, ...preview];
 }
 
 /** Tutto il corso (per lo script degli audio) */

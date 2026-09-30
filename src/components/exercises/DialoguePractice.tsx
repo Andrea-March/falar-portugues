@@ -116,7 +116,7 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
           <h2 className="text-2xl font-extrabold">{ui.dialogue.empty}</h2>
           <p className="text-brand-muted font-semibold">{ui.dialogue.emptyHint}</p>
           <button type="button" onClick={() => onFinish({ total: 0, errors: 0, bestCombo: 0 })} className="btn-3d btn-primary px-8 py-3.5 text-lg mt-2">
-            Concluir
+            {ui.lesson.finish}
           </button>
         </div>
       </LessonShell>
@@ -296,7 +296,7 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
       <div className="space-y-2.5 pt-3 pb-2" aria-live="polite">
         <p className="text-center">
           <span className="inline-block rounded-lg bg-brand-background text-brand-muted text-xs font-extrabold uppercase tracking-wide px-2.5 py-1">
-            Hoje
+            {ui.dialogue.today}
           </span>
         </p>
 
@@ -420,7 +420,7 @@ function DraftBubble({ before, after, value, feedback }: { before: string; after
 
 function TypingBubble() {
   return (
-    <div className="flex animate-bubble-in-left" aria-label="A escrever">
+    <div className="flex animate-bubble-in-left" aria-label={ui.dialogue.typing}>
       <div className="bg-white border-2 border-brand-border rounded-2xl rounded-tl-md px-4 py-3.5 flex gap-1.5 shadow-sm">
         {[0, 1, 2].map((i) => (
           <span key={i} className="w-2 h-2 rounded-full bg-brand-muted animate-typing-dot" style={{ animationDelay: `${i * 0.16}s` }} />

@@ -37,7 +37,7 @@ export default function ParadigmReview({ verbId, tense, onClose }: { verbId: str
                 }}
                 className="btn-3d btn-ghost px-5 py-4 text-lg"
               >
-                Voltar
+                {ui.common.back}
               </button>
             )}
             <button

@@ -266,7 +266,7 @@ function LessonFlow({
             <div className="max-w-2xl mx-auto px-5 sm:px-6 py-5 flex gap-3">
               {theoryIndex > 0 && (
                 <button type="button" onClick={() => { soundFX.playClick(); setTheoryIndex((i) => i - 1); }} className="btn-3d btn-ghost px-5 py-4 text-lg">
-                  Voltar
+                  {ui.common.back}
                 </button>
               )}
               <button

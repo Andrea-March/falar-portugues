@@ -10,15 +10,21 @@ import { ui } from '@/content';
 
 interface VerbStudyProps {
   verb: StudiedVerb;
+  /** Tempo da aprire (es. quello trovato con la ricerca); altrimenti il primo */
+  initialTense?: string;
+  /** Righe da evidenziare in quel tempo (es. "eravamo" → noi) */
+  highlight?: { tense: string; persons: string[] };
   onBack: () => void;
   onStudy: (tense: string) => void;
   onPractice: (tense: string) => void;
 }
 
 /** Scheda di un verbo studiato: tabella da ascoltare, ripasso passo passo e pratica */
-export default function VerbStudy({ verb, onBack, onStudy, onPractice }: VerbStudyProps) {
-  const [tense, setTense] = useState(verb.tenses[0]);
+export default function VerbStudy({ verb, initialTense, highlight, onBack, onStudy, onPractice }: VerbStudyProps) {
+  const [tense, setTense] = useState(initialTense && verb.tenses.includes(initialTense) ? initialTense : verb.tenses[0]);
   const rows = conjugationRows(verb.verbId, tense);
+  const marked = highlight?.tense === tense ? highlight.persons : [];
+  const isPreview = verb.previewTenses.includes(tense);
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -31,7 +37,7 @@ export default function VerbStudy({ verb, onBack, onStudy, onPractice }: VerbStu
         className="flex items-center gap-1.5 font-extrabold text-brand-muted hover:text-ink transition-colors"
       >
         <ArrowLeft size={20} strokeWidth={2.8} />
-        Gramática
+        {ui.grammar.title}
       </button>
 
       <div className="rounded-3xl border-2 border-b-[6px] border-brand-border bg-white p-5 space-y-4">
@@ -75,24 +81,32 @@ export default function VerbStudy({ verb, onBack, onStudy, onPractice }: VerbStu
           <p className="inline-block rounded-full bg-azulejo-light text-azulejo-dark font-extrabold px-3 py-0.5">{tenseLabel(tense)}</p>
         )}
 
-        {/* Ogni riga si ascolta toccandola */}
+        {isPreview && <p className="text-sm font-semibold text-brand-muted">{ui.grammar.previewNote}</p>}
+
+        {/* Ogni riga si ascolta toccandola; quelle trovate con la ricerca sono evidenziate */}
         <div className="rounded-3xl border-2 border-azulejo/25 bg-azulejo-light p-3">
           <div className="grid gap-2">
-            {rows.map((row) => (
+            {rows.map((row) => {
+              const isMarked = marked.includes(row.person);
+              return (
               <button
                 key={row.person}
                 type="button"
                 onClick={() => speakTarget(row.spoken)}
                 aria-label={ui.lesson.listenTo(`${row.pronoun} ${row.verb}`)}
-                className="btn-3d !justify-between bg-white border-2 border-azulejo/20 !border-b-4 px-4 py-3 text-left"
+                aria-current={isMarked ? 'true' : undefined}
+                className={`btn-3d !justify-between border-2 !border-b-4 px-4 py-3 text-left ${
+                  isMarked ? 'bg-brand-accentLight border-brand-accentHover' : 'bg-white border-azulejo/20'
+                }`}
               >
-                <span className="text-brand-muted font-bold">{row.pronoun}</span>
+                <span className={`font-bold ${isMarked ? 'text-brand-accentDark' : 'text-brand-muted'}`}>{row.pronoun}</span>
                 <span className="flex items-center gap-2 text-azulejo-dark font-extrabold text-lg">
                   {row.verb}
                   <Volume2 size={16} strokeWidth={2.6} className="opacity-50" aria-hidden="true" />
                 </span>
               </button>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -105,7 +119,7 @@ export default function VerbStudy({ verb, onBack, onStudy, onPractice }: VerbStu
             }}
             className="btn-3d w-full py-3.5 text-lg bg-white border-2 border-azulejo/40 text-azulejo-dark"
           >
-            📖 Ripassa passo passo
+            {ui.grammar.studyStepByStep}
           </button>
           <button
             type="button"
@@ -115,7 +129,7 @@ export default function VerbStudy({ verb, onBack, onStudy, onPractice }: VerbStu
             }}
             className="btn-3d w-full py-3.5 text-lg bg-brand-primary border-brand-dark text-white"
           >
-            ✏️ Allenati
+            {ui.grammar.practice}
           </button>
         </div>
       </div>

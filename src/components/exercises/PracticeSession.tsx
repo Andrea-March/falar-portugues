@@ -69,7 +69,7 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
           <h2 className="text-2xl font-extrabold">{ui.lesson.noExercises}</h2>
           <p className="text-brand-muted font-semibold">{ui.dialogue.emptyHint}</p>
           <button type="button" onClick={() => onFinish({ total: 0, errors: 0, bestCombo: 0 })} className="btn-3d btn-primary px-8 py-3.5 text-lg mt-2">
-            Concluir
+            {ui.lesson.finish}
           </button>
         </div>
       </LessonShell>

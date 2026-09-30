@@ -275,6 +275,11 @@ if (course) {
   for (const [id, { file }] of nodes) {
     if (!seen.has(id)) fail(file, `la lezione non è inserita in nessun capitolo di course.json`);
   }
+  for (const { verb, tenses } of course.grammarPreview ?? []) {
+    const v = verbs.get(verb)?.data;
+    if (!v) fail(courseFile, `grammarPreview: il verbo "${verb}" non esiste`);
+    else tenses.filter((t) => !v.conjugations[t]).forEach((t) => fail(courseFile, `grammarPreview: il verbo "${verb}" non ha il tempo "${t}"`));
+  }
 }
 
 // ---------- Esito ----------

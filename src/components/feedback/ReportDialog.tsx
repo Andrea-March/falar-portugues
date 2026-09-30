@@ -86,7 +86,7 @@ export default function ReportDialog({ report, onClose }: { report: ExerciseRepo
       <TrapField value={trap} onChange={setTrap} />
 
       <p className="mt-2 text-sm font-semibold text-brand-muted">
-        Inviamo anche l&apos;esercizio, la tua risposta e la versione dell&apos;app, così lo troviamo subito.
+        {ui.report.includes}
       </p>
 
       <button type="button" disabled={!canSend} onClick={submit} className="btn-3d btn-primary w-full py-3.5 text-lg mt-4">

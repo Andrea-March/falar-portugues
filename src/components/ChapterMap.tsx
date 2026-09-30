@@ -119,7 +119,7 @@ function DraggableMascot({ onRight }: { onRight: boolean }) {
     <div
       data-node-ui
       role="img"
-      aria-label="O galo"
+      aria-label={ui.mascot}
       className={`absolute top-1/2 touch-none select-none ${onRight ? 'left-full ml-4' : 'right-full mr-4'} ${
         state === 'grabbed' ? 'cursor-grabbing' : 'cursor-grab'
       }`}

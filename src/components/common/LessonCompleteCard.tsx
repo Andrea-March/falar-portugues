@@ -95,7 +95,7 @@ export default function LessonCompleteCard({ title, xpEarned = 15, accuracy, not
             }}
             className="btn-3d btn-primary w-full py-4 text-lg"
           >
-            Continuar
+            {ui.common.continue}
           </button>
         </div>
       </div>
