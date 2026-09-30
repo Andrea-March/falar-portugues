@@ -6,7 +6,8 @@
  */
 import type { CourseNode, NodeContent } from './schema';
 import type { Exercise as RuntimeExercise } from '@/types/exercise';
-import { chapters, loadNode, toRuntimeExercise } from './index';
+import { chapters, courseConfig, loadNode, toRuntimeExercise } from './index';
+import { DOUBLES_SKILL, hasDoubleConsonant } from '@/utils/answerCheck';
 
 export interface ReviewItem {
   /** Casella: 0 = appena sbagliata, poi sale a ogni risposta giusta */
@@ -58,7 +59,9 @@ export async function reviewExercises(state: ReviewState, sessionProgress: Recor
   const byRef = new Map<string, NodeContent['exercises']>();
   started.forEach((node: CourseNode, i) => {
     for (const ex of contents[i]?.exercises ?? []) {
-      for (const ref of ex.trains) byRef.set(ref, [...(byRef.get(ref) ?? []), ex]);
+      // Le doppie si allenano con qualunque frase la cui risposta ne contiene una
+      const doubles = courseConfig.doubleConsonants && hasDoubleConsonant(ex.text.match(/\{([^}]+)\}/)?.[1] ?? '');
+      for (const ref of doubles ? [...ex.trains, DOUBLES_SKILL] : ex.trains) byRef.set(ref, [...(byRef.get(ref) ?? []), ex]);
     }
   });
 
@@ -75,7 +78,8 @@ export async function reviewExercises(state: ReviewState, sessionProgress: Recor
     chosen.add(ex.id);
     const i = out.length;
     // Alterna com'è scritto (spesso scelta) e da scrivere; circa 1 su 3 diventa di ascolto
-    const runtime = toRuntimeExercise(ex, { typed: i % 2 === 1 });
+    // I punti difficili (skill:…) si allenano scrivendo: scegliendo, la doppia la si vede già
+    const runtime = toRuntimeExercise(ex, { typed: i % 2 === 1 || ref.startsWith('skill:') });
     out.push(i % 3 === 2 ? { ...runtime, listening: true } : runtime);
   }
   return out;

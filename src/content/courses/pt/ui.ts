@@ -186,6 +186,7 @@ export const ui = {
     yourAnswer: 'A tua resposta',
     placeholder: 'Escreve a palavra que falta',
     specialChars: 'Caracteres especiais',
+    doublesNote: (answer: string) => `Attenzione alle doppie: si scrive «${answer}».`,
     accentHint: 'Quase! Confere os acentos',
     dontKnow: 'Não sei',
     listenAndWrite: 'Ouve e escreve',

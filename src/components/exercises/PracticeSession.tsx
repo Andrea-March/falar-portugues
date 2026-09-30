@@ -3,14 +3,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { soundFX } from '@/utils/sound';
 import { speakTarget, stopSpeaking } from '@/utils/textToSpeech';
-import { matchAnswerAny } from '@/utils/answerCheck';
+import { matchAnswerAny, isDoublesSlip, hasDoubleConsonant, DOUBLES_SKILL } from '@/utils/answerCheck';
 import { useUser } from '@/context/UserContext';
 import { Exercise } from '@/types/exercise';
 import LessonShell from '@/components/common/LessonShell';
 import Mascot from '@/components/common/Mascot';
 import ExerciseRenderer from './ExerciseRenderer';
 import FeedbackSheet from './FeedbackSheet';
-import { ui } from '@/content';
+import { courseConfig, ui } from '@/content';
 
 /**
  * idle     → l'utente sta rispondendo
@@ -42,6 +42,8 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
   const [answer, setAnswer] = useState('');
   const [feedback, setFeedback] = useState<Feedback>('idle');
   const [accentHint, setAccentHint] = useState(false);
+  /** Nota sulle doppie dopo un errore di sola doppia (caro/carro) */
+  const [doublesNote, setDoublesNote] = useState<string | null>(null);
   /** Risposta riconosciuta (può essere un'alternativa, es. "Obrigada") */
   const [matched, setMatched] = useState<string | null>(null);
   const [errorCount, setErrorCount] = useState(0);
@@ -81,9 +83,9 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
     isChoice ? exercise.sentence.replace(/_{3,}/, answerText) : `${exercise.sentenceBefore}${answerText}${exercise.sentenceAfter}`;
   const fullSentence = sentenceWith(matched ?? exercise.correctAnswer);
 
-  const countError = () => {
+  const countError = (skills: string[] = []) => {
     if (!failedCurrent) {
-      recordAnswer(exercise.trains, false);
+      recordAnswer([...(exercise.trains ?? []), ...skills], false);
       setErrorCount((n) => n + 1);
       setFailedCurrent(true);
     }
@@ -95,7 +97,9 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
   };
 
   const markCorrect = (match: string) => {
-    if (!failedCurrent) recordAnswer(exercise.trains, true);
+    // Una doppia scritta giusta (non scelta) conta come allenamento delle doppie
+    const doubles = courseConfig.doubleConsonants && !isChoice && hasDoubleConsonant(match);
+    if (!failedCurrent) recordAnswer([...(exercise.trains ?? []), ...(doubles ? [DOUBLES_SKILL] : [])], true);
     const newCombo = failedCurrent ? 0 : combo + 1;
     setCombo(newCombo);
     setBestCombo((b) => Math.max(b, newCombo));
@@ -105,11 +109,13 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
     speakLater(sentenceWith(match));
   };
 
-  const markWrong = () => {
+  /** `doublesOf`: la risposta giusta, se l'errore è solo una doppia */
+  const markWrong = (doublesOf?: string) => {
     setFeedback('wrong');
     soundFX.playError();
     setCombo(0);
-    countError();
+    setDoublesNote(doublesOf ? ui.answer.doublesNote(doublesOf) : null);
+    countError(doublesOf ? [DOUBLES_SKILL] : []);
   };
 
   const reveal = () => {
@@ -123,7 +129,8 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
 
   /** Valuta una risposta; `explicit` = l'utente ha premuto Verificar/Invio */
   const evaluate = (value: string, explicit: boolean) => {
-    const { result, match } = matchAnswerAny(value, [exercise.correctAnswer, ...(exercise.alternatives ?? [])]);
+    const answers = [exercise.correctAnswer, ...(exercise.alternatives ?? [])];
+    const { result, match } = matchAnswerAny(value, answers);
     if (result === 'exact') {
       setMatched(match);
       return markCorrect(match);
@@ -133,7 +140,7 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
       setAccentHint(true);
       soundFX.playClick();
     } else {
-      markWrong();
+      markWrong(courseConfig.doubleConsonants ? answers.find((a) => isDoublesSlip(value, a)) : undefined);
     }
   };
 
@@ -160,6 +167,7 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
       setFeedback('idle');
       setAccentHint(false);
       setMatched(null);
+      setDoublesNote(null);
       setFailedCurrent(false);
     } else {
       onFinish({ total: exercises.length, errors: errorCount, bestCombo });
@@ -170,6 +178,7 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
     soundFX.playClick();
     // Nella scrittura si tiene quello che si è scritto, così si corregge senza ricominciare
     if (isChoice) setAnswer('');
+    setDoublesNote(null);
     setFeedback('idle');
   };
 
@@ -188,7 +197,7 @@ export default function PracticeSession({ exercises, onFinish, onClose }: Practi
           canCheck={answer.trim().length > 0}
           correctAnswer={exercise.correctAnswer}
           sentence={fullSentence}
-          learnerNote={exercise.learnerNote}
+          learnerNote={doublesNote ?? exercise.learnerNote}
           report={{ exerciseId: exercise.id, sentence: fullSentence, correctAnswer: exercise.correctAnswer, answer }}
           onCheck={() => evaluate(answer, true)}
           onDontKnow={reveal}

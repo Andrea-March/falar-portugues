@@ -37,10 +37,11 @@ export const AnswerText = z
  * Cosa allena un esercizio, per il ripasso futuro:
  *   "verb:ser:presente:eu"  → una forma verbale
  *   "vocab:bom-dia"         → una voce del vocabolario
+ *   "skill:doppie"          → un punto difficile (pronuncia, ortografia, grammatica)
  */
 export const TrainsRef = z
   .string()
-  .regex(/^(verb:[a-z_]+:[a-z_]+:[a-z_]+|vocab:[a-z0-9-]+)$/, 'formato "verb:ser:presente:eu" o "vocab:bom-dia"');
+  .regex(/^(verb:[a-z_]+:[a-z_]+:[a-z_]+|vocab:[a-z0-9-]+|skill:[a-z0-9-]+)$/, 'formato "verb:ser:presente:eu", "vocab:bom-dia" o "skill:doppie"');
 
 // ---------- Esercizi ----------
 

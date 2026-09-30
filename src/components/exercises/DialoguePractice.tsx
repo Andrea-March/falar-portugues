@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CheckCheck, Languages, SendHorizontal, Turtle, Volume2 } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
 import { estimateSpeechMs, speakTarget, stopSpeaking } from '@/utils/textToSpeech';
-import { matchAnswerAny, accentMistakes } from '@/utils/answerCheck';
+import { matchAnswerAny, accentMistakes, isDoublesSlip, hasDoubleConsonant, DOUBLES_SKILL } from '@/utils/answerCheck';
 import { useUser } from '@/context/UserContext';
 import type { Exercise, MultipleChoiceExercise } from '@/types/exercise';
 import type { Speaker } from '@/content';
@@ -62,6 +62,8 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
   const [answer, setAnswer] = useState('');
   const [feedback, setFeedback] = useState<Feedback>('idle');
   const [accentHint, setAccentHint] = useState(false);
+  /** Nota sulle doppie dopo un errore di sola doppia (caro/carro) */
+  const [doublesNote, setDoublesNote] = useState<string | null>(null);
   /** Risposta riconosciuta (può essere un'alternativa, es. "Obrigada") */
   const [matched, setMatched] = useState<string | null>(null);
   const [combo, setCombo] = useState(0);
@@ -147,6 +149,7 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
     setFeedback('idle');
     setAccentHint(false);
     setMatched(null);
+    setDoublesNote(null);
     setPhase(exercises[nextIndex].context ? 'typing' : 'answering');
   };
 
@@ -156,16 +159,18 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
     setPhase('sent');
   };
 
-  const countError = () => {
+  const countError = (skills: string[] = []) => {
     if (!stats.current.failedCurrent) {
-      recordAnswer(exercise.trains, false);
+      recordAnswer([...(exercise.trains ?? []), ...skills], false);
       stats.current.errors += 1;
       stats.current.failedCurrent = true;
     }
   };
 
   const markCorrect = (match: string) => {
-    if (!stats.current.failedCurrent) recordAnswer(exercise.trains, true);
+    // Una doppia scritta giusta (non scelta) conta come allenamento delle doppie
+    const doubles = courseConfig.doubleConsonants && !isChoice && hasDoubleConsonant(match);
+    if (!stats.current.failedCurrent) recordAnswer([...(exercise.trains ?? []), ...(doubles ? [DOUBLES_SKILL] : [])], true);
     const sentence = sentenceWith(match);
     const newCombo = stats.current.failedCurrent ? 0 : combo + 1;
     stats.current.bestCombo = Math.max(stats.current.bestCombo, newCombo);
@@ -189,11 +194,13 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
     }, SPEAK_DELAY_MS);
   };
 
-  const markWrong = () => {
+  /** `doublesOf`: la risposta giusta, se l'errore è solo una doppia */
+  const markWrong = (doublesOf?: string) => {
     setFeedback('wrong');
     soundFX.playError();
     setCombo(0);
-    countError();
+    setDoublesNote(doublesOf ? ui.answer.doublesNote(doublesOf) : null);
+    countError(doublesOf ? [DOUBLES_SKILL] : []);
   };
 
   const reveal = () => {
@@ -217,11 +224,13 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
   const retry = () => {
     soundFX.playClick();
     if (isChoice) setAnswer('');
+    setDoublesNote(null);
     setFeedback('idle');
   };
 
   const evaluate = (value: string, explicit: boolean) => {
-    const { result, match } = matchAnswerAny(value, [exercise.correctAnswer, ...(exercise.alternatives ?? [])]);
+    const answers = [exercise.correctAnswer, ...(exercise.alternatives ?? [])];
+    const { result, match } = matchAnswerAny(value, answers);
     if (result === 'exact') {
       setMatched(match);
       return markCorrect(match);
@@ -231,7 +240,7 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
       setAccentHint(true);
       soundFX.playClick();
     } else {
-      markWrong();
+      markWrong(courseConfig.doubleConsonants ? answers.find((a) => isDoublesSlip(value, a)) : undefined);
     }
   };
 
@@ -266,7 +275,7 @@ export default function DialoguePractice({ exercises, speaker = DEFAULT_SPEAKER,
             canCheck={answer.trim().length > 0}
             correctAnswer={exercise.correctAnswer}
             sentence={fullSentence}
-            learnerNote={exercise.learnerNote}
+            learnerNote={doublesNote ?? exercise.learnerNote}
             report={{ exerciseId: exercise.id, sentence: fullSentence, correctAnswer: exercise.correctAnswer, answer }}
             onCheck={() => evaluate(answer, true)}
             onDontKnow={reveal}

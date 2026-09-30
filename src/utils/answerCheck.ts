@@ -20,6 +20,28 @@ export function matchAnswer(input: string, correct: string): AnswerMatch {
 }
 
 /**
+ * Doppie. In italiano una consonante doppia cambia la parola (caro/carro), e chi parla
+ * portoghese tende a scriverne una sola perché non le sente. "cq" vale come doppia di "q" (acqua).
+ */
+const collapseDoubles = (s: string) => s.replace(/([bcdfglmnprstvz])\1/g, '$1').replace(/cq/g, 'q');
+
+/** La risposta contiene almeno una doppia (serve per allenare le doppie nel ripasso) */
+export const hasDoubleConsonant = (s: string) => /([bcdfglmnprstvz])\1|cq/.test(normalizeAnswer(s));
+
+/**
+ * Errore sulle doppie: la risposta è giusta se si ignorano accenti e doppie, ma sbagliata
+ * così com'è (una doppia mancante o di troppo). Resta un errore, con una nota apposta.
+ */
+export function isDoublesSlip(input: string, correct: string): boolean {
+  const a = stripAccents(normalizeAnswer(input));
+  const b = stripAccents(normalizeAnswer(correct));
+  return a !== b && collapseDoubles(a) === collapseDoubles(b);
+}
+
+/** Cosa allenata "doppie", registrata nel ripasso accanto ai trains dell'esercizio */
+export const DOUBLES_SKILL = 'skill:doppie';
+
+/**
  * Posizioni delle lettere con accento sbagliato o mancante, calcolate sulla
  * risposta dell'utente senza spazi iniziali/finali. Ha senso nel caso "accents",
  * dove le due parole hanno la stessa lunghezza.

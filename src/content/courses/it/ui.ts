@@ -189,6 +189,7 @@ export const ui: UiStrings = {
     placeholder: 'Scrivi la parola che manca',
     specialChars: 'Caratteri speciali',
     accentHint: 'Quase! Confere os acentos',
+    doublesNote: (answer: string) => `Atenção às consoantes duplas: escreve-se «${answer}». Em italiano a dupla ouve-se, é mais longa, e muda o sentido (caro/carro).`,
     dontKnow: 'Non lo so',
     listenAndWrite: 'Ascolta e scrivi',
     writeInTarget: 'Scrivi in italiano',
