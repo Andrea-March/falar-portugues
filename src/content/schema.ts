@@ -65,6 +65,11 @@ const ExerciseBase = {
   /** Nota per chi impara, mostrata dopo un errore (se manca, si usa quella della voce allenata) */
   learnerNote: LearnerNote.optional(),
   trains: z.array(TrainsRef).min(1, 'indica almeno una cosa allenata (verb:… o vocab:…)'),
+  /**
+   * Esercizio di ascolto: si sente la frase e la traduzione resta nascosta.
+   * Con "choose" è una coppia minima (Ho detto {carro} / caro), con "write" un dettato.
+   */
+  listen: z.literal(true).optional(),
 };
 
 /** L'utente scrive la risposta */
@@ -180,6 +185,30 @@ export const NodeContent = z.strictObject({
    * nella stessa situazione, così il test non si supera ricordando quella di Produção.
    * Riusa le espressioni di tutto il capitolo. Si scrive tutto, senza traduzioni.
    */
+  /**
+   * Solo nodi "dialogue", nei corsi con listeningSession: la sessione Ascolto, la prima del nodo.
+   * Si sente tutta la conversazione (le battute di "exercises", in ordine) senza testo,
+   * poi 2–4 domande di comprensione sul senso generale, poi il testo si svela.
+   */
+  listening: z
+    .strictObject({
+      /** La situazione, prima di ascoltare (lingua di chi impara), es. "A Ines entra num café." */
+      intro: NonEmpty.optional(),
+      questions: z
+        .array(
+          z.strictObject({
+            /** Domanda nella lingua di chi impara */
+            question: NonEmpty,
+            answer: NonEmpty,
+            wrong: z.array(NonEmpty).min(1).max(3),
+            /** Mostrata dopo la risposta, es. dove si sente nella conversazione */
+            note: LearnerNote.optional(),
+          })
+        )
+        .min(2)
+        .max(4),
+    })
+    .optional(),
   test: z
     .strictObject({
       /** Interlocutore, se diverso da quello del nodo */
@@ -206,6 +235,57 @@ export const Verb = z.strictObject({
   exercises: z.array(Exercise),
 });
 export type Verb = z.infer<typeof Verb>;
+
+// ---------- File: un punto difficile (courses/<corso>/skills/<id>.json) ----------
+
+/**
+ * Punto difficile per chi parla la lingua di partenza (doppie, pronomi…): spiegazione
+ * contrastiva e palestra di esercizi, nella tab "Punti difficili" della Grammatica.
+ * Ogni esercizio allena "skill:<id>"; gli errori su quella skill la fanno salire nella lista.
+ */
+export const Skill = z.strictObject({
+  id: Slug,
+  title: NonEmpty,
+  /** Una riga sotto il titolo, nella lingua di chi impara */
+  subtitle: NonEmpty,
+  /** Un'emoji */
+  icon: NonEmpty,
+  /** Schede di spiegazione (niente paradigmi né studio del vocabolario) */
+  theory: z.array(TheoryCard).min(1),
+  exercises: z.array(Exercise).min(4),
+});
+export type Skill = z.infer<typeof Skill>;
+
+// ---------- File: una registrazione (courses/<corso>/recordings/<id>.json) ----------
+
+/**
+ * Registrazione vera (voce umana) per la tab Ascolto. L'audio sta in
+ * public/recordings/<corso>/<file>; il testo è diviso in frasi con la traduzione.
+ * "at" (secondi dall'inizio) è facoltativo: se c'è in tutte le frasi, la frase che si
+ * sta ascoltando si evidenzia e toccandone una si salta lì.
+ */
+export const Recording = z.strictObject({
+  id: Slug,
+  title: NonEmpty,
+  /** Una riga sotto il titolo, nella lingua di chi impara */
+  subtitle: NonEmpty,
+  /** Per quando è adatta, es. "Depois do capítulo 2" */
+  level: NonEmpty.optional(),
+  /** Nome del file audio in public/recordings/<corso>/ */
+  file: z.string().regex(/^[a-z0-9_-]+\.(mp3|m4a)$/, 'es. "un-caffe-al-volo.mp3" (mp3 o m4a, minuscole)'),
+  /** In preparazione: non compare nell'app e l'audio può ancora mancare */
+  draft: z.boolean().optional(),
+  segments: z
+    .array(
+      z.strictObject({
+        text: NonEmpty,
+        translation: NonEmpty,
+        at: z.number().nonnegative().optional(),
+      })
+    )
+    .min(1),
+});
+export type Recording = z.infer<typeof Recording>;
 
 // ---------- File: un gruppo di vocaboli (courses/<corso>/vocab/<id>.json) ----------
 

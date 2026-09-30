@@ -509,6 +509,8 @@ export default function ChapterMap({
 /**
  * Sessioni del nodo nel fumetto: quelle fatte si possono ripetere, la prossima
  * ha il pulsante principale, le successive restano chiuse.
+ * "Salta al test": chi conosce già il contenuto fa subito il test finale; se lo supera
+ * il nodo è completato (è l'ultima sessione), se no resta dov'era.
  */
 function SessionList({
   node,
@@ -523,6 +525,8 @@ function SessionList({
 }) {
   const list = sessionsFor(node);
   const next = list[done];
+  const testIndex = list.findIndex((s) => s.kind === 'test');
+  const canSkip = !completed && node.kind !== 'checkpoint' && testIndex > done;
 
   return (
     <div className="mt-3 space-y-3">
@@ -573,6 +577,19 @@ function SessionList({
         >
           {done === 0 ? ui.common.start : ui.common.continue}: {sessionName(next)}
         </button>
+      )}
+
+      {canSkip && (
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={() => onStart(list[testIndex])}
+            className="font-extrabold underline underline-offset-4 decoration-2 decoration-white/60 hover:decoration-white cursor-pointer"
+          >
+            {ui.map.skipToTest}
+          </button>
+          <p className="text-sm font-semibold opacity-85 leading-snug mt-0.5">{ui.map.skipHint}</p>
+        </div>
       )}
     </div>
   );

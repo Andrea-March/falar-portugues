@@ -10,6 +10,7 @@ import { dayKey } from '@/content/rewards';
 import { useUser } from '@/context/UserContext';
 import Mascot from '@/components/common/Mascot';
 import GrammarHub from '@/components/GrammarHub';
+import ListenHub from '@/components/ListenHub';
 import LessonScreen from '@/components/LessonScreen';
 import ReviewScreen from '@/components/ReviewScreen';
 import { dueRefs } from '@/content/review';
@@ -83,6 +84,12 @@ export default function Home() {
               currentNodeId={progress.currentNodeId}
               onSelectSession={(node, session) => setActive({ node, session })}
             />
+          </div>
+        )}
+
+        {activeTab === 'listen' && (
+          <div className="animate-fade-in">
+            <ListenHub />
           </div>
         )}
 

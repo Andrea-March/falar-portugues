@@ -8,6 +8,7 @@ import type { CourseNode, NodeContent } from './schema';
 import type { Exercise as RuntimeExercise } from '@/types/exercise';
 import { chapters, courseConfig, loadNode, toRuntimeExercise } from './index';
 import { DOUBLES_SKILL, hasDoubleConsonant } from '@/utils/answerCheck';
+import { skillList } from './registry.generated';
 
 export interface ReviewItem {
   /** Casella: 0 = appena sbagliata, poi sale a ogni risposta giusta */
@@ -64,6 +65,12 @@ export async function reviewExercises(state: ReviewState, sessionProgress: Recor
       for (const ref of doubles ? [...ex.trains, DOUBLES_SKILL] : ex.trains) byRef.set(ref, [...(byRef.get(ref) ?? []), ex]);
     }
   });
+
+  // I punti difficili si ripassano anche con i loro esercizi (coppie minime, dettati)
+  for (const skill of skillList) {
+    const ref = `skill:${skill.id}`;
+    byRef.set(ref, [...(byRef.get(ref) ?? []), ...skill.exercises]);
+  }
 
   // Prima ciò che è in scadenza, poi (per arrivare a una sessione piena) ciò che scade prima
   const due = dueRefs(state);

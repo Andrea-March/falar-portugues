@@ -164,6 +164,7 @@ export function toRuntimeExercise(ex: ContentExercise, opts: { typed?: boolean; 
     alternatives: ex.accept,
     trains: ex.trains,
     learnerNote: ex.learnerNote ?? learnerNoteFromTrains(ex.trains),
+    listening: ex.listen,
   };
 
   if (typed) {
@@ -354,6 +355,10 @@ export interface Session {
 export function sessionsFor(node: CourseNode): Session[] {
   if (node.kind === 'checkpoint') return [{ kind: 'test' }];
   if (node.kind === 'culture') return [{ kind: 'discovery' }, { kind: 'guided' }];
+  // Conversazioni: prima si ascolta, senza testo (se il corso lo prevede)
+  if (node.kind === 'dialogue' && courseConfig.listeningSession) {
+    return [{ kind: 'listening' }, { kind: 'discovery' }, { kind: 'guided' }, { kind: 'production' }, { kind: 'test' }];
+  }
   // Nodi di frasi: poche espressioni alla volta, ognuna subito praticata
   const learn: Session[] =
     node.kind === 'vocab'
@@ -499,7 +504,7 @@ export const CHECKPOINT_PER_NODE = 3;
  * Nelle conversazioni l'ordine resta quello del dialogo.
  */
 export function sessionPool(kind: SessionKind, node: CourseNode, content: NodeContent): RuntimeExercise[] {
-  if (kind === 'discovery') return [];
+  if (kind === 'discovery' || kind === 'listening') return [];
   // Nella conversazione l'ordine dei turni è fisso, quindi in Prática sono tutti a scelta:
   // così non si scrive prima di aver scelto (la scrittura arriva in Produção)
   if (kind === 'guided') return content.exercises.map((ex) => toRuntimeExercise(ex, { choice: node.kind === 'dialogue' }));
@@ -508,6 +513,23 @@ export function sessionPool(kind: SessionKind, node: CourseNode, content: NodeCo
   const typed = source.map((ex) => toRuntimeExercise(ex, { typed: true }));
   if (node.kind === 'dialogue') return typed;
   return [...typed, ...generatedExercises(content.theory ?? [])];
+}
+
+/** Una battuta della conversazione da ascoltare: chi parla, cosa dice, con quale voce */
+export interface DialogueLine {
+  me: boolean;
+  text: string;
+  translation?: string;
+  voice?: string;
+}
+
+/** Tutta la conversazione del nodo, in ordine: battuta dell'altra persona, poi la risposta */
+export function dialogueLines(content: NodeContent): DialogueLine[] {
+  return content.exercises.flatMap((ex) => {
+    const rt = toRuntimeExercise(ex, { typed: true });
+    const other: DialogueLine[] = ex.context ? [{ me: false, text: ex.context, translation: ex.contextTranslation, voice: content.speaker?.voice }] : [];
+    return [...other, { me: true, text: exerciseSentence(rt), translation: ex.translation }];
+  });
 }
 
 /** Interlocutore di una sessione di conversazione: il test può averne uno diverso */

@@ -1,0 +1,21 @@
+{
+  "id": "un-caffe-al-volo",
+  "title": "Un caffè al volo",
+  "subtitle": "A manhã do Andrea no café por baixo de casa",
+  "level": "Depois do capítulo 2",
+  "file": "un-caffe-al-volo.mp3",
+  "segments": [
+    { "text": "Buongiorno! Mi chiamo Andrea e sono di Firenze.", "translation": "Bom dia! Chamo-me Andrea e sou de Florença.", "at": 0 },
+    { "text": "Ogni mattina, prima del lavoro, vado al bar sotto casa.", "translation": "Todas as manhãs, antes do trabalho, vou ao café por baixo de casa.", "at": 4.09 },
+    { "text": "Il bar è piccolo, ma è sempre pieno.", "translation": "O café é pequeno, mas está sempre cheio.", "at": 8.27 },
+    { "text": "Il barista si chiama Paolo. È simpatico e parla tantissimo.", "translation": "O barista chama-se Paolo. É simpático e fala imenso.", "at": 10.67 },
+    { "text": "Quando entro, mi dice: «Ciao Andrea! Come stai?»", "translation": "Quando entro, diz-me: «Olá Andrea! Como estás?»", "at": 15.31 },
+    { "text": "E io rispondo: «Sto bene, grazie. E tu?»", "translation": "E eu respondo: «Estou bem, obrigado. E tu?»", "at": 18.57 },
+    { "text": "Poi ordino sempre la stessa cosa: un caffè e un cornetto alla crema.", "translation": "Depois peço sempre a mesma coisa: um café e um croissant de creme.", "at": 21.61 },
+    { "text": "In Italia il caffè si beve al banco, in piedi, in due minuti.", "translation": "Em Itália o café bebe-se ao balcão, de pé, em dois minutos.", "at": 26.49 },
+    { "text": "Costa poco: un euro e venti.", "translation": "Custa pouco: um euro e vinte.", "at": 30.91 },
+    { "text": "Il cappuccino, invece, si prende solo la mattina. Dopo pranzo, mai!", "translation": "O cappuccino, pelo contrário, só se toma de manhã. Depois do almoço, nunca!", "at": 33.27 },
+    { "text": "Il bar è in centro, vicino al Duomo, e ci sono sempre tanti turisti.", "translation": "O café fica no centro, perto do Duomo, e há sempre muitos turistas.", "at": 39.05 },
+    { "text": "Alle otto e mezza pago, saluto tutti e dico: «Grazie, a domani!»", "translation": "Às oito e meia pago, despeço-me de toda a gente e digo: «Obrigado, até amanhã!»", "at": 43.63 }
+  ]
+}

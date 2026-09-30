@@ -43,6 +43,11 @@ export interface CourseConfig {
    * "skill:doppie" nel ripasso. Per chi impara l'italiano partendo dal portoghese.
    */
   doubleConsonants?: boolean;
+  /**
+   * Sessione Ascolto all'inizio dei nodi conversazione: il dialogo senza testo e
+   * domande di comprensione. Richiede "listening" nel JSON di ogni nodo dialogue.
+   */
+  listeningSession?: boolean;
   /** Bandierina delle note per chi impara, es. "🇮🇹" */
   learnerFlag: string;
   /** Nomi dei tempi verbali */

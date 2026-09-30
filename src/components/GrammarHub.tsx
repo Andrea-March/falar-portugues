@@ -14,6 +14,8 @@ import VerbStudy from './VerbStudy';
 import ParadigmReview from './theory/ParadigmReview';
 import PracticeSession, { type PracticeStats } from './exercises/PracticeSession';
 import LessonCompleteCard from './common/LessonCompleteCard';
+import SkillStudy, { SkillList } from './SkillStudy';
+import { skillPractice, skillStatuses, getSkill } from '@/content/skills';
 import { ui } from '@/content';
 
 type View =
@@ -21,7 +23,13 @@ type View =
   | { kind: 'verb'; verb: StudiedVerb; tense?: string; highlight?: VerbHighlight }
   | { kind: 'paradigm'; verb: StudiedVerb; tense: string }
   | { kind: 'practice'; verb: StudiedVerb; tense: string; exercises: Exercise[] }
-  | { kind: 'done'; verb: StudiedVerb; tense: string; accuracy: number; bestCombo: number; xp: number };
+  | { kind: 'done'; verb: StudiedVerb; tense: string; accuracy: number; bestCombo: number; xp: number }
+  | { kind: 'skill'; skillId: string }
+  | { kind: 'skill-practice'; skillId: string; exercises: Exercise[] }
+  | { kind: 'skill-done'; skillId: string; accuracy: number; bestCombo: number; xp: number };
+
+/** Le due sezioni della Grammatica */
+type Section = 'verbs' | 'skills';
 
 type VerbHighlight = { tense: string; persons: string[] };
 
@@ -37,6 +45,8 @@ export default function GrammarHub() {
   // Ricerca e filtro restano quando si torna alla lista da una scheda
   const [query, setQuery] = useState('');
   const [tenseFilter, setTenseFilter] = useState<string | null>(null);
+  const [section, setSection] = useState<Section>('verbs');
+  const skillList = useMemo(() => skillStatuses(progress.review), [progress.review]);
 
   const allTenses = useMemo(() => [...new Set((verbs ?? []).flatMap((v) => v.tenses))], [verbs]);
   const shownVerbs = useMemo(() => (verbs ?? []).filter((v) => !tenseFilter || v.tenses.includes(tenseFilter)), [verbs, tenseFilter]);
@@ -58,6 +68,54 @@ export default function GrammarHub() {
 
   const openMatch = (m: GrammarMatch) =>
     setView({ kind: 'verb', verb: m.verb, tense: m.tense, highlight: m.persons.length ? { tense: m.tense, persons: m.persons } : undefined });
+
+  // ---------- Punti difficili ----------
+  if (view.kind === 'skill-practice') {
+    const back = () => setView({ kind: 'skill', skillId: view.skillId });
+    return (
+      <PracticeSession
+        exercises={view.exercises}
+        onClose={back}
+        onFinish={(stats: PracticeStats) => {
+          const accuracy = Math.round(((stats.total - stats.errors) / stats.total) * 100);
+          const xp = reviewXp(false, accuracy);
+          addXp(xp);
+          soundFX.playComplete();
+          setView({ kind: 'skill-done', skillId: view.skillId, accuracy, bestCombo: stats.bestCombo, xp });
+        }}
+      />
+    );
+  }
+
+  if (view.kind === 'skill-done') {
+    return (
+      <LessonCompleteCard
+        title={getSkill(view.skillId)?.title ?? ui.skills.title}
+        xpEarned={view.xp}
+        streakDays={progress.streak}
+        accuracy={view.accuracy}
+        bestCombo={view.bestCombo}
+        onContinue={() => setView({ kind: 'skill', skillId: view.skillId })}
+      />
+    );
+  }
+
+  if (view.kind === 'skill') {
+    const status = skillList.find((s) => s.skill.id === view.skillId);
+    if (status) {
+      return (
+        <SkillStudy
+          status={status}
+          onBack={() => setView({ kind: 'hub' })}
+          onPractice={() => {
+            const exercises = skillPractice(status.skill);
+            preloadSpeech(exercises.map((e) => ({ text: exerciseSentence(e) })));
+            setView({ kind: 'skill-practice', skillId: status.skill.id, exercises });
+          }}
+        />
+      );
+    }
+  }
 
   if (view.kind === 'paradigm') {
     return <ParadigmReview verbId={view.verb.verbId} tense={view.tense} onClose={() => setView({ kind: 'verb', verb: view.verb, tense: view.tense })} />;
@@ -115,7 +173,31 @@ export default function GrammarHub() {
         <p className="font-semibold text-brand-muted">{ui.grammar.subtitle}</p>
       </header>
 
-      {verbs === null ? (
+      {skillList.length > 0 && (
+        <div className="grid grid-cols-2 gap-1 rounded-2xl bg-brand-background p-1" role="tablist" aria-label={ui.grammar.title}>
+          {(['verbs', 'skills'] as const).map((s) => (
+            <button
+              key={s}
+              type="button"
+              role="tab"
+              aria-selected={section === s}
+              onClick={() => {
+                soundFX.playClick();
+                setSection(s);
+              }}
+              className={`rounded-xl py-2 font-extrabold transition-colors ${
+                section === s ? 'bg-white text-ink shadow-sm' : 'text-brand-muted hover:text-ink'
+              }`}
+            >
+              {s === 'verbs' ? ui.grammar.verbs : ui.skills.title}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {section === 'skills' && skillList.length > 0 ? (
+        <SkillList statuses={skillList} onOpen={(skill) => setView({ kind: 'skill', skillId: skill.id })} />
+      ) : verbs === null ? (
         <div className="flex justify-center pt-10" aria-busy="true">
           <Mascot mood="think" size={80} />
         </div>

@@ -1,12 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Map, BookOpen, type LucideIcon } from 'lucide-react';
+import { Map, BookOpen, Headphones, type LucideIcon } from 'lucide-react';
 import { soundFX } from '@/utils/sound';
 import { ui } from '@/content';
+import { recordings } from '@/content/recordings';
 
 /** Vídeos e Conversa torneranno qui quando esisteranno: niente segnaposto "Em breve" nell'MVP */
-export type TabType = 'home' | 'grammar';
+export type TabType = 'home' | 'grammar' | 'listen';
 
 interface BottomNavProps {
   activeTab: TabType;
@@ -16,6 +17,8 @@ interface BottomNavProps {
 const NAV_ITEMS: { id: TabType; label: string; Icon: LucideIcon }[] = [
   { id: 'home', label: ui.nav.path, Icon: Map },
   { id: 'grammar', label: ui.grammar.title, Icon: BookOpen },
+  // La tab Ascolto compare solo se il corso ha registrazioni pronte
+  ...(recordings.length > 0 ? [{ id: 'listen' as const, label: ui.listen.title, Icon: Headphones }] : []),
 ];
 
 export default function BottomNav({ activeTab, setActiveTab }: BottomNavProps) {

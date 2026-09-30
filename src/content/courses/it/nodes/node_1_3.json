@@ -20,6 +20,36 @@
       ]
     }
   ],
+  "listening": {
+    "intro": "A Ines entra num café no centro de Florença. Ouve a conversa com o barista.",
+    "questions": [
+      {
+        "question": "O que pede a Ines?",
+        "answer": "Um café e um cornetto",
+        "wrong": [
+          "Um cappuccino e um cornetto",
+          "Só um café"
+        ]
+      },
+      {
+        "question": "De onde diz que é?",
+        "answer": "De Lisboa",
+        "wrong": [
+          "Do Porto",
+          "De Florença"
+        ]
+      },
+      {
+        "question": "Quanto paga?",
+        "answer": "Dois euros e cinquenta",
+        "wrong": [
+          "Dois euros",
+          "Um euro e cinquenta"
+        ],
+        "note": "«Due euro e cinquanta»: em italiano «euro» não muda no plural."
+      }
+    ]
+  },
   "exercises": [
     {
       "id": "it_1_3_1",

@@ -1,0 +1,19 @@
+{
+  "id": "il-diluvio",
+  "title": "Il diluvio",
+  "subtitle": "A arca de Noé, contada em italiano",
+  "level": "Passato prossimo e imperfetto",
+  "file": "il-diluvio.mp3",
+  "segments": [
+    { "text": "Il Signore era arrabbiato con gli uomini perché erano diventati cattivi.", "translation": "O Senhor estava zangado com os homens porque se tinham tornado maus.", "at": 0 },
+    { "text": "Allora ha deciso di mandare un diluvio e di eliminarli tutti, tranne Noè, un uomo buono, e la sua famiglia.", "translation": "Então decidiu mandar um dilúvio e eliminá-los a todos, exceto Noé, um homem bom, e a sua família.", "at": 5.37 },
+    { "text": "Così ha parlato con Noè e gli ha ordinato di costruire una grande arca.", "translation": "Assim, falou com Noé e ordenou-lhe que construísse uma grande arca.", "at": 12.97 },
+    { "text": "Quando è iniziato il diluvio, Noè ha fatto salire sull’arca la sua famiglia e una coppia di animali per ogni specie.", "translation": "Quando o dilúvio começou, Noé fez subir para a arca a sua família e um casal de animais de cada espécie.", "at": 18.31 },
+    { "text": "Il diluvio è durato quaranta giorni e le acque hanno coperto tutta la Terra.", "translation": "O dilúvio durou quarenta dias e as águas cobriram toda a Terra.", "at": 25.71 },
+    { "text": "Solo l’arca galleggiava sulle acque.", "translation": "Só a arca flutuava sobre as águas.", "at": 31.45 },
+    { "text": "Dopo quaranta giorni, l’arca si è fermata sulla cima del monte Ararat.", "translation": "Passados quarenta dias, a arca parou no cimo do monte Ararat.", "at": 34.13 },
+    { "text": "Noè ha liberato un corvo, che però non è tornato.", "translation": "Noé libertou um corvo, que, no entanto, não voltou.", "at": 39.41 },
+    { "text": "Poi ha liberato una colomba, che è tornata tenendo nel becco un rametto d’ulivo.", "translation": "Depois libertou uma pomba, que voltou com um raminho de oliveira no bico.", "at": 43.59 },
+    { "text": "Il diluvio era finalmente finito!", "translation": "O dilúvio tinha finalmente acabado!", "at": 49.15 }
+  ]
+}

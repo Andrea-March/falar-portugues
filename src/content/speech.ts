@@ -23,7 +23,9 @@ import {
   type Session,
   theoryForSession,
   toRuntimeExercise,
+  dialogueLines,
 } from './index';
+import { skillList } from './registry.generated';
 
 export interface SpeechItem {
   text: string;
@@ -61,6 +63,8 @@ export function sessionSpeech(session: Session, node: CourseNode, content: NodeC
     return out;
   }
 
+  if (kind === 'listening') return dialogueLines(content).map((l) => ({ text: l.text, voice: l.voice }));
+
   for (const ex of sessionPool(kind, node, content)) {
     if (ex.context) out.push({ text: ex.context, voice: dialogueSpeaker(kind, content)?.voice });
     out.push({ text: exerciseSentence(ex) });
@@ -89,6 +93,22 @@ function grammarSpeech(): SpeechItem[] {
   return [...rows, ...preview];
 }
 
+/** Punti difficili: parole in grassetto ed esempi delle spiegazioni, frasi degli esercizi */
+export function skillSpeech(): SpeechItem[] {
+  const out: SpeechItem[] = [];
+  for (const skill of skillList) {
+    for (const card of skill.theory) {
+      for (const m of card.text.matchAll(/\*\*(.*?)\*\*/g)) out.push({ text: m[1].replace(/…/g, '') });
+      card.examples?.forEach((e) => out.push({ text: e.text.replace(/\*\*/g, '') }));
+    }
+    for (const ex of skill.exercises.map((e) => toRuntimeExercise(e))) {
+      out.push({ text: exerciseSentence(ex) });
+      ex.alternatives?.forEach((a) => out.push({ text: exerciseSentence(ex, a) }));
+    }
+  }
+  return out;
+}
+
 /** Tutto il corso (per lo script degli audio) */
 export async function allSpeech(): Promise<SpeechItem[]> {
   const out: SpeechItem[] = [];
@@ -98,5 +118,6 @@ export async function allSpeech(): Promise<SpeechItem[]> {
     for (const session of sessionsFor(node)) out.push(...sessionSpeech(session, node, content));
   }
   out.push(...grammarSpeech());
+  out.push(...skillSpeech());
   return out;
 }
