@@ -31,17 +31,9 @@ export default function Home() {
     );
   }
 
-  // Primo avvio: onboarding, poi dritti nella prima sessione della prima lezione
+  // Primo avvio: onboarding, poi la pagina iniziale, così si può esplorare l'app prima di iniziare
   if (!progress.onboarded) {
-    return (
-      <Onboarding
-        onDone={(choices) => {
-          completeOnboarding(choices);
-          const first = chapters[0].nodes[0];
-          setActive({ node: first, session: sessionsFor(first)[0] });
-        }}
-      />
-    );
+    return <Onboarding onDone={completeOnboarding} />;
   }
 
   if (reviewing) return <ReviewScreen onClose={() => setReviewing(false)} />;
