@@ -24,6 +24,7 @@ import {
   theoryForSession,
   toRuntimeExercise,
   dialogueLines,
+  ui,
 } from './index';
 import { skillList } from './registry.generated';
 
@@ -119,5 +120,7 @@ export async function allSpeech(): Promise<SpeechItem[]> {
   }
   out.push(...grammarSpeech());
   out.push(...skillSpeech());
+  // La frase di prova dell'onboarding
+  out.push({ text: ui.onboarding.audioSample });
   return out;
 }
