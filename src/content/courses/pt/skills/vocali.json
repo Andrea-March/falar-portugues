@@ -1,0 +1,117 @@
+{
+  "id": "vocali",
+  "title": "Le vocali che spariscono",
+  "subtitle": "Obrigado suona «obrigadu»: allena l'orecchio",
+  "icon": "👂",
+  "theory": [
+    {
+      "title": "Si sente bene solo la sillaba accentata",
+      "text": "Nel portoghese europeo le vocali **non accentate** si riducono o quasi spariscono. La **e** atona spesso non si sente (**desculpe** suona più o meno «dsculp»), la **o** finale diventa una «u» (**obrigado**, «obrigadu»), la **a** atona è più chiusa. Per questo il portoghese di Lisbona sembra veloce e pieno di consonanti.",
+      "examples": [
+        {
+          "text": "Desculpe.",
+          "translation": "Scusi."
+        },
+        {
+          "text": "Obrigado.",
+          "translation": "Grazie."
+        },
+        {
+          "text": "Está aqui.",
+          "translation": "È qui."
+        },
+        {
+          "text": "O telefone.",
+          "translation": "Il telefono."
+        }
+      ]
+    },
+    {
+      "title": "Come allenarsi",
+      "text": "Ascolta e scrivi: la grafia conserva tutte le vocali che la voce si mangia. Cerca prima la sillaba accentata, l'unica che si sente piena, e se serve rallenta l'audio con la 🐢.\n\nAl contrario, quando parli tu, pronunciare tutte le vocali «all'italiana» non è un errore grave: ti capiranno lo stesso."
+    }
+  ],
+  "exercises": [
+    {
+      "id": "pt_sk_voc_1",
+      "type": "write",
+      "listen": true,
+      "text": "{Desculpe}, onde está o metro?",
+      "translation": "Scusi, dov'è la metro?",
+      "trains": [
+        "skill:vocali"
+      ]
+    },
+    {
+      "id": "pt_sk_voc_2",
+      "type": "write",
+      "listen": true,
+      "text": "Muito {obrigado}!",
+      "translation": "Grazie mille!",
+      "trains": [
+        "skill:vocali"
+      ]
+    },
+    {
+      "id": "pt_sk_voc_3",
+      "type": "write",
+      "listen": true,
+      "text": "O {telefone} está ali.",
+      "translation": "Il telefono è lì.",
+      "trains": [
+        "skill:vocali"
+      ]
+    },
+    {
+      "id": "pt_sk_voc_4",
+      "type": "write",
+      "listen": true,
+      "text": "A casa é {pequena}.",
+      "translation": "La casa è piccola.",
+      "trains": [
+        "skill:vocali"
+      ]
+    },
+    {
+      "id": "pt_sk_voc_5",
+      "type": "write",
+      "listen": true,
+      "text": "Boa {noite}, até amanhã!",
+      "translation": "Buonanotte, a domani!",
+      "trains": [
+        "skill:vocali"
+      ]
+    },
+    {
+      "id": "pt_sk_voc_6",
+      "type": "write",
+      "listen": true,
+      "text": "O Pedro {está} no café.",
+      "translation": "Pedro è al bar.",
+      "learnerNote": "In «está» la «e» quasi non si sente: suona «shta».",
+      "trains": [
+        "skill:vocali"
+      ]
+    },
+    {
+      "id": "pt_sk_voc_7",
+      "type": "write",
+      "listen": true,
+      "text": "Nós {temos} tempo.",
+      "translation": "Abbiamo tempo.",
+      "trains": [
+        "skill:vocali"
+      ]
+    },
+    {
+      "id": "pt_sk_voc_8",
+      "type": "write",
+      "listen": true,
+      "text": "{Segunda-feira} estou em Lisboa.",
+      "translation": "Lunedì sono a Lisbona.",
+      "trains": [
+        "skill:vocali"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,282 @@
+{
+  "id": "node_3_1",
+  "theory": [
+    {
+      "title": "Che ore sono? Che giorno è?",
+      "text": "Per organizzare la giornata ti servono le ore e i giorni. Prima le espressioni per chiedere e dire l'ora, poi quelle per i giorni della settimana, dove c'è una sorpresa per chi parla italiano."
+    },
+    {
+      "vocabStudy": {
+        "groups": [
+          {
+            "label": "Che ore sono",
+            "items": [
+              "que-horas-sao",
+              "sao-horas",
+              "a-que-horas"
+            ]
+          },
+          {
+            "label": "Che giorno è",
+            "items": [
+              "que-dia-e-hoje",
+              "segunda-feira",
+              "fim-de-semana"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "warmup": {
+    "speaker": {
+      "name": "Pedro",
+      "role": "Amigo · Lisboa",
+      "avatar": "🧑🏻",
+      "voice": "homem"
+    },
+    "exercises": [
+      {
+        "id": "warm_3_1_1",
+        "type": "choose",
+        "text": "{São duas horas}.",
+        "translation": "Sono le due.",
+        "prompt": "Pedro ti chiede l'ora: sono le due",
+        "context": "Olá! Desculpa, que horas são?",
+        "contextTranslation": "Ciao! Scusa, che ore sono?",
+        "trains": [
+          "vocab:sao-horas"
+        ],
+        "wrong": [
+          "Muito prazer",
+          "Tudo bem"
+        ]
+      },
+      {
+        "id": "warm_3_1_2",
+        "type": "choose",
+        "text": "Boa ideia! {A que horas}?",
+        "translation": "Bella idea! A che ora?",
+        "prompt": "Chiedigli a che ora",
+        "context": "Obrigado! Vamos jantar amanhã?",
+        "contextTranslation": "Grazie! Andiamo a cena domani?",
+        "trains": [
+          "vocab:a-que-horas"
+        ],
+        "wrong": [
+          "Que horas são",
+          "Onde está"
+        ]
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "ex_3_1_1",
+      "type": "choose",
+      "text": "Desculpe, {que horas são}?",
+      "translation": "Scusi, che ore sono?",
+      "prompt": "Chiedi l'ora a un passante",
+      "trains": [
+        "vocab:que-horas-sao"
+      ],
+      "wrong": [
+        "a que horas",
+        "que dia é hoje",
+        "onde está"
+      ]
+    },
+    {
+      "id": "ex_3_1_2",
+      "type": "write",
+      "text": "Pedro, {que horas são}?",
+      "translation": "Pedro, che ore sono?",
+      "trains": [
+        "vocab:que-horas-sao"
+      ]
+    },
+    {
+      "id": "ex_3_1_3",
+      "type": "write",
+      "text": "Já é tarde? {Que horas são}?",
+      "translation": "È già tardi? Che ore sono?",
+      "trains": [
+        "vocab:que-horas-sao"
+      ]
+    },
+    {
+      "id": "ex_3_1_4",
+      "type": "choose",
+      "text": "— Que horas são? — {São duas horas}.",
+      "translation": "— Che ore sono? — Sono le due.",
+      "prompt": "Sono le due in punto",
+      "trains": [
+        "vocab:sao-horas"
+      ],
+      "wrong": [
+        "Às duas",
+        "Que dia é hoje",
+        "Segunda-feira"
+      ]
+    },
+    {
+      "id": "ex_3_1_5",
+      "type": "write",
+      "text": "{São três horas}, vamos!",
+      "translation": "Sono le tre, andiamo!",
+      "trains": [
+        "vocab:sao-horas"
+      ]
+    },
+    {
+      "id": "ex_3_1_6",
+      "type": "choose",
+      "text": "Já {é uma hora}! Vamos almoçar?",
+      "translation": "È già l'una! Andiamo a pranzo?",
+      "prompt": "È l'una: ora di pranzo",
+      "trains": [
+        "vocab:sao-horas"
+      ],
+      "wrong": [
+        "são uma hora",
+        "são umas horas",
+        "é umas horas"
+      ]
+    },
+    {
+      "id": "ex_3_1_7",
+      "type": "write",
+      "text": "Agora {são dez horas}.",
+      "translation": "Adesso sono le dieci.",
+      "trains": [
+        "vocab:sao-horas"
+      ]
+    },
+    {
+      "id": "ex_3_1_8",
+      "type": "choose",
+      "text": "Jantar amanhã? {A que horas}?",
+      "translation": "Cena domani? A che ora?",
+      "prompt": "Chiedi a che ora è la cena",
+      "trains": [
+        "vocab:a-que-horas"
+      ],
+      "wrong": [
+        "Que horas são",
+        "Onde está",
+        "Que dia é hoje"
+      ]
+    },
+    {
+      "id": "ex_3_1_9",
+      "type": "write",
+      "text": "{A que horas} passa o autocarro?",
+      "translation": "A che ora passa l'autobus?",
+      "trains": [
+        "vocab:a-que-horas"
+      ]
+    },
+    {
+      "id": "ex_3_1_10",
+      "type": "choose",
+      "text": "— A que horas? — {Às} oito.",
+      "translation": "— A che ora? — Alle otto.",
+      "prompt": "Rispondi: alle otto",
+      "trains": [
+        "vocab:a-que-horas"
+      ],
+      "wrong": [
+        "A",
+        "São",
+        "Aos"
+      ]
+    },
+    {
+      "id": "ex_3_1_11",
+      "type": "choose",
+      "text": "Desculpa, {que dia é hoje}?",
+      "translation": "Scusa, che giorno è oggi?",
+      "prompt": "Chiedi che giorno è",
+      "trains": [
+        "vocab:que-dia-e-hoje"
+      ],
+      "wrong": [
+        "que horas são",
+        "a que horas",
+        "onde está"
+      ]
+    },
+    {
+      "id": "ex_3_1_12",
+      "type": "write",
+      "text": "{Que dia é hoje}? Sábado?",
+      "translation": "Che giorno è oggi? Sabato?",
+      "trains": [
+        "vocab:que-dia-e-hoje"
+      ]
+    },
+    {
+      "id": "ex_3_1_13",
+      "type": "choose",
+      "text": "Hoje é {segunda-feira}: começa a semana.",
+      "translation": "Oggi è lunedì: comincia la settimana.",
+      "prompt": "Oggi è lunedì",
+      "trains": [
+        "vocab:segunda-feira"
+      ],
+      "wrong": [
+        "terça-feira",
+        "sábado",
+        "domingo"
+      ]
+    },
+    {
+      "id": "ex_3_1_14",
+      "type": "write",
+      "text": "Amanhã é {segunda-feira}.",
+      "translation": "Domani è lunedì.",
+      "trains": [
+        "vocab:segunda-feira"
+      ]
+    },
+    {
+      "id": "ex_3_1_15",
+      "type": "choose",
+      "text": "Na {sexta-feira} à noite, jantamos fora?",
+      "translation": "Venerdì sera ceniamo fuori?",
+      "prompt": "Proponi una cena venerdì sera",
+      "trains": [
+        "vocab:segunda-feira"
+      ],
+      "wrong": [
+        "quinta-feira",
+        "quarta-feira",
+        "segunda-feira"
+      ]
+    },
+    {
+      "id": "ex_3_1_16",
+      "type": "choose",
+      "text": "Bom {fim de semana}!",
+      "translation": "Buon fine settimana!",
+      "prompt": "È venerdì: saluta un collega",
+      "trains": [
+        "vocab:fim-de-semana"
+      ],
+      "wrong": [
+        "final de semana",
+        "fim do dia",
+        "sábado"
+      ]
+    },
+    {
+      "id": "ex_3_1_17",
+      "type": "write",
+      "text": "No {fim de semana}, estou em Sintra.",
+      "translation": "Nel fine settimana sono a Sintra.",
+      "trains": [
+        "vocab:fim-de-semana"
+      ]
+    }
+  ]
+}

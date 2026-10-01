@@ -1,0 +1,176 @@
+{
+  "id": "nasali",
+  "title": "Le vocali nasali",
+  "subtitle": "Pão non è pau: il suono passa dal naso",
+  "icon": "👃",
+  "theory": [
+    {
+      "title": "Il til e la M finale",
+      "text": "Il **til** (~) e una **m** o **n** a fine sillaba rendono la vocale **nasale**: l'aria esce anche dal naso e la consonante non si pronuncia davvero. In **bom** le labbra non si chiudono come in «bomba», e **não** non ha nessuna «n» finale.",
+      "examples": [
+        {
+          "text": "Não.",
+          "translation": "No."
+        },
+        {
+          "text": "Pão.",
+          "translation": "Pane."
+        },
+        {
+          "text": "Mãe.",
+          "translation": "Mamma."
+        },
+        {
+          "text": "Sim.",
+          "translation": "Sì."
+        },
+        {
+          "text": "Bom dia!",
+          "translation": "Buongiorno!"
+        }
+      ]
+    },
+    {
+      "title": "Coppie da distinguere",
+      "text": "Senza la nasale cambia la parola: **pão** (pane) e **pau** (bastone), **mão** (mano) e **mau** (cattivo), **lã** (lana) e **lá** (là). Ascolta le coppie finché senti la differenza.",
+      "examples": [
+        {
+          "text": "pão",
+          "translation": "pane"
+        },
+        {
+          "text": "pau",
+          "translation": "bastone"
+        },
+        {
+          "text": "mão",
+          "translation": "mano"
+        },
+        {
+          "text": "mau",
+          "translation": "cattivo"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "pt_sk_nas_1",
+      "type": "choose",
+      "listen": true,
+      "text": "Eu disse {pão}.",
+      "wrong": [
+        "pau"
+      ],
+      "learnerNote": "«pão» (pane) è nasale; «pau» (bastone) no.",
+      "trains": [
+        "skill:nasali"
+      ]
+    },
+    {
+      "id": "pt_sk_nas_2",
+      "type": "choose",
+      "listen": true,
+      "text": "Eu disse {pau}.",
+      "wrong": [
+        "pão"
+      ],
+      "learnerNote": "«pau» (bastone) non è nasale; «pão» (pane) sì.",
+      "trains": [
+        "skill:nasali"
+      ]
+    },
+    {
+      "id": "pt_sk_nas_3",
+      "type": "choose",
+      "listen": true,
+      "text": "Eu disse {mão}.",
+      "wrong": [
+        "mau"
+      ],
+      "learnerNote": "«mão» (mano) è nasale; «mau» (cattivo) no.",
+      "trains": [
+        "skill:nasali"
+      ]
+    },
+    {
+      "id": "pt_sk_nas_4",
+      "type": "choose",
+      "listen": true,
+      "text": "Eu disse {mau}.",
+      "wrong": [
+        "mão"
+      ],
+      "learnerNote": "«mau» (cattivo) non è nasale; «mão» (mano) sì.",
+      "trains": [
+        "skill:nasali"
+      ]
+    },
+    {
+      "id": "pt_sk_nas_5",
+      "type": "choose",
+      "listen": true,
+      "text": "Eu disse {lã}.",
+      "wrong": [
+        "lá"
+      ],
+      "learnerNote": "«lã» (lana) è nasale; «lá» (là) no.",
+      "trains": [
+        "skill:nasali"
+      ]
+    },
+    {
+      "id": "pt_sk_nas_6",
+      "type": "choose",
+      "listen": true,
+      "text": "Eu disse {lá}.",
+      "wrong": [
+        "lã"
+      ],
+      "learnerNote": "«lá» (là) non è nasale; «lã» (lana) sì.",
+      "trains": [
+        "skill:nasali"
+      ]
+    },
+    {
+      "id": "pt_sk_nas_7",
+      "type": "write",
+      "listen": true,
+      "text": "Queria {pão}, por favor.",
+      "translation": "Vorrei del pane, per favore.",
+      "trains": [
+        "skill:nasali"
+      ]
+    },
+    {
+      "id": "pt_sk_nas_8",
+      "type": "write",
+      "listen": true,
+      "text": "{Não}, obrigado.",
+      "translation": "No, grazie.",
+      "trains": [
+        "skill:nasali"
+      ]
+    },
+    {
+      "id": "pt_sk_nas_9",
+      "type": "write",
+      "listen": true,
+      "text": "A minha {mãe} está em Lisboa.",
+      "translation": "Mia mamma è a Lisbona.",
+      "trains": [
+        "skill:nasali"
+      ]
+    },
+    {
+      "id": "pt_sk_nas_10",
+      "type": "write",
+      "listen": true,
+      "text": "{Sim}, tenho tempo.",
+      "translation": "Sì, ho tempo.",
+      "trains": [
+        "skill:nasali"
+      ]
+    }
+  ]
+}

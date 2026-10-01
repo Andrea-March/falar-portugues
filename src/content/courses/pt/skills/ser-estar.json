@@ -1,0 +1,161 @@
+{
+  "id": "ser-estar",
+  "title": "Sou o estou?",
+  "subtitle": "In italiano «sono», in portoghese due verbi",
+  "icon": "⚖️",
+  "theory": [
+    {
+      "title": "Chi sei, come stai, dove sei",
+      "text": "**Ser** è per chi sei: nome, nazionalità, provenienza, carattere. **Estar** è per come stai e dove ti trovi adesso. In italiano diciamo «sono» in tutti e due i casi.",
+      "examples": [
+        {
+          "text": "Sou italiano.",
+          "translation": "Sono italiano."
+        },
+        {
+          "text": "Sou de Roma.",
+          "translation": "Sono di Roma."
+        },
+        {
+          "text": "Estou bem.",
+          "translation": "Sto bene."
+        },
+        {
+          "text": "Estou em Lisboa.",
+          "translation": "Sono a Lisbona."
+        }
+      ]
+    },
+    {
+      "title": "Gli anni si hanno",
+      "text": "Come in italiano, l'età si dice con **ter**: «tenho trinta anos». Mai «sou trinta».",
+      "examples": [
+        {
+          "text": "Tenho trinta anos.",
+          "translation": "Ho trent'anni."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "pt_sk_se_1",
+      "type": "choose",
+      "text": "Eu {sou} italiano.",
+      "translation": "Sono italiano.",
+      "wrong": [
+        "estou"
+      ],
+      "learnerNote": "Nazionalità: è chi sei, quindi «ser».",
+      "trains": [
+        "skill:ser-estar"
+      ]
+    },
+    {
+      "id": "pt_sk_se_2",
+      "type": "choose",
+      "text": "Hoje {estou} cansado.",
+      "translation": "Oggi sono stanco.",
+      "wrong": [
+        "sou"
+      ],
+      "learnerNote": "Stanco oggi, non per sempre: «estar».",
+      "trains": [
+        "skill:ser-estar"
+      ]
+    },
+    {
+      "id": "pt_sk_se_3",
+      "type": "choose",
+      "text": "A Rita {é} de Lisboa.",
+      "translation": "Rita è di Lisbona.",
+      "wrong": [
+        "está"
+      ],
+      "trains": [
+        "skill:ser-estar"
+      ]
+    },
+    {
+      "id": "pt_sk_se_4",
+      "type": "choose",
+      "text": "A Rita {está} no café.",
+      "translation": "Rita è al bar.",
+      "wrong": [
+        "é"
+      ],
+      "learnerNote": "Dove si trova adesso: «estar».",
+      "trains": [
+        "skill:ser-estar"
+      ]
+    },
+    {
+      "id": "pt_sk_se_5",
+      "type": "choose",
+      "text": "Nós {somos} amigos.",
+      "translation": "Siamo amici.",
+      "wrong": [
+        "estamos"
+      ],
+      "trains": [
+        "skill:ser-estar"
+      ]
+    },
+    {
+      "id": "pt_sk_se_6",
+      "type": "choose",
+      "text": "Nós {estamos} em casa.",
+      "translation": "Siamo a casa.",
+      "wrong": [
+        "somos"
+      ],
+      "trains": [
+        "skill:ser-estar"
+      ]
+    },
+    {
+      "id": "pt_sk_se_7",
+      "type": "choose",
+      "text": "Eu {tenho} vinte anos.",
+      "translation": "Ho vent'anni.",
+      "wrong": [
+        "sou",
+        "estou"
+      ],
+      "learnerNote": "L'età si dice con «ter», come in italiano.",
+      "trains": [
+        "skill:ser-estar"
+      ]
+    },
+    {
+      "id": "pt_sk_se_8",
+      "type": "choose",
+      "text": "— Como estás? — {Estou} bem!",
+      "translation": "— Come stai? — Sto bene!",
+      "wrong": [
+        "Sou"
+      ],
+      "trains": [
+        "skill:ser-estar"
+      ]
+    },
+    {
+      "id": "pt_sk_se_9",
+      "type": "write",
+      "text": "O Marco {é} italiano.",
+      "translation": "Marco è italiano.",
+      "trains": [
+        "skill:ser-estar"
+      ]
+    },
+    {
+      "id": "pt_sk_se_10",
+      "type": "write",
+      "text": "Onde {estás} agora?",
+      "translation": "Dove sei adesso?",
+      "trains": [
+        "skill:ser-estar"
+      ]
+    }
+  ]
+}

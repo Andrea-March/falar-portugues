@@ -1,0 +1,66 @@
+{
+  "id": "node_3_cultura",
+  "theory": [
+    {
+      "title": "L'orario portoghese",
+      "text": "Il Portogallo ha **un'ora in meno** dell'Italia: quando a Roma sono le tre, a Lisbona sono le due. Si pranza verso l'una (**o almoço**) e si cena intorno alle otto (**o jantar**).\n\nE i giorni? Dal lunedì al venerdì sono numerati: **segunda-feira**, **terça-feira**, **quarta-feira**, **quinta-feira**, **sexta-feira**. È un'eredità del latino della Chiesa, che contava i giorni a partire dalla domenica: così il Portogallo non ha i nomi di Luna, Marte e Mercurio che usiamo in italiano.",
+      "vocab": [
+        "segunda-feira",
+        "fim-de-semana"
+      ],
+      "examples": [
+        {
+          "text": "Em Roma são três horas, em Lisboa são duas.",
+          "translation": "A Roma sono le tre, a Lisbona sono le due."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "ex_3_cult_1",
+      "type": "choose",
+      "text": "Quando em Roma são três horas, em Lisboa são {duas}.",
+      "translation": "Quando a Roma sono le tre, a Lisbona sono le due.",
+      "prompt": "Che ore sono a Lisbona?",
+      "trains": [
+        "vocab:sao-horas"
+      ],
+      "wrong": [
+        "quatro",
+        "três",
+        "cinco"
+      ]
+    },
+    {
+      "id": "ex_3_cult_2",
+      "type": "choose",
+      "text": "Depois de segunda-feira vem a {terça-feira}.",
+      "translation": "Dopo il lunedì viene il martedì.",
+      "prompt": "Che giorno viene dopo il lunedì?",
+      "trains": [
+        "vocab:segunda-feira"
+      ],
+      "wrong": [
+        "quarta-feira",
+        "domingo",
+        "sexta-feira"
+      ]
+    },
+    {
+      "id": "ex_3_cult_3",
+      "type": "choose",
+      "text": "O sábado e o domingo são o {fim de semana}.",
+      "translation": "Il sabato e la domenica sono il fine settimana.",
+      "prompt": "Come si chiamano sabato e domenica insieme?",
+      "trains": [
+        "vocab:fim-de-semana"
+      ],
+      "wrong": [
+        "final de semana",
+        "fim do dia",
+        "segunda-feira"
+      ]
+    }
+  ]
+}

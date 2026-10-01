@@ -102,7 +102,7 @@
       "id": "chapter_3",
       "number": 3,
       "title": "A Rotina Diária",
-      "description": "Orari, giorni e il verbo ter.",
+      "description": "Che ore sono, che giorno è, e il verbo ter per l'età e il tempo libero.",
       "icon": "☀️",
       "nodes": [
         {
@@ -110,28 +110,40 @@
           "kind": "vocab",
           "title": "Horas e dias",
           "subtitle": "Che ore sono, che giorno è",
-          "icon": "🕐",
-          "draft": true
+          "icon": "🕐"
         },
         {
           "id": "node_3_2",
           "kind": "verb",
           "title": "Ter",
-          "subtitle": "Avere",
-          "icon": "📖",
-          "draft": true
+          "subtitle": "Avere: tempo, anni e cose",
+          "icon": "📖"
+        },
+        {
+          "id": "node_3_3",
+          "kind": "dialogue",
+          "title": "Marcar um café",
+          "subtitle": "Combina un caffè con Rita",
+          "icon": "🗓️"
+        },
+        {
+          "id": "node_3_cultura",
+          "kind": "culture",
+          "title": "O horário",
+          "subtitle": "Un'ora indietro e giorni numerati",
+          "icon": "🕰️"
         },
         {
           "id": "node_3_checkpoint",
           "kind": "checkpoint",
           "title": "Teste final",
-          "subtitle": "Sfida di fine capitolo",
+          "subtitle": "Metti alla prova tutto il capitolo",
           "icon": "🏆",
           "requires": [
             "node_3_1",
-            "node_3_2"
-          ],
-          "draft": true
+            "node_3_2",
+            "node_3_3"
+          ]
         }
       ]
     }

@@ -182,7 +182,8 @@
       "prompt": "Ser o estar? Qui dici da dove vieni",
       "learnerNote": "In italiano diciamo «sono» in entrambi i casi. In portoghese «sou» è per chi sei, «estou» per come stai o dove sei.",
       "trains": [
-        "verb:ser:presente:eu"
+        "verb:ser:presente:eu",
+        "skill:ser-estar"
       ],
       "wrong": [
         "estou",
@@ -197,7 +198,8 @@
       "prompt": "Ser o estar? Qui dici dove sei",
       "learnerNote": "In italiano diciamo «sono» in entrambi i casi. In portoghese «sou» è per chi sei, «estou» per come stai o dove sei.",
       "trains": [
-        "verb:estar:presente:eu"
+        "verb:estar:presente:eu",
+        "skill:ser-estar"
       ],
       "wrong": [
         "sou",

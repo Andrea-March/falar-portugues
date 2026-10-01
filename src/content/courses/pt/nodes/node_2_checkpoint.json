@@ -29,7 +29,8 @@
       "translation": "Vengo dall'Italia, ma ora sono a Porto.",
       "prompt": "Ser o estar?",
       "trains": [
-        "verb:estar:presente:eu"
+        "verb:estar:presente:eu",
+        "skill:ser-estar"
       ],
       "wrong": [
         "sou",

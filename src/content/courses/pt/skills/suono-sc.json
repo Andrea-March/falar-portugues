@@ -1,0 +1,142 @@
+{
+  "id": "suono-sc",
+  "title": "S, X e CH",
+  "subtitle": "Un suono «sc», tre modi di scriverlo",
+  "icon": "🔤",
+  "theory": [
+    {
+      "title": "La S che suona «sc»",
+      "text": "A fine parola e davanti a una consonante, la **s** si legge come il nostro «sc» di «scena»: **estás** suona «shtash», **dois** «doish». Davanti a una consonante sonora (b, d, g, l, m…) diventa più dolce, come la «j» francese: **Lisboa**.",
+      "examples": [
+        {
+          "text": "Estás bem?",
+          "translation": "Stai bene?"
+        },
+        {
+          "text": "Dois cafés.",
+          "translation": "Due caffè."
+        },
+        {
+          "text": "Lisboa",
+          "translation": "Lisbona"
+        }
+      ]
+    },
+    {
+      "title": "Si scrive anche CH o X",
+      "text": "Lo stesso suono «sc» si scrive anche **ch** (**chá**, **chamo-me**) e spesso **x** (**peixe**, **Baixa**). Attenzione: la **ch** portoghese non è mai la «k» italiana di «chiesa». La **x** a volte si legge in altri modi (**táxi**): quelle parole conviene impararle una per una.",
+      "examples": [
+        {
+          "text": "Um chá, por favor.",
+          "translation": "Un tè, per favore."
+        },
+        {
+          "text": "Peixe",
+          "translation": "Pesce"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "pt_sk_sc_1",
+      "type": "choose",
+      "text": "Queria um {chá}, por favor.",
+      "translation": "Vorrei un tè, per favore.",
+      "wrong": [
+        "xá",
+        "scià"
+      ],
+      "trains": [
+        "skill:suono-sc"
+      ]
+    },
+    {
+      "id": "pt_sk_sc_2",
+      "type": "choose",
+      "text": "Hoje como {peixe}.",
+      "translation": "Oggi mangio pesce.",
+      "wrong": [
+        "peiche",
+        "peisce"
+      ],
+      "trains": [
+        "skill:suono-sc"
+      ]
+    },
+    {
+      "id": "pt_sk_sc_3",
+      "type": "choose",
+      "text": "Olá! {Chamo-me} Marco.",
+      "translation": "Ciao! Mi chiamo Marco.",
+      "wrong": [
+        "Xamo-me",
+        "Sciamo-me"
+      ],
+      "learnerNote": "Nella «ch» portoghese non c'è mai la «k» italiana: «chamo» suona «sciamu».",
+      "trains": [
+        "skill:suono-sc"
+      ]
+    },
+    {
+      "id": "pt_sk_sc_4",
+      "type": "choose",
+      "text": "Estou em {Lisboa}.",
+      "translation": "Sono a Lisbona.",
+      "wrong": [
+        "Lixboa",
+        "Lijboa"
+      ],
+      "trains": [
+        "skill:suono-sc"
+      ]
+    },
+    {
+      "id": "pt_sk_sc_5",
+      "type": "choose",
+      "text": "Olá! {Estás} bem?",
+      "translation": "Ciao! Stai bene?",
+      "wrong": [
+        "Extás",
+        "Eshtás"
+      ],
+      "learnerNote": "Il suono «sc» davanti a consonante si scrive con la «s».",
+      "trains": [
+        "skill:suono-sc"
+      ]
+    },
+    {
+      "id": "pt_sk_sc_6",
+      "type": "choose",
+      "text": "Vamos à {Baixa}?",
+      "translation": "Andiamo in centro, alla Baixa?",
+      "wrong": [
+        "Baicha",
+        "Baisha"
+      ],
+      "trains": [
+        "skill:suono-sc"
+      ]
+    },
+    {
+      "id": "pt_sk_sc_7",
+      "type": "write",
+      "listen": true,
+      "text": "{Dois} cafés, por favor.",
+      "translation": "Due caffè, per favore.",
+      "trains": [
+        "skill:suono-sc"
+      ]
+    },
+    {
+      "id": "pt_sk_sc_8",
+      "type": "write",
+      "listen": true,
+      "text": "Desculpe, {estás} no café?",
+      "translation": "Scusa, sei al bar?",
+      "trains": [
+        "skill:suono-sc"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,227 @@
+{
+  "id": "node_3_2",
+  "theory": [
+    {
+      "title": "Ter: avere",
+      "text": "Il verbo **ter** vuol dire avere, e si usa quasi sempre come in italiano: per quello che hai, per il tempo (**não tenho tempo**) e per l'età (**tenho trinta anos**). Con **Tens horas?** chiedi l'ora a un amico.",
+      "examples": [
+        {
+          "text": "Não tenho tempo hoje.",
+          "translation": "Non ho tempo oggi."
+        },
+        {
+          "text": "Tenho trinta anos.",
+          "translation": "Ho trent'anni.",
+          "learnerNote": "Come in italiano «ho trent'anni»: per l'età si usa «ter», non «ser»."
+        },
+        {
+          "text": "Tens horas?",
+          "translation": "Hai l'ora?",
+          "learnerNote": "Domanda informale per chiedere l'ora. Con chi dai del Lei: «Tem horas?»."
+        }
+      ]
+    },
+    {
+      "paradigm": {
+        "verb": "ter",
+        "tense": "presente"
+      }
+    }
+  ],
+  "exercises": [
+    {
+      "id": "ex_3_2_1",
+      "type": "choose",
+      "text": "— Tens tempo amanhã? — Sim, {tenho}!",
+      "translation": "— Hai tempo domani? — Sì!",
+      "prompt": "Rispondi che hai tempo",
+      "trains": [
+        "verb:ter:presente:eu"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "ex_3_2_2",
+      "type": "choose",
+      "text": "Desculpa, {tens} horas?",
+      "translation": "Scusa, hai l'ora?",
+      "prompt": "Chiedi l'ora a un amico",
+      "trains": [
+        "verb:ter:presente:tu"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "ex_3_2_3",
+      "type": "choose",
+      "text": "A Rita {tem} um gato.",
+      "translation": "Rita ha un gatto.",
+      "prompt": "Di' cosa ha Rita",
+      "trains": [
+        "verb:ter:presente:ele_ela_voce"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "ex_3_2_4",
+      "type": "choose",
+      "text": "Hoje nós não {temos} tempo.",
+      "translation": "Oggi non abbiamo tempo.",
+      "prompt": "Parla per te e i tuoi amici",
+      "trains": [
+        "verb:ter:presente:nos"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "ex_3_2_5",
+      "type": "choose",
+      "text": "Eles {têm} uma casa em Sintra.",
+      "translation": "Hanno una casa a Sintra.",
+      "prompt": "Parla di due amici",
+      "trains": [
+        "verb:ter:presente:eles_elas_voces"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "ex_3_2_6",
+      "type": "write",
+      "text": "Eu {tenho} trinta anos.",
+      "translation": "Ho trent'anni.",
+      "learnerNote": "Come in italiano «ho trent'anni»: per l'età si usa «ter», non «ser».",
+      "trains": [
+        "verb:ter:presente:eu"
+      ]
+    },
+    {
+      "id": "ex_3_2_7",
+      "type": "write",
+      "text": "Não {tenho} tempo hoje, desculpa.",
+      "translation": "Non ho tempo oggi, scusa.",
+      "trains": [
+        "verb:ter:presente:eu"
+      ]
+    },
+    {
+      "id": "ex_3_2_8",
+      "type": "write",
+      "text": "Quantos anos {tens}?",
+      "translation": "Quanti anni hai?",
+      "trains": [
+        "verb:ter:presente:tu"
+      ]
+    },
+    {
+      "id": "ex_3_2_9",
+      "type": "write",
+      "text": "Tu {tens} irmãos?",
+      "translation": "Hai fratelli?",
+      "trains": [
+        "verb:ter:presente:tu"
+      ]
+    },
+    {
+      "id": "ex_3_2_10",
+      "type": "write",
+      "text": "O senhor {tem} horas, por favor?",
+      "translation": "Lei ha l'ora, per favore?",
+      "learnerNote": "Con «o senhor» / «a senhora» il verbo va alla terza persona: «tem», non «tens».",
+      "trains": [
+        "verb:ter:presente:ele_ela_voce"
+      ]
+    },
+    {
+      "id": "ex_3_2_11",
+      "type": "write",
+      "text": "O Pedro {tem} vinte e cinco anos.",
+      "translation": "Pedro ha venticinque anni.",
+      "trains": [
+        "verb:ter:presente:ele_ela_voce"
+      ]
+    },
+    {
+      "id": "ex_3_2_12",
+      "type": "write",
+      "text": "Nós {temos} um jantar no sábado.",
+      "translation": "Sabato abbiamo una cena.",
+      "trains": [
+        "verb:ter:presente:nos"
+      ]
+    },
+    {
+      "id": "ex_3_2_13",
+      "type": "write",
+      "text": "Eu e a Ana {temos} tempo no fim de semana.",
+      "translation": "Io e Ana abbiamo tempo nel fine settimana.",
+      "trains": [
+        "verb:ter:presente:nos"
+      ]
+    },
+    {
+      "id": "ex_3_2_14",
+      "type": "write",
+      "text": "Vocês {têm} horas?",
+      "translation": "Avete l'ora?",
+      "learnerNote": "«têm» (loro hanno) ha l'accento circonflesso, «tem» (lui/lei ha) no. Si pronunciano quasi uguali.",
+      "trains": [
+        "verb:ter:presente:eles_elas_voces"
+      ]
+    },
+    {
+      "id": "ex_3_2_15",
+      "type": "write",
+      "text": "Os meus amigos {têm} um café no Porto.",
+      "translation": "I miei amici hanno un bar a Porto.",
+      "trains": [
+        "verb:ter:presente:eles_elas_voces"
+      ]
+    },
+    {
+      "id": "ex_3_2_16",
+      "type": "choose",
+      "text": "Eu {tenho} trinta anos e sou de Roma.",
+      "translation": "Ho trent'anni e sono di Roma.",
+      "prompt": "Ser, estar o ter? Qui dici l'età",
+      "learnerNote": "Come in italiano «ho trent'anni»: per l'età si usa «ter», non «ser».",
+      "trains": [
+        "verb:ter:presente:eu",
+        "skill:ser-estar"
+      ],
+      "wrong": [
+        "sou",
+        "estou"
+      ]
+    },
+    {
+      "id": "ex_3_2_17",
+      "type": "choose",
+      "text": "Tenho trinta anos e {sou} de Roma.",
+      "translation": "Ho trent'anni e sono di Roma.",
+      "prompt": "Ser, estar o ter? Qui dici da dove vieni",
+      "trains": [
+        "verb:ser:presente:eu",
+        "skill:ser-estar"
+      ],
+      "wrong": [
+        "tenho",
+        "estou"
+      ]
+    },
+    {
+      "id": "ex_3_2_18",
+      "type": "choose",
+      "text": "Hoje {estou} em Lisboa e tenho tempo!",
+      "translation": "Oggi sono a Lisbona e ho tempo!",
+      "prompt": "Ser, estar o ter? Qui dici dove sei",
+      "trains": [
+        "verb:estar:presente:eu",
+        "skill:ser-estar"
+      ],
+      "wrong": [
+        "sou",
+        "tenho"
+      ]
+    }
+  ]
+}

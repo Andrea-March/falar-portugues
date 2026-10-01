@@ -1,0 +1,76 @@
+{
+  "id": "node_3_checkpoint",
+  "exercises": [
+    {
+      "id": "chk_3_1",
+      "type": "write",
+      "text": "Boa tarde! Desculpe, {que horas são}?",
+      "translation": "Buon pomeriggio! Scusi, che ore sono?",
+      "prompt": "Chiedi l'ora a un signore",
+      "trains": [
+        "vocab:que-horas-sao"
+      ]
+    },
+    {
+      "id": "chk_3_2",
+      "type": "choose",
+      "text": "Já {é uma hora}, vamos almoçar!",
+      "translation": "È già l'una, andiamo a pranzo!",
+      "prompt": "È l'una",
+      "trains": [
+        "vocab:sao-horas"
+      ],
+      "wrong": [
+        "são uma hora",
+        "são umas horas",
+        "é umas horas"
+      ]
+    },
+    {
+      "id": "chk_3_3",
+      "type": "write",
+      "text": "O Pedro {tem} trinta anos.",
+      "translation": "Pedro ha trent'anni.",
+      "prompt": "Di' quanti anni ha Pedro",
+      "trains": [
+        "verb:ter:presente:ele_ela_voce"
+      ]
+    },
+    {
+      "id": "chk_3_4",
+      "type": "choose",
+      "text": "Eles não {têm} tempo no sábado.",
+      "translation": "Sabato non hanno tempo.",
+      "prompt": "Parla di Rita e Marco",
+      "trains": [
+        "verb:ter:presente:eles_elas_voces"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "chk_3_5",
+      "type": "write",
+      "text": "Hoje é {segunda-feira}, amanhã é terça.",
+      "translation": "Oggi è lunedì, domani è martedì.",
+      "prompt": "Oggi è lunedì",
+      "trains": [
+        "vocab:segunda-feira"
+      ]
+    },
+    {
+      "id": "chk_3_6",
+      "type": "choose",
+      "text": "— Jantar no sábado? — Sim! {A que horas}?",
+      "translation": "— Cena sabato? — Sì! A che ora?",
+      "prompt": "Accetta e chiedi l'ora",
+      "trains": [
+        "vocab:a-que-horas"
+      ],
+      "wrong": [
+        "Que horas são",
+        "Que dia é hoje",
+        "Onde está"
+      ]
+    }
+  ]
+}

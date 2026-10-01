@@ -1,0 +1,60 @@
+{
+  "id": "rotina",
+  "title": "Horas e dias",
+  "items": [
+    {
+      "id": "que-horas-sao",
+      "text": "Que horas são?",
+      "translation": "Che ore sono?",
+      "icon": "🕐",
+      "usage": "Per chiedere l'ora. Con uno sconosciuto si comincia con «Desculpe».",
+      "situation": "🕐 Hai il telefono scarico e vuoi sapere l'ora."
+    },
+    {
+      "id": "sao-horas",
+      "text": "São duas horas.",
+      "translation": "Sono le due.",
+      "icon": "🕑",
+      "note": "per l'una: «É uma hora»",
+      "usage": "Per dire l'ora: «são três, quatro… horas». Per mezzogiorno: «é meio-dia».",
+      "situation": "🕑 Ti chiedono l'ora: sono le due in punto.",
+      "learnerNote": "Come in italiano: «é uma hora» (è l'una) al singolare, poi «são duas, três…» (sono le due, le tre…) al plurale."
+    },
+    {
+      "id": "a-que-horas",
+      "text": "A que horas?",
+      "translation": "A che ora?",
+      "icon": "⏰",
+      "usage": "Per chiedere quando succede qualcosa. Si risponde con «às»: «Às três».",
+      "situation": "⏰ Un amico ti invita a cena e vuoi sapere quando.",
+      "learnerNote": "«Às três» vuol dire «alle tre»: «a» + «as», come il nostro «a» + «le»."
+    },
+    {
+      "id": "que-dia-e-hoje",
+      "text": "Que dia é hoje?",
+      "translation": "Che giorno è oggi?",
+      "icon": "📅",
+      "usage": "Per chiedere il giorno della settimana (o la data).",
+      "situation": "📅 In vacanza hai perso il conto dei giorni: lo chiedi a un amico."
+    },
+    {
+      "id": "segunda-feira",
+      "text": "Segunda-feira",
+      "translation": "Lunedì",
+      "icon": "🗓️",
+      "note": "poi terça, quarta, quinta e sexta-feira",
+      "usage": "Il primo giorno di lavoro della settimana. I giorni si scrivono con la minuscola.",
+      "situation": "🗓️ Si ricomincia a lavorare dopo la domenica: che giorno è?",
+      "learnerNote": "Attenzione: «segunda-feira» è lunedì, non martedì! Si conta dalla domenica: segunda (lunedì), terça (martedì), quarta (mercoledì), quinta (giovedì), sexta (venerdì)."
+    },
+    {
+      "id": "fim-de-semana",
+      "text": "O fim de semana",
+      "translation": "Il fine settimana",
+      "icon": "🏖️",
+      "usage": "Sábado e domingo: gli unici due giorni senza «-feira».",
+      "situation": "🏖️ Sabato e domenica, finalmente liberi: come si chiamano insieme?",
+      "learnerNote": "«Final de semana» è brasiliano: in Portogallo si dice «fim de semana»."
+    }
+  ]
+}

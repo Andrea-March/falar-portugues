@@ -1,0 +1,156 @@
+{
+  "id": "pronomi",
+  "title": "Chamo-me",
+  "subtitle": "Il pronome va dopo il verbo… quasi sempre",
+  "icon": "🔗",
+  "theory": [
+    {
+      "title": "Dopo il verbo, con il trattino",
+      "text": "In una frase affermativa il pronome va **dopo** il verbo, unito da un trattino: **chamo-me** (mi chiamo), **vejo-te amanhã** (ti vedo domani), **conheço-o** (lo conosco). In italiano è il contrario.",
+      "examples": [
+        {
+          "text": "Chamo-me Marco.",
+          "translation": "Mi chiamo Marco.",
+          "learnerNote": "«Me chamo» all'inizio della frase è brasiliano: in Portogallo si dice «chamo-me»."
+        },
+        {
+          "text": "Vejo-te amanhã!",
+          "translation": "Ci vediamo domani!"
+        },
+        {
+          "text": "Conheço-o.",
+          "translation": "Lo conosco."
+        }
+      ]
+    },
+    {
+      "title": "Quando torna prima",
+      "text": "Il pronome torna **prima** del verbo dopo **não**, dopo le parole interrogative (**como**, **onde**, **quando**) e dopo alcune parole come **também** e **já**.",
+      "examples": [
+        {
+          "text": "Não me chamo Pedro.",
+          "translation": "Non mi chiamo Pedro."
+        },
+        {
+          "text": "Como te chamas?",
+          "translation": "Come ti chiami?"
+        },
+        {
+          "text": "Também me chamo Ana.",
+          "translation": "Anch'io mi chiamo Ana."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "pt_sk_pro_1",
+      "type": "choose",
+      "text": "{Chamo-me} Marco.",
+      "translation": "Mi chiamo Marco.",
+      "wrong": [
+        "Me chamo",
+        "Mi chamo"
+      ],
+      "learnerNote": "«Me chamo» all'inizio della frase è brasiliano: in Portogallo si dice «chamo-me».",
+      "trains": [
+        "skill:pronomi"
+      ]
+    },
+    {
+      "id": "pt_sk_pro_2",
+      "type": "choose",
+      "text": "Como {te chamas}?",
+      "translation": "Come ti chiami?",
+      "wrong": [
+        "chamas-te",
+        "chamaste"
+      ],
+      "learnerNote": "Dopo «como» il pronome va prima del verbo.",
+      "trains": [
+        "skill:pronomi"
+      ]
+    },
+    {
+      "id": "pt_sk_pro_3",
+      "type": "choose",
+      "text": "Não {me chamo} Pedro.",
+      "translation": "Non mi chiamo Pedro.",
+      "wrong": [
+        "chamo-me",
+        "chamome"
+      ],
+      "learnerNote": "Dopo «não» il pronome va prima del verbo.",
+      "trains": [
+        "skill:pronomi"
+      ]
+    },
+    {
+      "id": "pt_sk_pro_4",
+      "type": "choose",
+      "text": "{Vejo-te} amanhã!",
+      "translation": "Ci vediamo domani!",
+      "wrong": [
+        "Te vejo",
+        "Ti vejo"
+      ],
+      "trains": [
+        "skill:pronomi"
+      ]
+    },
+    {
+      "id": "pt_sk_pro_5",
+      "type": "choose",
+      "text": "O Marco? Sim, {conheço-o}.",
+      "translation": "Marco? Sì, lo conosco.",
+      "wrong": [
+        "o conheço",
+        "conheço-lo"
+      ],
+      "trains": [
+        "skill:pronomi"
+      ]
+    },
+    {
+      "id": "pt_sk_pro_6",
+      "type": "choose",
+      "text": "Eu também {me chamo} Ana.",
+      "translation": "Anch'io mi chiamo Ana.",
+      "wrong": [
+        "chamo-me",
+        "chamo me"
+      ],
+      "learnerNote": "Dopo «também» il pronome va prima del verbo.",
+      "trains": [
+        "skill:pronomi"
+      ]
+    },
+    {
+      "id": "pt_sk_pro_7",
+      "type": "write",
+      "text": "Olá! {Chamo-me} Ines.",
+      "translation": "Ciao! Mi chiamo Ines.",
+      "trains": [
+        "skill:pronomi"
+      ]
+    },
+    {
+      "id": "pt_sk_pro_8",
+      "type": "write",
+      "text": "E tu, como {te chamas}?",
+      "translation": "E tu, come ti chiami?",
+      "trains": [
+        "skill:pronomi"
+      ]
+    },
+    {
+      "id": "pt_sk_pro_9",
+      "type": "write",
+      "text": "{Vejo-te} no sábado!",
+      "translation": "Ci vediamo sabato!",
+      "trains": [
+        "skill:pronomi"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "id": "lh-nh",
+  "title": "LH e NH",
+  "subtitle": "Sono il tuo «gli» e il tuo «gn»",
+  "icon": "😌",
+  "theory": [
+    {
+      "title": "Suoni che conosci già",
+      "text": "Una buona notizia: **nh** è il nostro «gn» (**amanhã**, **senhor**, **vinho**) e **lh** è quasi il nostro «gli» (**filha**, **trabalho**, **olha**). Il suono non è un problema: basta ricordarsi come si scrive.",
+      "examples": [
+        {
+          "text": "Até amanhã!",
+          "translation": "A domani!"
+        },
+        {
+          "text": "O senhor",
+          "translation": "Il signore"
+        },
+        {
+          "text": "A minha filha",
+          "translation": "Mia figlia"
+        },
+        {
+          "text": "Olha!",
+          "translation": "Guarda!"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "pt_sk_lhnh_1",
+      "type": "choose",
+      "text": "Até {amanhã}!",
+      "translation": "A domani!",
+      "wrong": [
+        "amagnã",
+        "amaniã"
+      ],
+      "trains": [
+        "skill:lh-nh"
+      ]
+    },
+    {
+      "id": "pt_sk_lhnh_2",
+      "type": "choose",
+      "text": "Bom dia, {senhor} Manuel!",
+      "translation": "Buongiorno, signor Manuel!",
+      "wrong": [
+        "segnor",
+        "senior"
+      ],
+      "trains": [
+        "skill:lh-nh"
+      ]
+    },
+    {
+      "id": "pt_sk_lhnh_3",
+      "type": "choose",
+      "text": "Um copo de {vinho}, por favor.",
+      "translation": "Un bicchiere di vino, per favore.",
+      "wrong": [
+        "vigno",
+        "vinio"
+      ],
+      "trains": [
+        "skill:lh-nh"
+      ]
+    },
+    {
+      "id": "pt_sk_lhnh_4",
+      "type": "choose",
+      "text": "A minha {filha} está em Itália.",
+      "translation": "Mia figlia è in Italia.",
+      "wrong": [
+        "figlia",
+        "filia"
+      ],
+      "trains": [
+        "skill:lh-nh"
+      ]
+    },
+    {
+      "id": "pt_sk_lhnh_5",
+      "type": "choose",
+      "text": "Hoje tenho muito {trabalho}.",
+      "translation": "Oggi ho molto lavoro.",
+      "wrong": [
+        "trabaglio",
+        "trabalio"
+      ],
+      "trains": [
+        "skill:lh-nh"
+      ]
+    },
+    {
+      "id": "pt_sk_lhnh_6",
+      "type": "choose",
+      "text": "{Olha}, o elétrico!",
+      "translation": "Guarda, il tram!",
+      "wrong": [
+        "Oglia",
+        "Olia"
+      ],
+      "trains": [
+        "skill:lh-nh"
+      ]
+    },
+    {
+      "id": "pt_sk_lhnh_7",
+      "type": "write",
+      "listen": true,
+      "text": "O {senhor} tem horas?",
+      "translation": "Lei ha l'ora?",
+      "trains": [
+        "skill:lh-nh"
+      ]
+    },
+    {
+      "id": "pt_sk_lhnh_8",
+      "type": "write",
+      "listen": true,
+      "text": "Até {amanhã}, Rita!",
+      "translation": "A domani, Rita!",
+      "trains": [
+        "skill:lh-nh"
+      ]
+    }
+  ]
+}

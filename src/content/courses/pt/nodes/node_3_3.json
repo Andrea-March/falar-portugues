@@ -1,0 +1,173 @@
+{
+  "id": "node_3_3",
+  "speaker": {
+    "name": "Rita",
+    "role": "Amiga · Lisboa",
+    "avatar": "👩🏽"
+  },
+  "theory": [
+    {
+      "title": "Marcar um café com a Rita",
+      "text": "Rita ti chiama per prendere un caffè insieme. Dovrete mettervi d'accordo su giorno e ora: ti serviranno **tenho**, **a que horas** e i giorni della settimana.",
+      "examples": [
+        {
+          "text": "A que horas?",
+          "translation": "A che ora?"
+        },
+        {
+          "text": "Às cinco, combinado!",
+          "translation": "Alle cinque, d'accordo!"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "ex_3_3_1",
+      "type": "write",
+      "text": "Sim, {tenho}! Porquê?",
+      "translation": "Sì! Perché?",
+      "prompt": "Hai tempo: diglielo",
+      "context": "Olá! Tens tempo amanhã?",
+      "contextTranslation": "Ciao! Hai tempo domani?",
+      "trains": [
+        "verb:ter:presente:eu"
+      ],
+      "wrongFrom": "verb-forms"
+    },
+    {
+      "id": "ex_3_3_2",
+      "type": "choose",
+      "text": "Boa ideia! {A que horas}?",
+      "translation": "Bella idea! A che ora?",
+      "prompt": "Chiedile a che ora",
+      "context": "Vamos tomar um café?",
+      "contextTranslation": "Andiamo a prendere un caffè?",
+      "trains": [
+        "vocab:a-que-horas"
+      ],
+      "wrong": [
+        "Que horas são",
+        "Que dia é hoje",
+        "Onde está"
+      ]
+    },
+    {
+      "id": "ex_3_3_3",
+      "type": "choose",
+      "text": "Às quatro não posso. {Às cinco}?",
+      "translation": "Alle quattro non posso. Alle cinque?",
+      "prompt": "Alle quattro non puoi: proponi le cinque",
+      "context": "Às quatro, no café do senhor Manuel. Pode ser?",
+      "contextTranslation": "Alle quattro, al bar del signor Manuel. Va bene?",
+      "trains": [
+        "vocab:a-que-horas"
+      ],
+      "wrong": [
+        "São cinco",
+        "A cinco",
+        "Cinco horas"
+      ]
+    },
+    {
+      "id": "ex_3_3_4",
+      "type": "choose",
+      "text": "Não, amanhã é {sexta-feira}!",
+      "translation": "No, domani è venerdì!",
+      "prompt": "Domani è venerdì: correggila",
+      "context": "Às cinco, combinado! Amanhã é sábado, não é?",
+      "contextTranslation": "Alle cinque, d'accordo! Domani è sabato, vero?",
+      "trains": [
+        "vocab:segunda-feira"
+      ],
+      "wrong": [
+        "sábado",
+        "segunda-feira",
+        "domingo"
+      ]
+    },
+    {
+      "id": "ex_3_3_5",
+      "type": "write",
+      "text": "Não, o Pedro não {tem} tempo amanhã.",
+      "translation": "No, Pedro domani non ha tempo.",
+      "prompt": "Pedro non ha tempo: diglielo",
+      "context": "Ah, é verdade! E o Pedro? Tem tempo?",
+      "contextTranslation": "Ah, è vero! E Pedro? Ha tempo?",
+      "trains": [
+        "verb:ter:presente:ele_ela_voce"
+      ],
+      "wrongFrom": "verb-forms"
+    }
+  ],
+  "test": {
+    "speaker": {
+      "name": "Pedro",
+      "role": "Amigo · Lisboa",
+      "avatar": "🧑🏻",
+      "voice": "homem"
+    },
+    "exercises": [
+      {
+        "id": "ex_3_3_t1",
+        "type": "write",
+        "text": "Sim, no sábado {tenho} tempo!",
+        "translation": "Sì, sabato ho tempo!",
+        "prompt": "Sabato sei libero: diglielo",
+        "context": "Olá! No sábado há jantar lá em casa. Tens tempo?",
+        "contextTranslation": "Ciao! Sabato c'è una cena a casa mia. Hai tempo?",
+        "trains": [
+          "verb:ter:presente:eu"
+        ]
+      },
+      {
+        "id": "ex_3_3_t2",
+        "type": "write",
+        "text": "Boa! {A que horas} é o jantar?",
+        "translation": "Bene! A che ora è la cena?",
+        "prompt": "Chiedi a che ora è la cena",
+        "context": "Ótimo! A Ana e o Marco também estão lá.",
+        "contextTranslation": "Ottimo! Ci sono anche Ana e Marco.",
+        "trains": [
+          "vocab:a-que-horas"
+        ]
+      },
+      {
+        "id": "ex_3_3_t3",
+        "type": "write",
+        "text": "Sim, a Rita também {tem} tempo.",
+        "translation": "Sì, anche Rita ha tempo.",
+        "prompt": "Anche Rita è libera",
+        "context": "Às oito. E a Rita? Ela tem tempo?",
+        "contextTranslation": "Alle otto. E Rita? Lei ha tempo?",
+        "trains": [
+          "verb:ter:presente:ele_ela_voce"
+        ]
+      },
+      {
+        "id": "ex_3_3_t4",
+        "type": "write",
+        "text": "Agora {são três horas}.",
+        "translation": "Adesso sono le tre.",
+        "prompt": "Sono le tre",
+        "context": "Desculpa, que horas são agora? Não tenho relógio.",
+        "contextTranslation": "Scusa, che ore sono adesso? Non ho l'orologio.",
+        "trains": [
+          "vocab:sao-horas"
+        ]
+      },
+      {
+        "id": "ex_3_3_t5",
+        "type": "write",
+        "text": "{Bom fim de semana}, Pedro!",
+        "translation": "Buon fine settimana, Pedro!",
+        "prompt": "Ricambia il saluto",
+        "context": "Obrigado! Até sábado, bom fim de semana!",
+        "contextTranslation": "Grazie! A sabato, buon fine settimana!",
+        "trains": [
+          "vocab:fim-de-semana"
+        ]
+      }
+    ]
+  }
+}

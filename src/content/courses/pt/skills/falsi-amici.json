@@ -1,0 +1,161 @@
+{
+  "id": "falsi-amici",
+  "title": "Falsi amici",
+  "subtitle": "Burro è un asino, esquisito vuol dire strano",
+  "icon": "🎭",
+  "theory": [
+    {
+      "title": "Sembrano italiane, ma…",
+      "text": "Molte parole portoghesi somigliano all'italiano ma vogliono dire un'altra cosa. Ecco le più traditrici per chi arriva dall'Italia.",
+      "examples": [
+        {
+          "text": "burro",
+          "translation": "asino",
+          "learnerNote": "Il burro si chiama «manteiga»."
+        },
+        {
+          "text": "esquisito",
+          "translation": "strano",
+          "learnerNote": "Per dire «squisito» si usa «delicioso»."
+        },
+        {
+          "text": "apelido",
+          "translation": "cognome",
+          "learnerNote": "Il soprannome è «alcunha»."
+        },
+        {
+          "text": "primo",
+          "translation": "cugino",
+          "learnerNote": "«Primo» nel senso di primo è «primeiro»."
+        },
+        {
+          "text": "ligar",
+          "translation": "telefonare",
+          "learnerNote": "«Chamar» è chiamare a voce."
+        },
+        {
+          "text": "sair",
+          "translation": "uscire",
+          "learnerNote": "Salire si dice «subir»."
+        },
+        {
+          "text": "guardar",
+          "translation": "conservare, mettere via",
+          "learnerNote": "Guardare si dice «olhar»."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "pt_sk_fa_1",
+      "type": "choose",
+      "text": "Pão com {manteiga}, por favor.",
+      "translation": "Pane e burro, per favore.",
+      "wrong": [
+        "burro",
+        "leite"
+      ],
+      "learnerNote": "«Burro» in portoghese è l'asino!",
+      "trains": [
+        "skill:falsi-amici"
+      ]
+    },
+    {
+      "id": "pt_sk_fa_2",
+      "type": "choose",
+      "text": "Este pastel é {delicioso}!",
+      "translation": "Questo pastel è squisito!",
+      "wrong": [
+        "esquisito",
+        "estranho"
+      ],
+      "learnerNote": "«Esquisito» vuol dire strano.",
+      "trains": [
+        "skill:falsi-amici"
+      ]
+    },
+    {
+      "id": "pt_sk_fa_3",
+      "type": "choose",
+      "text": "Qual é o seu {apelido}?",
+      "translation": "Qual è il suo cognome?",
+      "wrong": [
+        "nome",
+        "alcunha"
+      ],
+      "trains": [
+        "skill:falsi-amici"
+      ]
+    },
+    {
+      "id": "pt_sk_fa_4",
+      "type": "choose",
+      "text": "O meu {primo} está no Porto.",
+      "translation": "Mio cugino è a Porto.",
+      "wrong": [
+        "primeiro",
+        "irmão"
+      ],
+      "trains": [
+        "skill:falsi-amici"
+      ]
+    },
+    {
+      "id": "pt_sk_fa_5",
+      "type": "choose",
+      "text": "Amanhã {ligo} à Rita.",
+      "translation": "Domani chiamo Rita (al telefono).",
+      "wrong": [
+        "chamo",
+        "guardo"
+      ],
+      "learnerNote": "Al telefono si dice «ligar»; «chamar» è chiamare a voce.",
+      "trains": [
+        "skill:falsi-amici"
+      ]
+    },
+    {
+      "id": "pt_sk_fa_6",
+      "type": "choose",
+      "text": "{Olha}, o elétrico!",
+      "translation": "Guarda, il tram!",
+      "wrong": [
+        "Guarda",
+        "Sai"
+      ],
+      "learnerNote": "«Guardar» vuol dire conservare: guardare è «olhar».",
+      "trains": [
+        "skill:falsi-amici"
+      ]
+    },
+    {
+      "id": "pt_sk_fa_7",
+      "type": "choose",
+      "text": "{Saio} às cinco.",
+      "translation": "Esco alle cinque.",
+      "wrong": [
+        "Subo",
+        "Fico"
+      ],
+      "learnerNote": "«Sair» vuol dire uscire, non salire.",
+      "trains": [
+        "skill:falsi-amici"
+      ]
+    },
+    {
+      "id": "pt_sk_fa_8",
+      "type": "choose",
+      "text": "Vamos {subir} ao castelo?",
+      "translation": "Saliamo al castello?",
+      "wrong": [
+        "sair",
+        "salir"
+      ],
+      "learnerNote": "Salire è «subir»; «sair» vuol dire uscire.",
+      "trains": [
+        "skill:falsi-amici"
+      ]
+    }
+  ]
+}

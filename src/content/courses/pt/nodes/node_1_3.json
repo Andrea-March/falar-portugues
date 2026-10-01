@@ -157,7 +157,8 @@
         "contextTranslation": "E come si chiama?",
         "prompt": "Di' che ti chiami Marco",
         "trains": [
-          "vocab:chamo-me"
+          "vocab:chamo-me",
+          "skill:pronomi"
         ]
       },
       {
