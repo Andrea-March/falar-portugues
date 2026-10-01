@@ -48,6 +48,16 @@ export interface CourseConfig {
    * domande di comprensione. Richiede "listening" nel JSON di ogni nodo dialogue.
    */
   listeningSession?: boolean;
+  /**
+   * App Android (TWA) collegata al sito: servita in /.well-known/assetlinks.json, così Android
+   * sa che app e sito sono dello stesso proprietario e apre l'app senza la barra di Chrome.
+   * Impronte SHA-256 dei certificati: quella della chiave di caricamento e, dopo il primo
+   * caricamento sul Play Store, anche quella di Play App Signing (Play Console → Integrità app).
+   */
+  android?: {
+    packageName: string;
+    sha256CertFingerprints: readonly string[];
+  };
   /** Bandierina delle note per chi impara, es. "🇮🇹" */
   learnerFlag: string;
   /** Nomi dei tempi verbali */

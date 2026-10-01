@@ -27,6 +27,14 @@ const config: CourseConfig = {
   verbGroups: ['ar', 'er', 'ir'],
   specialChars: ['á', 'à', 'â', 'ã', 'ç', 'é', 'ê', 'í', 'ó', 'ô', 'õ', 'ú'],
   learnerFlag: '🇮🇹',
+  android: {
+    packageName: 'com.falaluso.app',
+    sha256CertFingerprints: [
+      // Chiave di firma creata con PWABuilder (1 ottobre 2026)
+      'D3:DF:D2:B4:0E:A6:09:AC:A7:4F:D5:85:1E:82:E9:6F:24:41:9C:F9:14:79:72:57:FD:24:0F:5D:DF:E3:94:5E',
+      // TODO dopo il primo caricamento: impronta di Play App Signing (Play Console → Integrità app → Firma dell'app)
+    ],
+  },
   tenseLabels: {
     presente: 'Presente do Indicativo',
     preterito_perfeito: 'Pretérito Perfeito',
