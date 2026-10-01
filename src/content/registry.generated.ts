@@ -13,6 +13,8 @@ import skill_doppie from './courses/it/skills/doppie.json';
 import skill_pronomi from './courses/it/skills/pronomi.json';
 import skill_suoni from './courses/it/skills/suoni.json';
 import recording_il_diluvio from './courses/it/recordings/il-diluvio.json';
+import recording_il_sole_e_il_vento from './courses/it/recordings/il-sole-e-il-vento.json';
+import recording_novecento_parte_1 from './courses/it/recordings/novecento-parte-1.json';
 import recording_un_caffe_al_volo from './courses/it/recordings/un-caffe-al-volo.json';
 
 /** Configurazione, struttura e voci del corso */
@@ -26,7 +28,7 @@ export const vocabSetList = [vocab_bar, vocab_saluti, vocab_strada] as unknown a
 /** Punti difficili (tab della Grammatica) */
 export const skillList = [skill_doppie, skill_pronomi, skill_suoni] as unknown as Skill[];
 /** Registrazioni della tab Ascolto (anche le bozze: l'app le nasconde) */
-export const recordingList = [recording_il_diluvio, recording_un_caffe_al_volo] as unknown as Recording[];
+export const recordingList = [recording_il_diluvio, recording_il_sole_e_il_vento, recording_novecento_parte_1, recording_un_caffe_al_volo] as unknown as Recording[];
 
 /** Nomi dei gruppi dello studio del vocabolario per nodo: la mappa li mostra nelle sessioni senza caricare la lezione */
 export const vocabGroupLabels: Record<string, string[]> = {
